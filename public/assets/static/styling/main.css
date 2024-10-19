@@ -43,7 +43,7 @@ main > div > h1 {
 .project-item {
 	display: flex;
 	align-items: stretch;
-	
+	padding: 10px;
 	@media (min-width: 768px) {
 		.grid-item {
 			width: 50%;

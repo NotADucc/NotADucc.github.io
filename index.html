@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <title>Portfolio</title>
+        <title>Gwilom</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link href="./public/assets/static/styling/main.css" rel="stylesheet">
@@ -24,20 +24,11 @@
 
     <main>
         <div>
-            <h1 class="text-2xl lg:text-4xl font-extrabold my-2">Welcome to Mog Inc.</h1>
-            <div>
-                <p class="mb-5">
-                    Lorem ipsum dolor sit amet. Vel vero sint a eius repellendus ut magnam eius quo molestias harum. 33 laboriosam deleniti vel soluta Quis est similique voluptatum aut officiis dolores sed nemo nobis in enim quasi qui possimus dolor. Est veritatis dignissimos est quam voluptatem sed itaque ullam vel sunt quia hic sunt optio qui quisquam magnam eum eius quos.
-                </p>
-                
-                <p class="mb-5">
-                    Quo facilis cupiditate At quaerat vitae ab rerum harum eum exercitationem saepe At cumque cumque in laudantium aliquam aut officiis vero. Non consectetur natus aut provident inventore non temporibus iste sit fugit totam ad sint repellat eum eaque temporibus? Ab sunt libero eos inventore sapiente sit debitis quos nam pariatur sunt in eius vitae et quae illum. Non deserunt nisi sit alias magnam sit minus minus est iusto earum non praesentium autem qui sunt architecto et dolore natus.
-                </p>
-                
-                <p>
-                    Qui sint cumque ex error odit qui libero ipsum aut ducimus doloremque est dolor delectus id corporis doloribus ea provident autem. Est quidem nisi aut sapiente minima et recusandae doloremque?
-                </p>
-            </div> 
+            <h1>Welcome to my portfolio.</h1>
+            <section>
+                <div class="project-container">
+                </div>
+            </section>
         </div>
     </main>
 
@@ -47,7 +38,7 @@
                 href=""
                 class="link"
             > 
-                Mog Inc. 
+                Gwilom. 
             </a>
             <p class="copyright">
                 © Copyright 2024. All Snides Reserved.
@@ -73,6 +64,38 @@
     </footer>
 </body>
 <script>
+    let projects = 
+    [
+        {
+            "title": "Mogcord",
+            "under_title": "A simple messaging paltform",
+            "image": "mogcord.png",
+            "tools": ["Rust", "MongoDB", "AlpineJs", "HTMX", "Tailwind"],
+            "description": "A messaging platform which allows the user to chat with individuals or with a group.",
+        },
+    ];
+
+    let proj_container = document.getElementsByClassName("project-container")[0];
     
+    projects.forEach(x => {
+        let proj_item = document.createElement('div');
+        proj_item.className = 'project-item';
+        proj_item.innerHTML = `
+            <div>
+                <div class="blur-project-img" style="background-image: url('public/assets/img/${x.image}');">
+                    <img src="public/assets/img/${x.image}" class="img-fluid" loading="lazy" alt="${x.title}-screenshot">
+                </div>
+                <div class="project-content">
+                    <h3>${x.title}</h3>
+                    <h4><i>${x.under_title}</i></h4>
+                    <p class="tools">${x.tools.join(' | ')}</p>
+                    <p class="project-description">
+                        ${x.description}
+                    </p>
+                </div>
+            </div>
+        `;
+        proj_container.appendChild(proj_item);
+    });
 </script>
 </html>

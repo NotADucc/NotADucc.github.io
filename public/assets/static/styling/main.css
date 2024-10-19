@@ -7,12 +7,19 @@ body {
 }
 
 main {
+	margin-bottom: auto;
 	display: flex; 
 	flex-direction: column; 
 	justify-content: center; 
 	align-items: center; 
 }
 
+main > div {
+	margin-top: 1rem; 
+	width: 83.333333%; 
+	text-align: justify; 
+	color: #ffffff; 
+}
 
 
 
@@ -55,8 +62,6 @@ header > .container > a > .link {
 	color: #ffffff; 
 	white-space: nowrap; 
 }
-
-
 
 
 footer {

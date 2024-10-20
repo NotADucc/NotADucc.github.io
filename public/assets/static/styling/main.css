@@ -44,6 +44,7 @@ main > div > h1 {
 	display: flex;
 	align-items: stretch;
 	padding: 10px;
+	animation: slide-up .5s ease;
 	@media (min-width: 768px) {
 		.grid-item {
 			width: 50%;
@@ -55,6 +56,10 @@ main > div > h1 {
 			width: 33.33%;
 		}
 	}
+}
+
+.project-title {
+	font-size: 1.25rem;
 }
 
 .project-content {
@@ -74,16 +79,15 @@ main > div > h1 {
 .img-fluid {
 	height: auto;
 	max-width: 100%;
-	transition: transform 0.3s ease-in-out;
 }
 
-.img-fluid:hover {
-	transform: scale(1.1);
-}
 
 .tools {
-	color: #3875ea;
+	-webkit-text-fill-color: transparent;
+	background: linear-gradient(20deg, #3875ea, #a62161);
+	-webkit-background-clip: text;
 }
+
 
 header {
 	padding-left: 0.5rem;
@@ -173,4 +177,15 @@ footer > .container > .svg > a > .icon {
 	width: 1.25rem; 
 	height: 1.25rem; 
 	fill: currentColor; 
+}
+
+.link, .icon {
+	-webkit-transition: color 0.5s ease-out;
+	-moz-transition: color 0.5s ease-out;
+	-o-transition: color 0.5s ease-out;
+	transition: color 0.5s ease-out;
+}
+
+.link:hover, .icon:hover {
+	color: #3875ea !important;
 }

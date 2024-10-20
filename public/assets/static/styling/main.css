@@ -189,3 +189,10 @@ footer > .container > .svg > a > .icon {
 .link:hover, .icon:hover {
 	color: #3875ea !important;
 }
+
+canvas {
+	position:absolute;
+	left:0;
+	top:0;
+	z-index:-1;
+}

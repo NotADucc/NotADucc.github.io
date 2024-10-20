@@ -11,7 +11,7 @@ let projects =
         "title": ".Inside",
         "under_title": "A visitor registration tool",
         "image": "inside.png",
-        "tools": [".NET", "ASP.NET Core", "REST API", "WPF", "ADO.NET", "SQL SERVER", "MySQL"],
+        "tools": [".NET", "C#", "ASP.NET Core", "REST API", "WPF", "ADO.NET", "SQL SERVER", "MySQL"],
         "description": "A business park with a central reception wanted an application to register visitors to the park. This is necessary for fire safety, so that it is always known who is present on the site. Everyone visiting one of the companies must first register at the reception. To make this process as fast as possible, visitors are given the opportunity to register themselves via a touchscreen provided at the entrance. Through the touchscreen, they can enter their own information and the person they have an appointment with. Upon departure, visitors can check out again using the same touchscreen. We ensure that the privacy of visitors is respected in accordance with GDPR regulations. Visitors that came with a car can park at the car park.",
     },
     {
@@ -25,7 +25,7 @@ let projects =
         "title": "Electronic Receipts",
         "under_title": "Tool created to manage expenses",
         "image": "electronic-receipts.png",
-        "tools": ["Winforms", ".NET Framework", "Entity Framework Core", "SQL Server", "SAP Crystal Reports", "OpenXML"],
+        "tools": [".NET Framework", "C#", "Winforms", "Entity Framework Core", "SQL Server", "SAP Crystal Reports", "OpenXML"],
         "description": "An internal tool that acts as a bookkeeping tool, it allows users to manage expenses made for customers or generate PDF and Excel reports.",
     },
     {
@@ -36,10 +36,24 @@ let projects =
         "description": "A simulation where x amount of monkeys are dropped in a xx * yy sized forest with y trees. The goal was to optimize it as much as possible; to accomplish this, chunks and distance algorithms were used.",
     },
     {
+        "title": "Mog Site",
+        "under_title": "Personal tool hub",
+        "image": "mogsite.png",
+        "tools": [".NET", "C#", "ASP .NET CORE", "Angular.Js", "JWT", "Auth", "Private Nuget", "Tailwind", "'Next.Js'"],
+        "description": "Personalized platform where all my most frequently used tools are centralized.",
+    },
+    {
+        "title": "Mogsweeper",
+        "under_title": "Minesweeper clone",
+        "image": "mogsweeper.png",
+        "tools": [".NET", "C#", "WPF"],
+        "description": "Minesweeper clone made in .NET WPF.",
+    },
+    {
         "title": "Restaurant manager",
         "under_title": "REST API to book and manage reservations",
         "image": "web4.png",
-        "tools": ["ASP .NET CORE", "XUNIT", "Moq", "REST API", "ADO.NET", "SQL SERVER",],
+        "tools": ["ASP .NET CORE", "C#", "XUNIT", "Moq", "REST API", "ADO.NET", "SQL SERVER",],
         "description": "REST API to view and manage reservations.",
     },
 ];

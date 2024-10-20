@@ -2,7 +2,6 @@ let m = document.getElementById("noise");
 let width = m.width;
 let height = m.height;
 m = m.getContext("2d");
-console.log(width);
 
 draw = (x, y, c, s) => {
     m.fillStyle = c;

@@ -78,7 +78,7 @@
             "under_title": "A visitor registration tool",
             "image": "inside.png",
             "tools": [".NET", "ASP.NET Core", "REST API", "WPF", "SQL SERVER", "MySQL"],
-            "description": "A business park with a central reception wants an application to register visitors to the park. This is necessary for fire safety, so that it is always known who is present on the site. Everyone visiting one of the companies must first register at the reception. To make this process as fast as possible, visitors are given the opportunity to register themselves via a touchscreen provided at the entrance. Through the touchscreen, they can enter their own information and the person they have an appointment with. Upon departure, visitors can check out again using the same touchscreen. We ensure that the privacy of visitors is respected in accordance with GDPR regulations. Visitors that came with a car can park at the car park.",
+            "description": "A business park with a central reception wanted an application to register visitors to the park. This is necessary for fire safety, so that it is always known who is present on the site. Everyone visiting one of the companies must first register at the reception. To make this process as fast as possible, visitors are given the opportunity to register themselves via a touchscreen provided at the entrance. Through the touchscreen, they can enter their own information and the person they have an appointment with. Upon departure, visitors can check out again using the same touchscreen. We ensure that the privacy of visitors is respected in accordance with GDPR regulations. Visitors that came with a car can park at the car park.",
         },
         {
             "title": "Follow-up system",
@@ -86,6 +86,13 @@
             "image": "web3.png",
             "tools": ["React", "Node.Js", "REST API", "JWT", "Auth", "Express", "WebSockets", "MySQL", "Tailwind"],
             "description": "A follow-up system where teachers can monitor or modify the timer for a test, see asked questions, and extra requested time by students in real time. Also allows the teacher to import bulk csv data.",
+        },
+        {
+            "title": "Electronic Receipts",
+            "under_title": "Tool created to manage expenses",
+            "image": "electronic-receipts.png",
+            "tools": ["Winforms", ".NET Framework", "Entity Framework Core", "SQL Server", "SAP Crystal Reports", "OpenXML"],
+            "description": "An internal tool that acts as a bookkeeping tool, it allows users to manage expenses made for customers.",
         },
     ];
 
@@ -96,11 +103,11 @@
         proj_item.className = 'project-item';
         proj_item.innerHTML = `
             <div>
-                <div class="blur-project-img" style="background-image: url('public/assets/img/${x.image}');">
+                <a href="public/assets/img/${x.image}" target="_blank" rel="noreferrer">
                     <img src="public/assets/img/${x.image}" class="img-fluid" loading="lazy" alt="${x.image}-screenshot">
-                </div>
+                </a>
                 <div class="project-content">
-                    <h3>${x.title}</h3>
+                    <h3 class="project-title">${x.title}</h3>
                     <h4><i>${x.under_title}</i></h4>
                     <p class="tools">${x.tools.join(' | ')}</p>
                     <p class="project-description">

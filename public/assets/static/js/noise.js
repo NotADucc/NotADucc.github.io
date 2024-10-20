@@ -39,12 +39,12 @@ rule = (particles1, particles2, g) => {
             }
             
         }
-            a.vx = (a.vx + fx) * 0.5;
-            a.vy = (a.vy + fy) * 0.5;
-            a.x += a.vx;
-            a.y += a.vy;
-            if (a.x <= 0 || a.x >= width * 0.9) { a.vx *= -1; }
-            if (a.y <= 0 || a.y >= height * 0.9) { a.vy *= -1; }
+        a.vx = (a.vx + fx) * 0.5;
+        a.vy = (a.vy + fy) * 0.5;
+        a.x += a.vx;
+        a.y += a.vy;
+        if (a.x <= 0 || a.x >= width * 0.9) { a.vx *= -1; }
+        if (a.y <= 0 || a.y >= height * 0.9) { a.vy *= -1; }
     }
 }
 

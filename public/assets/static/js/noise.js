@@ -43,7 +43,7 @@ rule = (seekers, targets, attraction) => {
                 if (dy > canvas.height >> 1) dy = canvas.height - dy;
             }
             d = Math.sqrt(dx * dx + dy * dy);
-            if (d > 0 && d <= 6) {
+            if (d > 0 && d <= 7) {
                 F = 0.9 / d;
                 fx += F * dx;
                 fy += F * dy;
@@ -53,16 +53,11 @@ rule = (seekers, targets, attraction) => {
                 fx += F * dx;
                 fy += F * dy;
             }
-            else { continue; }
         }
         seeker.vx = (seeker.vx + fx) * MULTIPLIER;
         seeker.vy = (seeker.vy + fy) * MULTIPLIER;
-        seeker.x += seeker.vx;
-        seeker.y += seeker.vy;
-        if (seeker.x < 0) { seeker.x = canvas.width; }
-		else if (seeker.x > canvas.width) { seeker.x = 0; }
-		if (seeker.y < 0) { seeker.y = canvas.height; }
-		else if (seeker.y > canvas.height) { seeker.y = 0; }
+        seeker.x = (seeker.x + seeker.vx + canvas.width) % canvas.width;
+        seeker.y = (seeker.y + seeker.vy + canvas.height) % canvas.height;
     }
 }
 
@@ -71,10 +66,10 @@ magenta = create(10, "magenta", true);
 purple = create(150, "#a62161", false);
 update = () => {
     rule(blue, blue, 0.32);
-    rule(blue, magenta, -0.27);
-    rule(blue, purple, -0.35);
+    rule(blue, magenta, -0.4);
+    rule(blue, purple, -0.4);
     rule(magenta, magenta, 0.1);
-    rule(magenta, blue, 0.34);
+    rule(magenta, blue, 0.4);
     rule(purple, purple, -0.15);
     rule(purple, blue, 0.2);
     rule(purple, magenta, -0.2);

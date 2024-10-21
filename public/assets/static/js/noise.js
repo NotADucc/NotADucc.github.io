@@ -1,7 +1,7 @@
 let canvas = document.getElementById("noise");
 canvas.width = window.innerWidth;
 canvas.height = document.getElementsByTagName("header")[0].offsetHeight;
-const MULTIPLIER = 0.3;
+const MULTIPLIER = 0.3; const PARTICLE_SIZE = 5;
 ctx = canvas.getContext("2d");
 
 
@@ -66,7 +66,7 @@ update = () => {
     rule(purple, magenta, -0.2);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     for (let i = 0; i < particles.length; i++) {
-        draw(particles[i].x, particles[i].y, particles[i].color, 5, 5);
+        draw(particles[i].x, particles[i].y, particles[i].color, PARTICLE_SIZE, PARTICLE_SIZE);
     }
     requestAnimationFrame(update);
 }

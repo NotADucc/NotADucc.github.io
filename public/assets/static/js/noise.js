@@ -1,21 +1,27 @@
-let canvas = document.getElementById("noise");
-canvas.width = window.innerWidth;
-canvas.height = document.getElementsByTagName("header")[0].offsetHeight;
-document.getElementsByClassName("fakeHeader")[0].offsetHeight = canvas.height;
-const FRICTION = 0.6; const PARTICLE_SIZE = 5; const MIN_DISTANCE = 5; const MAX_DISTANCE = 30;
-ctx = canvas.getContext("2d");
+const resize = addEventListener("resize", (_) => {
+    canvas.width = window.innerWidth;
+    canvas.height = document.getElementsByTagName("header")[0].offsetHeight;
+    document.getElementsByClassName("fakeHeader")[0].offsetHeight = canvas.height;
+});
 
+const FRICTION = 0.6; const PARTICLE_SIZE = 5; const MIN_DISTANCE = 5; const MAX_DISTANCE = 30;
+let canvas = document.getElementById("noise");
+
+window.dispatchEvent(new CustomEvent("resize"));
+ctx = canvas.getContext("2d");
 
 
 draw = (x, y, c, w, h) => {
     ctx.fillStyle = c;
     ctx.fillRect(x, y, w, h);
 }
-particles = []
+
 particle = (x, y, c, b) => {
     return { "x": x, "y": y, "vx": 0, "vy": 0, "color": c, "bounds": b };
 }
+
 random = () => Math.random() *  50;
+
 create = (amount, color, b) => {
     group = []
     for (let i = 0; i < amount; i++) {
@@ -27,10 +33,10 @@ create = (amount, color, b) => {
 
 rule = (seekers, targets, attraction) => {
     for (let i = 0; i < seekers.length; i++) {
-        seeker = seekers[i];
         fx = 0.0;
         fy = 0.0;
-
+        
+        seeker = seekers[i];
         for (let j = 0; j < targets.length; j++) {
             target = targets[j];
             if (seeker.bounds) {
@@ -49,7 +55,7 @@ rule = (seekers, targets, attraction) => {
             fx += F * dx;
             fy += F * dy;
         }
-
+        
         seeker.vx = (seeker.vx + fx) * FRICTION;
         seeker.vy = (seeker.vy + fy) * FRICTION;
         seeker.x = (seeker.x + seeker.vx + canvas.width) % canvas.width;
@@ -57,10 +63,6 @@ rule = (seekers, targets, attraction) => {
     }
 }
 
-
-blue = create(70, "#3875ea", true);
-magenta = create(15, "magenta", true);
-purple = create(150, "#a62161", false);
 update = () => {
     rule(blue, blue, 0.32);
     rule(blue, magenta, -0.4);
@@ -77,10 +79,9 @@ update = () => {
     }
     requestAnimationFrame(update);
 }
-update();
 
-addEventListener("resize", (_) => {
-    canvas.width = window.innerWidth;
-    canvas.height = document.getElementsByTagName("header")[0].offsetHeight;
-    document.getElementsByClassName("fakeHeader")[0].offsetHeight = canvas.height;
-});
+particles = []
+blue = create(70, "#3875ea", true);
+magenta = create(15, "magenta", true);
+purple = create(150, "#a62161", false);
+update();

@@ -43,11 +43,17 @@ rule = (seekers, targets, attraction) => {
                 if (dy > canvas.height >> 1) dy = canvas.height - dy;
             }
             d = Math.sqrt(dx * dx + dy * dy);
-            if (d > 0 && d <= 80) {
+            if (d > 0 && d <= 6) {
+                F = 0.9 / d;
+                fx += F * dx;
+                fy += F * dy;
+            } 
+            else if (d > 0 && d <= 80) {
                 F = -attraction / d;
                 fx += F * dx;
                 fy += F * dy;
             }
+            else { continue; }
         }
         seeker.vx = (seeker.vx + fx) * MULTIPLIER;
         seeker.vy = (seeker.vy + fy) * MULTIPLIER;
@@ -65,7 +71,7 @@ magenta = create(10, "magenta", true);
 purple = create(150, "#a62161", false);
 update = () => {
     rule(blue, blue, 0.32);
-    rule(blue, magenta, 0.17);
+    rule(blue, magenta, -0.27);
     rule(blue, purple, -0.35);
     rule(magenta, magenta, 0.1);
     rule(magenta, blue, 0.34);

@@ -1,6 +1,7 @@
 let canvas = document.getElementById("noise");
 canvas.width = window.innerWidth;
 canvas.height = document.getElementsByTagName("header")[0].offsetHeight;
+document.getElementsByClassName("fakeHeader")[0].offsetHeight = canvas.height;
 const MULTIPLIER = 0.3; const PARTICLE_SIZE = 5;
 ctx = canvas.getContext("2d");
 
@@ -68,7 +69,7 @@ update = () => {
     rule(blue, purple, -0.35);
     rule(magenta, magenta, 0.1);
     rule(magenta, blue, 0.34);
-    rule(purple, purple, -0.35);
+    rule(purple, purple, -0.15);
     rule(purple, blue, 0.2);
     rule(purple, magenta, -0.2);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -82,4 +83,5 @@ update();
 addEventListener("resize", (_) => {
     canvas.width = window.innerWidth;
     canvas.height = document.getElementsByTagName("header")[0].offsetHeight;
+    document.getElementsByClassName("fakeHeader")[0].offsetHeight = canvas.height;
 });

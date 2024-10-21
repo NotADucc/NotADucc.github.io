@@ -2,13 +2,13 @@ let canvas = document.getElementById("noise");
 canvas.width = window.innerWidth;
 canvas.height = document.getElementsByTagName("header")[0].offsetHeight;
 const MULTIPLIER = 0.3;
-m = canvas.getContext("2d");
+ctx = canvas.getContext("2d");
 
 
 
 draw = (x, y, c, w, h) => {
-    m.fillStyle = c;
-    m.fillRect(x, y, w, h);
+    ctx.fillStyle = c;
+    ctx.fillRect(x, y, w, h);
 }
 particles = []
 particle = (x, y, c) => {
@@ -64,7 +64,7 @@ update = () => {
     rule(purple, purple, -0.35);
     rule(purple, blue, 0.2);
     rule(purple, magenta, -0.2);
-    m.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     for (let i = 0; i < particles.length; i++) {
         draw(particles[i].x, particles[i].y, particles[i].color, 5, 5);
     }

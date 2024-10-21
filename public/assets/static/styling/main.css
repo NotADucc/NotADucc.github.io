@@ -4,6 +4,7 @@ body {
 	flex-direction: column; 
 	justify-content: space-between; 
 	height: 100vh; 
+	font-family: Open Sans, Verdana;
 }
 
 main {
@@ -90,6 +91,7 @@ canvas {
 }
 
 header {
+	width: 100%;
 	position: fixed;
 	top: 0;
 	left: 0;
@@ -109,6 +111,8 @@ header > .container {
 	flex-wrap: wrap; 
 	justify-content: space-between; 
 	align-items: center; 
+	margin-left: auto;
+	margin-right: auto;
 }
 
 header > .container > a {
@@ -183,6 +187,21 @@ footer > .container > .svg > a > .icon {
 
 .link:hover, .icon:hover {
 	color: #3875ea !important;
+}
+
+.arrow {
+	border: solid black;
+	border-width: 0 3px 3px 0;
+	display: inline-block;
+	padding-left: 1.25rem;
+	padding-right: 2.25rem; 
+	padding-bottom: 0.625rem;
+	padding-top: 0.625rem;
+}
+
+.down {
+	transform: rotate(45deg);
+	-webkit-transform: rotate(45deg);
 }
 
 @media (min-width: 600px) {

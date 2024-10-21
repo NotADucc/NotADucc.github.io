@@ -1,70 +1,78 @@
-let m = document.getElementById("noise");
-let width = m.width;
-let height = m.height;
-m = m.getContext("2d");
+let canvas = document.getElementById("noise");
+canvas.width = window.innerWidth;
+canvas.height = document.getElementsByTagName("header")[0].offsetHeight;
+const MULTIPLIER = 0.3;
+m = canvas.getContext("2d");
 
-draw = (x, y, c, s) => {
+
+
+draw = (x, y, c, w, h) => {
     m.fillStyle = c;
-    m.fillRect(x, y, s, s);
+    m.fillRect(x, y, w, h);
 }
 particles = []
 particle = (x, y, c) => {
     return { "x": x, "y": y, "vx": 0, "vy": 0, "color": c };
 }
-random = () => Math.random() * 100 + 50;
-create = (number, color) => {
+random = () => Math.random() * canvas.width + 50;
+create = (amount, color) => {
     group = []
-    for (let i = 0; i < number; i++) {
+    for (let i = 0; i < amount; i++) {
         group.push(particle(random(), random(), color));
         particles.push(group[i]);
     }
     return group;
 }
 
-rule = (particles1, particles2, g) => {
-    for (let i = 0; i < particles1.length; i++) {
-        fx = 0;
-        fy = 0;
+rule = (seekers, targets, attraction) => {
+    for (let i = 0; i < seekers.length; i++) {
+        fx = 0.0;
+        fy = 0.0;
 
-        for (let j = 0; j < particles2.length; j++) {
-            a = particles1[i];
-            b = particles2[j];
-            dx = a.x - b.x;
-            dy = a.y - b.y;
+        for (let j = 0; j < targets.length; j++) {
+            seeker = seekers[i];
+            target = targets[j];
+            dx = seeker.x - target.x;
+            dy = seeker.y - target.y;
             d = Math.sqrt(dx * dx + dy * dy);
-            if (d > 0 && d < 80) {
-                F = g * 1 / d;
-                fx += (F * dx);
-                fy += (F * dy);
+            if (d > 0 && d <= 100) {
+                F = -attraction / d;
+                fx += F * dx;
+                fy += F * dy;
             }
-            
         }
-        a.vx = (a.vx + fx) * 0.5;
-        a.vy = (a.vy + fy) * 0.5;
-        a.x += a.vx;
-        a.y += a.vy;
-        if (a.x <= 0 || a.x >= width * 0.9) { a.vx *= -1; }
-        if (a.y <= 0 || a.y >= height * 0.9) { a.vy *= -1; }
+        seeker.vx = (seeker.vx + fx) * MULTIPLIER;
+        seeker.vy = (seeker.vy + fy) * MULTIPLIER;
+        seeker.x += seeker.vx;
+        seeker.y += seeker.vy;
+        if (seeker.x < 0) { seeker.x = canvas.width; }
+		else if (seeker.x > canvas.width) { seeker.x = 0; }
+		if (seeker.y < 0) { seeker.y = canvas.height; }
+		else if (seeker.y > canvas.height) { seeker.y = 0; }
     }
 }
 
 blue = create(70, "#3875ea");
 magenta = create(10, "magenta");
-purple = create(100, "#a62161");
+purple = create(150, "#a62161");
 update = () => {
-    rule(blue, blue, -0.32);
-    rule(blue, magenta, -0.17);
-    rule(blue, purple, 0.35);
-    rule(magenta, magenta, -0.1);
-    rule(magenta, blue, -0.34);
-    rule(purple, purple, 0.15);
-    rule(purple, blue, -0.2);
-    rule(purple, magenta, 0.2);
-    m.clearRect(0, 0, 1000, 500);
-    draw(0, 0, "rgb(23 23 23)", 1000);
+    rule(blue, blue, 0.32);
+    rule(blue, magenta, 0.17);
+    rule(blue, purple, -0.35);
+    rule(magenta, magenta, 0.1);
+    rule(magenta, blue, 0.34);
+    rule(purple, purple, -0.35);
+    rule(purple, blue, 0.2);
+    rule(purple, magenta, -0.2);
+    m.clearRect(0, 0, canvas.width, canvas.height);
     for (let i = 0; i < particles.length; i++) {
-        draw(particles[i].x, particles[i].y, particles[i].color, 5);
+        draw(particles[i].x, particles[i].y, particles[i].color, 5, 5);
     }
     requestAnimationFrame(update);
 }
 update();
+
+addEventListener("resize", (_) => {
+    canvas.width = window.innerWidth;
+    canvas.height = document.getElementsByTagName("header")[0].offsetHeight;
+});

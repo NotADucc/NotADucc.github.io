@@ -1,5 +1,5 @@
 body {
-	background-color: rgb(23 23 23);
+	background-color: #171717;
 	display: flex; 
 	flex-direction: column; 
 	justify-content: space-between; 
@@ -125,11 +125,44 @@ header > .container > a > .link {
 	align-self: center; 
 	font-size: 1.25rem;
 	line-height: 1.75rem; 
-	font-weight: 600; 
+	font-weight: 600;
 	color: #ffffff; 
 	white-space: nowrap; 
 }
 
+
+.header_buttons {
+	padding-top: 0.625rem;
+	padding-bottom: 0.625rem; 
+	padding-left: 1.25rem;
+	padding-right: 1.25rem; 
+	margin-right: 1.75rem;
+	border-radius: 0.5rem; 
+	background-color: transparent;
+	transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+	transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+	transition-duration: 300ms; 
+	transition-duration: 300ms; 
+}
+
+.header_buttons:hover {
+	background-color: #262626; 
+}
+
+.triangle_down {
+	width: 0;
+	height: 0;
+	border-left: 15px solid transparent;
+	border-right: 15px solid transparent;
+	border-top: 15px solid #FFF;
+	font-size: 0;
+	line-height: 0;
+	float: left;
+}
+
+.triangle_rotate {
+	transform: rotate(-180deg);
+}
 
 footer {
 	border-top: solid;

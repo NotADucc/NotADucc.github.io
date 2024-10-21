@@ -11,14 +11,14 @@ draw = (x, y, c, w, h) => {
     ctx.fillRect(x, y, w, h);
 }
 particles = []
-particle = (x, y, c) => {
-    return { "x": x, "y": y, "vx": 0, "vy": 0, "color": c };
+particle = (x, y, c, b) => {
+    return { "x": x, "y": y, "vx": 0, "vy": 0, "color": c, "bounds": b };
 }
 random = () => Math.random() * canvas.width + 50;
-create = (amount, color) => {
+create = (amount, color, bounds) => {
     group = []
     for (let i = 0; i < amount; i++) {
-        group.push(particle(random(), random(), color));
+        group.push(particle(random(), random(), color, bounds));
         particles.push(group[i]);
     }
     return group;
@@ -32,10 +32,15 @@ rule = (seekers, targets, attraction) => {
         for (let j = 0; j < targets.length; j++) {
             seeker = seekers[i];
             target = targets[j];
-            dx = Math.abs(seeker.x - target.x);
-            dy = Math.abs(seeker.y - target.y);
-            if (dx > canvas.width >> 1) dx = canvas.width - dx;
-            if (dy > canvas.height >> 1) dy = canvas.height - dy;
+            if (seeker.bounds || target.bounds) {
+                dx = seeker.x - target.x;
+                dy = seeker.y - target.y;
+            } else {
+                dx = Math.abs(seeker.x - target.x);
+                dy = Math.abs(seeker.y - target.y);
+                if (dx > canvas.width >> 1) dx = canvas.width - dx;
+                if (dy > canvas.height >> 1) dy = canvas.height - dy;
+            }
             d = Math.sqrt(dx * dx + dy * dy);
             if (d > 0 && d <= 80) {
                 F = -attraction / d;
@@ -54,9 +59,9 @@ rule = (seekers, targets, attraction) => {
     }
 }
 
-blue = create(70, "#3875ea");
-magenta = create(10, "magenta");
-purple = create(150, "#a62161");
+blue = create(70, "#3875ea", true);
+magenta = create(10, "magenta", true);
+purple = create(150, "#a62161", false);
 update = () => {
     rule(blue, blue, 0.32);
     rule(blue, magenta, 0.17);

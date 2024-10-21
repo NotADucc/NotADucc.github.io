@@ -2,7 +2,7 @@ let canvas = document.getElementById("noise");
 canvas.width = window.innerWidth;
 canvas.height = document.getElementsByTagName("header")[0].offsetHeight;
 document.getElementsByClassName("fakeHeader")[0].offsetHeight = canvas.height;
-const MULTIPLIER = 0.3; const PARTICLE_SIZE = 5;
+const FRICTION = 0.3; const PARTICLE_SIZE = 5;
 ctx = canvas.getContext("2d");
 
 
@@ -54,8 +54,8 @@ rule = (seekers, targets, attraction) => {
                 fy += F * dy;
             }
         }
-        seeker.vx = (seeker.vx + fx) * MULTIPLIER;
-        seeker.vy = (seeker.vy + fy) * MULTIPLIER;
+        seeker.vx = (seeker.vx + fx) * FRICTION;
+        seeker.vy = (seeker.vy + fy) * FRICTION;
         seeker.x = (seeker.x + seeker.vx + canvas.width) % canvas.width;
         seeker.y = (seeker.y + seeker.vy + canvas.height) % canvas.height;
     }

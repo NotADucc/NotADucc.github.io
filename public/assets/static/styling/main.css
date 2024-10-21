@@ -23,7 +23,7 @@ main > div {
 	color: #ffffff; 
 }
 
-main > div > h1 {
+main h1 {
 	margin-top: 0.5rem;
 	margin-bottom: 0.5rem; 
 	font-size: 1.5rem;
@@ -106,7 +106,7 @@ header {
 	border-color: #ffffff; 
 }
 
-header > .container {
+header .container {
 	display: flex; 
 	flex-wrap: wrap; 
 	justify-content: space-between; 
@@ -115,13 +115,13 @@ header > .container {
 	margin-right: auto;
 }
 
-header > .container > a {
+header a {
 	display: flex; 
 	align-items: center;
 	text-decoration: none;
 }
 
-header > .container > a > .link {
+header .link {
 	align-self: center; 
 	font-size: 1.25rem;
 	line-height: 1.75rem; 
@@ -170,7 +170,7 @@ footer {
 	border-color: #ffffff; 
 }
 
-footer > .container {
+footer .container {
 	display: flex; 
 	padding: 1.5rem; 
 	margin-top: 1rem; 
@@ -179,7 +179,7 @@ footer > .container {
 	align-items: center; 
 }
 
-footer > .container > .link {
+footer .link {
 	font-size: 1.5rem;
 	line-height: 2rem; 
 	font-weight: 700; 
@@ -187,25 +187,25 @@ footer > .container > .link {
 	text-decoration: none; 
 }
 
-footer > .container > .copyright {
+footer .copyright {
 	font-size: 0.875rem;
 	line-height: 1.25rem; 
 	color: #D1D5DB; 
 }
 
-footer > .container > .svg {
+footer .svg {
 	display: flex; 
 	margin-left: -0.5rem;
 	margin-right: -0.5rem; 
 }
 
-footer > .container > .svg > a {
+footer a {
 	margin-left: 0.5rem;
 	margin-right: 0.5rem; 
 	color: #ffffff; 
 }
 
-footer > .container > .svg > a > .icon {
+footer .icon {
 	width: 1.25rem; 
 	height: 1.25rem; 
 	fill: currentColor; 
@@ -258,7 +258,7 @@ footer > .container > .svg > a > .icon {
 	main > div {
 		width: 70%; 
 	}
-	main > div > h1 {
+	main h1 {
 		font-size: 2.25rem;
 		line-height: 2.5rem; 
 	}

@@ -48,7 +48,7 @@ rule = (seekers, targets, attraction) => {
         if (seeker.x < 0) { seeker.x = canvas.width; }
 		else if (seeker.x > canvas.width) { seeker.x = 0; }
 		if (seeker.y < 0) { seeker.y = canvas.height; }
-		else if (seeker.y > canvas.height) { seeker.y = 0; }
+		else if (seeker.y > canvas.height - 1) { seeker.y = 0; }
     }
 }
 

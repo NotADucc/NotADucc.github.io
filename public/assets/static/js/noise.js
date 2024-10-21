@@ -2,7 +2,7 @@ let canvas = document.getElementById("noise");
 canvas.width = window.innerWidth;
 canvas.height = document.getElementsByTagName("header")[0].offsetHeight;
 document.getElementsByClassName("fakeHeader")[0].offsetHeight = canvas.height;
-const FRICTION = 0.3; const PARTICLE_SIZE = 5; const MIN_DISTANCE = 5; const MAX_DISTANCE = 30;
+const FRICTION = 0.6; const PARTICLE_SIZE = 5; const MIN_DISTANCE = 5; const MAX_DISTANCE = 30;
 ctx = canvas.getContext("2d");
 
 
@@ -12,14 +12,14 @@ draw = (x, y, c, w, h) => {
     ctx.fillRect(x, y, w, h);
 }
 particles = []
-particle = (x, y, c) => {
-    return { "x": x, "y": y, "vx": 0, "vy": 0, "color": c, "bounds": false };
+particle = (x, y, c, b) => {
+    return { "x": x, "y": y, "vx": 0, "vy": 0, "color": c, "bounds": b };
 }
-random = () => Math.random() * canvas.width + 50;
-create = (amount, color) => {
+random = () => Math.random() *  50;
+create = (amount, color, b) => {
     group = []
     for (let i = 0; i < amount; i++) {
-        group.push(particle(random(), random(), color));
+        group.push(particle(random(), random(), color, b));
         particles.push(group[i]);
     }
     return group;
@@ -33,14 +33,18 @@ rule = (seekers, targets, attraction) => {
 
         for (let j = 0; j < targets.length; j++) {
             target = targets[j];
-            dx = Math.abs(seeker.x - target.x);
-            dy = Math.abs(seeker.y - target.y);
-            if (dx > canvas.width >> 1) dx = canvas.width - dx;
-            if (dy > canvas.height >> 1) dy = canvas.height - dy;
-            d = Math.sqrt(dx * dx + dy * dy);
-            if (d == 0 || d > MAX_DISTANCE) {
-                continue;
+            if (seeker.bounds) {
+                dx = seeker.x - target.x;
+                dy = seeker.y - target.y;
             }
+            else {
+                dx = Math.abs(seeker.x - target.x);
+                dy = Math.abs(seeker.y - target.y);
+                if (dx > canvas.width >> 1) dx = canvas.width - dx;
+                if (dy > canvas.height >> 1) dy = canvas.height - dy;
+            }
+            d = Math.sqrt(dx * dx + dy * dy);
+            if (d == 0 || d > MAX_DISTANCE) continue;
             F = (d <= MIN_DISTANCE ? 0.9 : -attraction) / d;
             fx += F * dx;
             fy += F * dy;
@@ -54,9 +58,9 @@ rule = (seekers, targets, attraction) => {
 }
 
 
-blue = create(70, "#3875ea");
-magenta = create(20, "magenta");
-purple = create(100, "#a62161");
+blue = create(70, "#3875ea", true);
+magenta = create(15, "magenta", true);
+purple = create(150, "#a62161", false);
 update = () => {
     rule(blue, blue, 0.32);
     rule(blue, magenta, -0.4);

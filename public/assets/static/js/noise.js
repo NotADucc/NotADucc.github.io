@@ -39,7 +39,7 @@ rule = (seekers, targets, attraction) => {
         seeker = seekers[i];
         for (let j = 0; j < targets.length; j++) {
             target = targets[j];
-            if (seeker.bounds) {
+            if (seeker.bounds || target.bounds) {
                 dx = seeker.x - target.x;
                 dy = seeker.y - target.y;
             }
@@ -51,7 +51,7 @@ rule = (seekers, targets, attraction) => {
             }
             d = Math.sqrt(dx * dx + dy * dy);
             if (d == 0 || d > MAX_DISTANCE) continue;
-            F = (d <= MIN_DISTANCE ? 0.9 : -attraction) / d;
+            F = (d <= MIN_DISTANCE ? 0.3 : -attraction) / d;
             fx += F * dx;
             fy += F * dy;
         }
@@ -71,8 +71,7 @@ update = () => {
     rule(magenta, purple, -0.2);
     rule(magenta, blue, 0.4);
     rule(purple, purple, -0.15);
-    rule(purple, blue, 0.2);
-    rule(purple, magenta, -0.2);
+    rule(purple, blue, 0.4);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     for (let i = 0; i < particles.length; i++) {
         draw(particles[i].x, particles[i].y, particles[i].color, PARTICLE_SIZE, PARTICLE_SIZE);

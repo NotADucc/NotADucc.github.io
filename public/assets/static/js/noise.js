@@ -32,10 +32,12 @@ rule = (seekers, targets, attraction) => {
         for (let j = 0; j < targets.length; j++) {
             seeker = seekers[i];
             target = targets[j];
-            dx = seeker.x - target.x;
-            dy = seeker.y - target.y;
+            dx = Math.abs(seeker.x - target.x);
+            dy = Math.abs(seeker.y - target.y);
+            if (dx > canvas.width >> 1) dx = canvas.width - dx;
+            if (dy > canvas.height >> 1) dy = canvas.height - dy;
             d = Math.sqrt(dx * dx + dy * dy);
-            if (d > 0 && d <= 100) {
+            if (d > 0 && d <= 80) {
                 F = -attraction / d;
                 fx += F * dx;
                 fy += F * dy;
@@ -48,7 +50,7 @@ rule = (seekers, targets, attraction) => {
         if (seeker.x < 0) { seeker.x = canvas.width; }
 		else if (seeker.x > canvas.width) { seeker.x = 0; }
 		if (seeker.y < 0) { seeker.y = canvas.height; }
-		else if (seeker.y > canvas.height - 1) { seeker.y = 0; }
+		else if (seeker.y > canvas.height) { seeker.y = 0; }
     }
 }
 

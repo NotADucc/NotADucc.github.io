@@ -18,34 +18,29 @@ button.addEventListener("click", (_) => {
 window.dispatchEvent(new CustomEvent("resize"));
 
 const init = async () => {
-    // ~~ INITIALIZE ~~ Make sure we can initialize WebGPU in the browser
-    // https://carmencincotti.com/2022-04-18/drawing-a-webgpu-triangle/#adapter-and-device
-    if (!navigator.gpu) {
-      console.error(
-        "WebGPU cannot be initialized - navigator.gpu not found"
-      );
-      return null;
+    const gpu = navigator.gpu;
+    if (!gpu) {
+      console.error("WebGPU cannot be initialized - navigator.gpu not found");
+      return;
     }
-    const adapter = await navigator.gpu.requestAdapter();
+    const adapter = await gpu.requestAdapter();
     if (!adapter) {
       console.error("WebGPU cannot be initialized - Adapter not found");
-      return null;
+      return;
     }
     const device = await adapter.requestDevice();
     device.lost.then(() => {
       console.error("WebGPU cannot be initialized - Device has been lost");
-      return null;
+      return;
     });
 
     const context = canvas.getContext("webgpu");
     if (!context) {
-      console.error(
-        "WebGPU cannot be initialized - Canvas does not support WebGPU"
-      );
-      return null;
+      console.error("WebGPU cannot be initialized - Canvas does not support WebGPU");
+      return;
     }
 
-    const presentationFormat = navigator.gpu.getPreferredCanvasFormat();
+    const presentationFormat = gpu.getPreferredCanvasFormat();
 
     context.configure({
       device, 

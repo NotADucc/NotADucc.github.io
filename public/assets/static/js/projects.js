@@ -1,4 +1,4 @@
-let projects = 
+const projects = 
 [
     {
         "title": "Mogcord",
@@ -58,10 +58,10 @@ let projects =
     },
 ];
 
-let proj_container = document.getElementsByClassName("project-container")[0];
+const proj_container = document.getElementsByClassName("project-container")[0];
 
 projects.forEach(x => {
-    let proj_item = document.createElement('div');
+    const proj_item = document.createElement('div');
     proj_item.className = 'project-item';
     proj_item.innerHTML = `
         <div>

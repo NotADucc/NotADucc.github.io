@@ -62,11 +62,12 @@ main h1 {
 	height: auto;
 	max-width: 100%;
 	transition: transform 0.3s ease-in-out;
+
+	&:hover {
+		transform: scale(1.05);
+	}
 }
 
-.img-fluid:hover {
-	transform: scale(1.05);
-}
 
 .tools {
 	-webkit-text-fill-color: transparent;
@@ -146,11 +147,12 @@ header .link {
 	transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
 	transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 	transition-duration: 300ms; 
+
+	&:hover {
+		background-color: #262626; 
+	}
 }
 
-.header_buttons:hover {
-	background-color: #262626; 
-}
 
 .triangle_down {
 	width: 0;
@@ -220,10 +222,10 @@ footer .icon {
 	-moz-transition: color 0.5s ease-out;
 	-o-transition: color 0.5s ease-out;
 	transition: color 0.5s ease-out;
-}
 
-.link:hover, .icon:hover {
-	color: #3875ea !important;
+	&:hover {
+		color: #3875ea !important;
+	}
 }
 
 .arrow {

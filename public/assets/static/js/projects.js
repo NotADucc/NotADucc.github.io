@@ -2,7 +2,7 @@ const projects =
 [
     {
         "title": "Mogcord",
-        "under_title": "A simple messaging paltform",
+        "under_title": "A simple messaging platform",
         "image": "mogcord.png",
         "tools": ["Rust", "MongoDB", "REST API", "JWT", "Auth", "AlpineJs", "HTMX", "Tailwind"],
         "description": "A messaging platform which allows the user to chat with individuals or with a group of people.",

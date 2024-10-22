@@ -54,9 +54,10 @@ const init = async () => {
     });
 
     const vertices = new Float32Array([
-      -1.0, -1.0, 0, 1, 1, 0, 0, 1, 
-      -0.0, 1.0, 0, 1, 0, 1, 0, 1, 
-      1.0, -1.0, 0, 1, 0, 0, 1, 1, 
+        -0.5, -0.5, 0, 1,   1, 0, 0, 1, 
+         0.5, -0.5, 0, 1,   0, 1, 0, 1, 
+        -0.5,  0.5, 0, 1,   0, 0, 1, 1, 
+         0.5,  0.5, 0, 1,   1, 1, 0, 1, 
     ]);
 
     const vertexBuffer = device.createBuffer({
@@ -94,16 +95,14 @@ const init = async () => {
       };
       @vertex
       fn vertex_main(@location(0) position: vec4<f32>,
-                  @location(1) color: vec4<f32>) -> VertexOut
-      {
+                  @location(1) color: vec4<f32>) -> VertexOut {
           var output : VertexOut;
           output.position = position;
           output.color = color;
           return output;
       } 
       @fragment
-      fn fragment_main(fragData: VertexOut) -> @location(0) vec4<f32>
-      {
+      fn fragment_main(fragData: VertexOut) -> @location(0) vec4<f32> {
           return fragData.color;
       } 
   `,
@@ -119,14 +118,10 @@ const init = async () => {
       fragment: {
         module: shaderModule,
         entryPoint: "fragment_main",
-        targets: [
-          {
-            format: presentationFormat,
-          },
-        ],
+        targets: [{ format: presentationFormat, }],
       },
       primitive: {
-        topology: "triangle-list",
+        topology: "triangle-strip",
       },
     });
 
@@ -152,7 +147,7 @@ const init = async () => {
       passEncoder.setPipeline(pipeline);
       passEncoder.setVertexBuffer(0, vertexBuffer);
 
-      passEncoder.draw(3);
+      passEncoder.draw(4);
 
       passEncoder.end();
 

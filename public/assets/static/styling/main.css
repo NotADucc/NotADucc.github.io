@@ -8,12 +8,13 @@ body {
 }
 
 main {
-	margin-top: calc(71px * 1.5 + 1px);
+	margin-top: 73px;
 	margin-bottom: auto;
 	display: flex; 
 	flex-direction: column; 
 	justify-content: center; 
-	align-items: center; 
+	align-items: center;
+	transition: margin-top 1s ease;
 }
 
 main > div {
@@ -78,29 +79,30 @@ canvas {
 	left: 0;
 	top: 0;
 	z-index: 2;
+	transition: height 1s ease;
 }
 
 .fakeHeader {
 	position: fixed;
+	height: 73px;
+	width: 100%;
 	left: 0;
 	top: 0;
 	z-index: 1;
-	background-color: rgb(23 23 23);
-	height: 71px;
-	width: 100%;
+	background-color: #171717;
+	transition: height 1s ease;
 }
 
 header {
-	width: 100%;
 	position: fixed;
+	height: 73px;
+	width: 100%;
 	top: 0;
 	left: 0;
-	width: 100%;
 	z-index: 3;
 	padding-left: 0.5rem;
 	padding-right: 0.5rem; 
-	padding-top: 0.625rem;
-	padding-bottom: 0.625rem; 
+	transition: height 1s ease;
 	border-bottom: solid;
 	border-bottom-width: 1px; 
 	border-color: #ffffff; 
@@ -113,6 +115,8 @@ header .container {
 	align-items: center; 
 	margin-left: auto;
 	margin-right: auto;
+	padding-top: 0.625rem;
+	padding-bottom: 0.625rem; 
 }
 
 header a {
@@ -142,7 +146,6 @@ header .link {
 	transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
 	transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 	transition-duration: 300ms; 
-	transition-duration: 300ms; 
 }
 
 .header_buttons:hover {
@@ -158,10 +161,11 @@ header .link {
 	font-size: 0;
 	line-height: 0;
 	float: left;
+	transition: transform 0.5s ease-in-out;
 }
 
 .triangle_rotate {
-	transform: rotate(-180deg);
+	transform: scaleY(-1);
 }
 
 footer {

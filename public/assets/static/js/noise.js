@@ -1,12 +1,20 @@
 addEventListener("resize", (_) => {
     canvas.width = window.innerWidth;
-    canvas.height = document.getElementsByTagName("header")[0].offsetHeight;
-    document.getElementsByClassName("fakeHeader")[0].offsetHeight = canvas.height;
+    canvas.height = document.getElementsByClassName("fakeHeader")[0].offsetHeight;
 });
 
 const FRICTION = 0.6; const PARTICLE_SIZE = 5; const MIN_DISTANCE = 5; const MAX_DISTANCE = 30;
 const canvas = document.getElementById("noise");
-
+const button = document.getElementById("expand_button");
+button.addEventListener("click", (_) => {
+    const main = document.getElementsByTagName("main")[0];
+    const height = canvas.height == 300 ? 73 : 300;
+    document.getElementsByTagName("header")[0].style.height = `${height}px`;
+    document.getElementsByClassName("fakeHeader")[0].style.height = `${height}px`;
+    document.getElementById("expand_button_text").classList.toggle("triangle_rotate");
+    main.style.marginTop = `${height}px`;
+    canvas.height = height;
+});
 window.dispatchEvent(new CustomEvent("resize"));
 const ctx = canvas.getContext("2d");
 

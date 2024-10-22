@@ -1,29 +1,29 @@
-const resize = addEventListener("resize", (_) => {
+addEventListener("resize", (_) => {
     canvas.width = window.innerWidth;
     canvas.height = document.getElementsByTagName("header")[0].offsetHeight;
     document.getElementsByClassName("fakeHeader")[0].offsetHeight = canvas.height;
 });
 
 const FRICTION = 0.6; const PARTICLE_SIZE = 5; const MIN_DISTANCE = 5; const MAX_DISTANCE = 30;
-let canvas = document.getElementById("noise");
+const canvas = document.getElementById("noise");
 
 window.dispatchEvent(new CustomEvent("resize"));
-ctx = canvas.getContext("2d");
+const ctx = canvas.getContext("2d");
 
 
-draw = (x, y, c, w, h) => {
+const draw = (x, y, c, w, h) => {
     ctx.fillStyle = c;
     ctx.fillRect(x, y, w, h);
 }
 
-particle = (x, y, c, b) => {
+const particle = (x, y, c, b) => {
     return { "x": x, "y": y, "vx": 0, "vy": 0, "color": c, "bounds": b };
 }
 
-random = () => Math.random() *  50;
+const random = () => Math.random() *  50;
 
-create = (amount, color, b) => {
-    group = []
+const create = (amount, color, b) => {
+    const group = [];
     for (let i = 0; i < amount; i++) {
         group.push(particle(random(), random(), color, b));
         particles.push(group[i]);
@@ -31,14 +31,14 @@ create = (amount, color, b) => {
     return group;
 }
 
-rule = (seekers, targets, attraction) => {
+const rule = (seekers, targets, attraction) => {
     for (let i = 0; i < seekers.length; i++) {
-        fx = 0.0;
-        fy = 0.0;
+        let fx = 0.0;
+        let fy = 0.0;
         
-        seeker = seekers[i];
+        const seeker = seekers[i];
         for (let j = 0; j < targets.length; j++) {
-            target = targets[j];
+            const target = targets[j];
             if (seeker.bounds || target.bounds) {
                 dx = seeker.x - target.x;
                 dy = seeker.y - target.y;
@@ -49,9 +49,9 @@ rule = (seekers, targets, attraction) => {
                 if (dx > canvas.width >> 1) dx = canvas.width - dx;
                 if (dy > canvas.height >> 1) dy = canvas.height - dy;
             }
-            d = Math.sqrt(dx * dx + dy * dy);
+            const d = Math.sqrt(dx * dx + dy * dy);
             if (d == 0 || d > MAX_DISTANCE) continue;
-            F = (d <= MIN_DISTANCE ? 0.3 : -attraction) / d;
+            const F = (d <= MIN_DISTANCE ? 0.3 : -attraction) / d;
             fx += F * dx;
             fy += F * dy;
         }
@@ -63,7 +63,7 @@ rule = (seekers, targets, attraction) => {
     }
 }
 
-update = () => {
+const update = () => {
     rule(blue, blue, 0.32);
     rule(blue, magenta, -0.4);
     rule(blue, purple, -0.4);
@@ -79,8 +79,8 @@ update = () => {
     requestAnimationFrame(update);
 }
 
-particles = []
-blue = create(70, "#3875ea", true);
-magenta = create(15, "magenta", true);
-purple = create(150, "#a62161", false);
+const particles = [];
+const blue = create(70, "#3875ea", true);
+const magenta = create(15, "magenta", true);
+const purple = create(150, "#a62161", false);
 update();

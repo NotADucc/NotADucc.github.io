@@ -105,7 +105,7 @@ class QuadTree {
 const canvas = document.getElementById("noise");
 const ctx = canvas.getContext("2d");
 const button = document.getElementById("expand_button");
-const FRICTION = 0.6; const PARTICLE_SIZE = 5; const MIN_DISTANCE = 5; const MAX_DISTANCE = 30;
+const FRICTION = 0.4; const PARTICLE_SIZE = 5; const MIN_DISTANCE = 5; const MAX_DISTANCE = 30;
 let quadtree = new QuadTree(new Rectangle(canvas.width / 2, canvas.height / 2, canvas.width, canvas.height));
 const particles = [];
 
@@ -147,19 +147,25 @@ const redraw_tree = () => {
     }
 }
 
-const create_particles = () => {
-    create("b", 70, "#3875ea", true);
-    create("m", 15, "magenta", true);
-    create("p", 150, "#a62161", false);
+const create_particles = (multiplier = 1) => {
+    create("b", 70 * multiplier, "#3875ea", true);
+    create("m", 15 * multiplier, "magenta", true);
+    create("p", 150 * multiplier, "#a62161", false);
     redraw_tree();
 }
+
+const redraw_particles = () => {
+    var is_mobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    const multiplier = canvas.height == 300 ? is_mobile ? 3 : 10 : 1;
+
+    particles.length = 0;
+    create_particles(multiplier);
+};
 
 addEventListener("resize", (_) => {
     canvas.width = window.innerWidth;
     canvas.height = document.getElementsByClassName("fakeHeader")[0].offsetHeight;
-
-    particles.length = 0;
-    create_particles();
+    redraw_particles();
 });
 window.dispatchEvent(new CustomEvent("resize"));
 
@@ -172,8 +178,7 @@ button.addEventListener("click", (_) => {
     main.style.marginTop = `${height}px`;
     canvas.height = height;
 
-    particles.length = 0;
-    create_particles();
+    redraw_particles();
 });
 
 const calc_next_positions = () => {

@@ -2,25 +2,27 @@ class Point { constructor(x, y) { this.x = x; this.y = y; } }
 
 class Rectangle {
     constructor(x, y, w, h) {
-        this.x = x;
-        this.y = y;
-        this.w = w;
-        this.h = h;
-
-        this.left = x - w / 2;
-        this.right = x + w / 2;
-        this.top = y - h / 2;
-        this.bottom = y + h / 2;
+      this.x = x;
+      this.y = y;
+      this.w = w;
+      this.h = h;
     }
-
+  
     contains(point) {
-        return this.left <= point.x && point.x <= this.right && this.top <= point.y && point.y <= this.bottom;
-      }
-    
-    intersects(range) {   
-        return !(this.right < range.left || range.right < this.left || this.bottom < range.top || range.bottom < this.top);
+      return (point.x >= this.x - this.w &&
+        point.x <= this.x + this.w &&
+        point.y >= this.y - this.h &&
+        point.y <= this.y + this.h);
     }
-}
+  
+  
+    intersects(range) {
+      return !(range.x - range.w > this.x + this.w ||
+        range.x + range.w < this.x - this.w ||
+        range.y - range.h > this.y + this.h ||
+        range.y + range.h < this.y - this.h);
+    }
+  }
 
 class QuadTree {
     constructor(boundary) {
@@ -56,18 +58,16 @@ class QuadTree {
         let y = this.boundary.y;
         let w = this.boundary.w / 2;
         let h = this.boundary.h / 2;
-
+    
         let ne = new Rectangle(x + w, y - h, w, h);
         this.northeast = new QuadTree(ne);
-
         let nw = new Rectangle(x - w, y - h, w, h);
         this.northwest = new QuadTree(nw);
-
         let se = new Rectangle(x + w, y + h, w, h);
         this.southeast = new QuadTree(se);
-
         let sw = new Rectangle(x - w, y + h, w, h);
         this.southwest = new QuadTree(sw);
+    
 
         this.divided = true;
 
@@ -80,21 +80,25 @@ class QuadTree {
             return found;
         }
 
-
-        for (let p of this.particles) {
+        
+        if (!range.intersects(this.boundary)) {
+            return found;
+          }
+      
+          for (let p of this.particles) {
             if (range.contains(p.points)) {
-                found.push(p);
+              found.push(p);
             }
-        }
+          }
 
-        if (this.divided) {
+          if (this.divided) {
             this.northwest.query(range, found);
             this.northeast.query(range, found);
             this.southwest.query(range, found);
             this.southeast.query(range, found);
-        }
-
-        return found;
+          }
+      
+          return found;
     }
 }
 
@@ -178,9 +182,9 @@ const calc_next_positions = () => {
         let fy = 0.0;
         
         const seeker = particles[i];
-        const rect = new Rectangle(seeker.points.x, seeker.points.y, seeker.points.x + MAX_DISTANCE, seeker.points.y + MAX_DISTANCE);
+        const rect = new Rectangle(seeker.points.x, seeker.points.y, MAX_DISTANCE, MAX_DISTANCE);
         const targets = quadtree.query(rect, []);
-
+        
         for (let j = 0; j < targets.length; j++) {
             const target = targets[j];
             const attraction = attraction_dct[seeker.key][target.key];

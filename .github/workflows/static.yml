@@ -1,0 +1,15 @@
+name: build
+
+on:
+  push:
+    branches: [ "test" ]
+
+jobs:
+  minify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: check out the repository
+        uses: actions/checkout@v4
+
+      - name: static file projects
+        uses: notaducc/NotADucc.github.io.action@main

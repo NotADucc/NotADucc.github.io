@@ -28,7 +28,7 @@ jobs:
             node-version: 16
 
       - name: static file projects
-        run: node ./updateProjects.js
+        run: node ./_data/updateProjects.js
 
       - name: Check for modified files
         id: git-check

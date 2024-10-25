@@ -58,25 +58,37 @@ const projects =
     },
 ];
 
-const proj_container = document.getElementsByClassName("project-container")[0];
+const fs = require("fs");
 
+const template = fs.readFileSync("index_template.html", { encoding: 'utf8' });
+const split = template.split('<div class="project-container"></div>')
+const arr = [];
+arr.push(split[0]);
+arr.push('<div class="project-container">');
 projects.forEach(x => {
-    const proj_item = document.createElement('div');
-    proj_item.className = 'project-item';
-    proj_item.innerHTML = `
-        <div>
-            <a href="public/assets/img/${x.image}" target="_blank" rel="noreferrer">
-                <img src="public/assets/img/${x.image}" class="img-fluid" loading="lazy" alt="${x.image}-screenshot">
-            </a>
-            <div class="project-content">
-                <h3 class="project-title">${x.title}</h3>
-                <h4><i>${x.under_title}</i></h4>
-                <p class="tools">${x.tools.join(' | ')}</p>
-                <p class="project-description">
-                    ${x.description}
-                </p>
+    arr.push(`
+        <div class="project-item">
+            <div>
+                <a href="public/assets/img/${x.image}" target="_blank" rel="noreferrer">
+                    <img src="public/assets/img/${x.image}" class="img-fluid" loading="lazy" alt="${x.image}-screenshot">
+                </a>
+                <div class="project-content">
+                    <h3 class="project-title">${x.title}</h3>
+                    <h4><i>${x.under_title}</i></h4>
+                    <p class="tools">${x.tools.join(' | ')}</p>
+                    <p class="project-description">
+                        ${x.description}
+                    </p>
+                </div>
             </div>
-        </div>
-    `;
-    proj_container.appendChild(proj_item);
+        </div> 
+    `);
+});
+arr.push('<div>');
+arr.push(split[1]);
+
+const output = arr.join('');
+
+fs.writeFileSync('index.html', output, {
+    encoding: 'utf8',
 });

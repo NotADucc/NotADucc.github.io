@@ -3,13 +3,24 @@ name: build
 on:
   push:
     branches: [ "minified" ]
+  pull_request:
+    branches: [ "minified" ]
 
 jobs:
-  static-generator:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: check out the repository
         uses: actions/checkout@v4
+
+      - name: auto minify the files
+        uses: nizarmah/auto-minify@v3
+        with: 
+            overwrite: true
+      - name: auto commit the minified files
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+            commit_message: "bot: Add auto minified files"
 
       - name: Use Node.js (dependency)
         uses: actions/setup-node@v3

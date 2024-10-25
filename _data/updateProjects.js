@@ -60,7 +60,7 @@ const projects =
 
 const fs = require("fs");
 
-const template = fs.readFileSync("index_template.html", { encoding: 'utf8' });
+const template = fs.readFileSync("./_data/index_template.html", { encoding: 'utf8' });
 const split = template.split('<div class="project-container"></div>')
 const arr = [];
 arr.push(split[0]);

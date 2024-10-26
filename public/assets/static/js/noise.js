@@ -84,17 +84,26 @@ expand_button.addEventListener("click", (_) => {
 
 plus_button.addEventListener("click", (_) => {
     if (CUSTOM_MULTIPLIER >= 30) return;
-    console.log("ADD");
-    
     CUSTOM_MULTIPLIER++;
+    minus_button.disabled = false;
+    minus_button.classList.remove("disabled");
     redraw_particles();
+    if (CUSTOM_MULTIPLIER >= 30) {
+        plus_button.disabled = true;
+        plus_button.classList.add("disabled");
+    }
 });
 
 minus_button.addEventListener("click", (_) => {
     if (CUSTOM_MULTIPLIER <= 1) return;
-    console.log("REMVOE");
+    plus_button.disabled = false;
+    plus_button.classList.remove("disabled");
     CUSTOM_MULTIPLIER--;
     redraw_particles();
+    if (CUSTOM_MULTIPLIER <= 1) {
+        minus_button.disabled = true;
+        minus_button.classList.add("disabled");
+    }
 });
 
 const calc_next_positions = () => {

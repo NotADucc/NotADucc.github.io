@@ -151,6 +151,11 @@ header .link {
 	}
 }
 
+.disabled {
+	pointer-events: none;
+	opacity: 0.3;
+  }
+
 #expand_button_triangle {
 	width: 0;
 	height: 0;

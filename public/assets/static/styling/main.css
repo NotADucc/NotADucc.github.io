@@ -135,7 +135,7 @@ header .link {
 }
 
 
-.header_buttons {
+.button {
 	padding-top: 0.625rem;
 	padding-bottom: 0.625rem; 
 	padding-left: 1.25rem;
@@ -146,13 +146,12 @@ header .link {
 	transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
 	transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 	transition-duration: 300ms; 
+	&:hover {
+		background-color: #262626; 
+	}
 }
 
-.header_buttons:hover {
-	background-color: #262626; 
-}
-
-.triangle_down {
+#expand_button_triangle {
 	width: 0;
 	height: 0;
 	border-left: 15px solid transparent;
@@ -162,10 +161,96 @@ header .link {
 	line-height: 0;
 	float: left;
 	transition: transform 0.5s ease-in-out;
+} 
+
+#plus {
+	font-size: 16px;
+	position: relative;
+	
+	&:after,
+	&:before {
+		content: "";
+		display: block;
+		background-color: #FFF;
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+	}
+	
+	&:before {
+		height: 1em;
+		width: 0.2em;
+	}
+
+	&:after {
+		height: 0.2em;
+		width: 1em;
+	}
+}
+
+#minus {
+	font-size: 16px;
+	position: relative;
+	
+	&:after {
+		content: "";
+		display: block;
+		background-color: #FFF;
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+	}
+	
+	&:after {
+		height: 0.2em;
+		width: 1em;
+	}
 }
 
 .triangle_rotate {
 	transform: scaleY(-1);
+}
+
+#counter {
+	display: flex;
+	flex-direction: row;
+	animation: appear 1s;
+}
+
+#counter.invisible {
+	display: none;
+	animation: vanish 1s;
+}
+
+@keyframes appear {
+	from {
+		opacity: 0;
+		transform: translateX(100%);
+	}
+	to {
+		opacity: 1;
+		transform: translateX(0%);
+	}
+}
+
+@keyframes vanish {
+	from {
+		display: flex;
+		opacity: 1;
+		transform: translateX(0%);
+	}
+	to {
+		display: none;
+		opacity: 0;
+		transform: translateX(100%);
+	}
+}
+
+.header_buttons {
+	display: flex;
+	flex-direction: row;
 }
 
 footer {

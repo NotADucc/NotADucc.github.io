@@ -1,7 +1,11 @@
 const canvas = document.getElementById("noise");
 const ctx = canvas.getContext("2d");
-const button = document.getElementById("expand_button");
+const expand_button = document.getElementById("expand_button");
+const plus_button = document.getElementById("plus_button");
+const minus_button = document.getElementById("minus_button");
 const FRICTION = 0.4; const PARTICLE_SIZE = 5; const MIN_DISTANCE = 5; const MAX_DISTANCE = 30;
+const is_mobile = () => /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+let CUSTOM_MULTIPLIER = is_mobile() ? 3 : 10;
 let quadtree = new QuadTree(new Rectangle(canvas.width / 2, canvas.height / 2, canvas.width, canvas.height));
 const particles = [];
 
@@ -23,6 +27,7 @@ const attraction_dct =
         "p": -0.15 
     },
 };
+
 
 const random = (size) => Math.random() * size;
 
@@ -51,9 +56,7 @@ const create_particles = (multiplier = 1) => {
 }
 
 const redraw_particles = () => {
-    var is_mobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    const multiplier = canvas.height == 300 ? is_mobile ? 3 : 10 : 1;
-
+    const multiplier = canvas.height == 300 ? CUSTOM_MULTIPLIER : 1;
     particles.length = 0;
     create_particles(multiplier);
 };
@@ -65,15 +68,32 @@ addEventListener("resize", (_) => {
 });
 window.dispatchEvent(new CustomEvent("resize"));
 
-button.addEventListener("click", (_) => {
-    const main = document.getElementsByTagName("main")[0];
-    const height = canvas.height == 300 ? 73 : 300;
+expand_button.addEventListener("click", (_) => {
+    const main = document.getElementsByTagName("main")[0];   
+    const [height] = canvas.height == 300 ? [73] : [300];
     document.getElementsByTagName("header")[0].style.height = `${height}px`;
     document.getElementsByClassName("fakeHeader")[0].style.height = `${height}px`;
-    document.getElementById("expand_button_text").classList.toggle("triangle_rotate");
+    document.getElementById("expand_button_triangle").classList.toggle("triangle_rotate");
+    if (!is_mobile()) document.getElementById("counter").classList.toggle("invisible");
+
     main.style.marginTop = `${height}px`;
     canvas.height = height;
 
+    redraw_particles();
+});
+
+plus_button.addEventListener("click", (_) => {
+    if (CUSTOM_MULTIPLIER >= 30) return;
+    console.log("ADD");
+    
+    CUSTOM_MULTIPLIER++;
+    redraw_particles();
+});
+
+minus_button.addEventListener("click", (_) => {
+    if (CUSTOM_MULTIPLIER <= 1) return;
+    console.log("REMVOE");
+    CUSTOM_MULTIPLIER--;
     redraw_particles();
 });
 

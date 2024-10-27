@@ -20,7 +20,7 @@ jobs:
       - name: auto commit the minified files
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-            commit_message: "bot: Add auto minified files"
+            commit_message: "refactor: updated js/css to minified files"
 
       - name: Use Node.js (dependency)
         uses: actions/setup-node@v3
@@ -40,5 +40,5 @@ jobs:
             git config --global user.email "robertohelper@outlook.com"
             git config --global user.name "Gwilom-Bot"
             git add .
-            git commit -am "feature: Update static project files" || true
+            git commit -am "refactor: Update static project files" || true
             git push || git pull --rebase && git push

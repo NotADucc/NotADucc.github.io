@@ -66,11 +66,12 @@ const arr = [];
 arr.push(split[0]);
 arr.push('<div class="project-container">');
 projects.forEach(x => {
+    const img = x.image.split('.');
     arr.push(`
         <div class="project-item">
             <div>
                 <a href="public/assets/img/${x.image}" target="_blank" rel="noreferrer">
-                    <img src="public/assets/img/${x.image}" class="img-fluid" loading="lazy" alt="${x.image}-screenshot">
+                    <img src="public/assets/img/${img[0]}.mini.${img[1]}" class="img-fluid" loading="lazy" alt="${x.image}-screenshot">
                 </a>
                 <div class="project-content">
                     <h3 class="project-title">${x.title}</h3>
@@ -84,7 +85,7 @@ projects.forEach(x => {
         </div> 
     `);
 });
-arr.push('<div>');
+arr.push('</div>');
 arr.push(split[1]);
 
 const output = arr.join('');

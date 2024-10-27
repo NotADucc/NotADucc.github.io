@@ -102,14 +102,14 @@ const draw = (x, y, c, w, h) => {
     ctx.fillRect(x, y, w, h);
 }
 
-const update = () => {
+const update_particles = () => {
     calc_next_positions();
     redraw_tree();
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     for (let i = 0; i < particles.length; i++) {
         draw(particles[i].points.x, particles[i].points.y, particles[i].color, PARTICLE_SIZE, PARTICLE_SIZE);
     }
-    requestAnimationFrame(update);
+    requestAnimationFrame(update_particles);
 }
 
 expand_button.addEventListener("click", (_) => {
@@ -157,4 +157,4 @@ addEventListener("resize", (_) => {
 });
 
 window.dispatchEvent(new CustomEvent("resize"));
-addEventListener("load", (_) => update());
+addEventListener("load", update_particles);

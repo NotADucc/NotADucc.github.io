@@ -42,3 +42,11 @@ jobs:
             git add .
             git commit -am "refactor: Update static project files" || true
             git push || git pull --rebase && git push
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v1
+        with:
+          path: 'public'
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v1

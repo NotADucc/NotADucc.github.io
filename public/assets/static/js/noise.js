@@ -3,28 +3,27 @@ const ctx = canvas.getContext("2d");
 const expand_button = document.getElementById("expand_button");
 const plus_button = document.getElementById("plus_button");
 const minus_button = document.getElementById("minus_button");
-const FRICTION = 0.4; const PARTICLE_SIZE = 5; const MIN_DISTANCE = 5; const MAX_DISTANCE = 30;
-const is_mobile = () => /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+const FRICTION = 0.4, PARTICLE_SIZE = 5, MIN_DISTANCE = 5, MAX_DISTANCE = 30, is_mobile = () => /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 let CUSTOM_MULTIPLIER = is_mobile() ? 3 : 10;
 let quadtree = new QuadTree(new Rectangle(canvas.width / 2, canvas.height / 2, canvas.width, canvas.height));
 const particles = [];
 
 const attraction_dct = 
 {
-    "b": { 
-        "b": 0.32, 
-        "m": -0.4, 
-        "p": -0.4 
+    b: { 
+        b: 0.32, 
+        m: -0.4, 
+        p: -0.4 
     },
-    "m": { 
-        "b": 0.4, 
-        "m": 0.1, 
-        "p": -0.2
+    m: { 
+        b: 0.4, 
+        m: 0.1, 
+        p: -0.2
     },
-    "p": { 
-        "b": 0.4, 
-        "m": 0, 
-        "p": -0.15 
+    p: { 
+        b: 0.4, 
+        m: 0, 
+        p: -0.15 
     },
 };
 

@@ -7,7 +7,7 @@ on:
     branches: [ "minified" ]
 
 jobs:
-  build:
+  build-static-site:
     runs-on: ubuntu-latest
     steps:
       - name: check out the repository

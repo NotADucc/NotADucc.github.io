@@ -60,51 +60,6 @@ const redraw_particles = () => {
     create_particles(multiplier);
 };
 
-addEventListener("resize", (_) => {
-    canvas.width = window.innerWidth;
-    canvas.height = document.getElementsByClassName("fakeHeader")[0].offsetHeight;
-    redraw_particles();
-});
-window.dispatchEvent(new CustomEvent("resize"));
-
-expand_button.addEventListener("click", (_) => {
-    const main = document.getElementsByTagName("main")[0];   
-    const [height] = canvas.height == 300 ? [73] : [300];
-    document.getElementsByTagName("header")[0].style.height = `${height}px`;
-    document.getElementsByClassName("fakeHeader")[0].style.height = `${height}px`;
-    document.getElementById("expand_button_triangle").classList.toggle("triangle_rotate");
-    if (!is_mobile()) document.getElementById("counter").classList.toggle("invisible");
-
-    main.style.marginTop = `${height}px`;
-    canvas.height = height;
-
-    redraw_particles();
-});
-
-plus_button.addEventListener("click", (_) => {
-    if (CUSTOM_MULTIPLIER >= 30) return;
-    CUSTOM_MULTIPLIER++;
-    minus_button.disabled = false;
-    minus_button.classList.remove("disabled");
-    redraw_particles();
-    if (CUSTOM_MULTIPLIER >= 30) {
-        plus_button.disabled = true;
-        plus_button.classList.add("disabled");
-    }
-});
-
-minus_button.addEventListener("click", (_) => {
-    if (CUSTOM_MULTIPLIER <= 1) return;
-    plus_button.disabled = false;
-    plus_button.classList.remove("disabled");
-    CUSTOM_MULTIPLIER--;
-    redraw_particles();
-    if (CUSTOM_MULTIPLIER <= 1) {
-        minus_button.disabled = true;
-        minus_button.classList.add("disabled");
-    }
-});
-
 const calc_next_positions = () => {
     for (let i = 0; i < particles.length; i++) {
         let fx = 0.0;
@@ -157,4 +112,49 @@ const update = () => {
     requestAnimationFrame(update);
 }
 
-update();
+expand_button.addEventListener("click", (_) => {
+    const main = document.getElementsByTagName("main")[0];   
+    const height = canvas.height == 300 ? 73 : 300;
+    document.getElementsByTagName("header")[0].style.height = `${height}px`;
+    document.getElementsByClassName("fakeHeader")[0].style.height = `${height}px`;
+    document.getElementById("expand_button_triangle").classList.toggle("triangle_rotate");
+    if (!is_mobile()) document.getElementById("counter").classList.toggle("invisible");
+
+    main.style.marginTop = `${height}px`;
+    canvas.height = height;
+
+    redraw_particles();
+});
+
+plus_button.addEventListener("click", (_) => {
+    if (CUSTOM_MULTIPLIER >= 30) return;
+    CUSTOM_MULTIPLIER++;
+    minus_button.disabled = false;
+    minus_button.classList.remove("disabled");
+    redraw_particles();
+    if (CUSTOM_MULTIPLIER >= 30) {
+        plus_button.disabled = true;
+        plus_button.classList.add("disabled");
+    }
+});
+
+minus_button.addEventListener("click", (_) => {
+    if (CUSTOM_MULTIPLIER <= 1) return;
+    plus_button.disabled = false;
+    plus_button.classList.remove("disabled");
+    CUSTOM_MULTIPLIER--;
+    redraw_particles();
+    if (CUSTOM_MULTIPLIER <= 1) {
+        minus_button.disabled = true;
+        minus_button.classList.add("disabled");
+    }
+});
+
+addEventListener("resize", (_) => {
+    canvas.width = window.innerWidth;
+    canvas.height = document.getElementsByClassName("fakeHeader")[0].offsetHeight;
+    redraw_particles();
+});
+
+window.dispatchEvent(new CustomEvent("resize"));
+addEventListener("load", (_) => update());

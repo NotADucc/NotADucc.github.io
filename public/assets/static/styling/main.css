@@ -331,6 +331,12 @@ footer .icon {
 	-webkit-transform: rotate(45deg);
 }
 
+@media (max-width: 600px) {
+	#counter {
+		display: none;
+	}
+}
+
 @media (min-width: 600px) {
 	main > div {
 		width: 80%; 

@@ -32,7 +32,7 @@ class Rectangle {
 class QuadTree {
   constructor(boundary) {
       this.boundary = boundary;
-      this.capacity = 10;
+      this.capacity = 16;
       this.particles = [];
       this.divided = false;
   }
@@ -54,57 +54,7 @@ class QuadTree {
               this.southwest.insert(particle);
       }
   }
-
-  // remove_particle(particle) {
-  //     if (!this.boundary.contains(particle.points)) return false;
-
-  //     if (!this.divided) {
-  //         this.particles = this.particles.filter(x => 
-  //           x.key != particle.key 
-  //           || x.points.x != particle.points.x
-  //           || x.points.y != particle.points.y
-  //           || x.velocity.x != particle.velocity.x
-  //           || x.velocity.y != particle.velocity.y
-  //         );                  
-  //         return true;
-  //     } else {
-  //         return this.northeast.remove_particle(particle) 
-  //           || this.northwest.remove_particle(particle)
-  //           || this.southeast.remove_particle(particle)
-  //           || this.southwest.remove_particle(particle);
-  //     }
-  // }
-
-  // remove_nodes() {
-  //     if (this.divided && !(this.northeast.divided || this.northwest.divided || this.southeast.divided || this.southwest.divided)) {
-  //         const len = this.northeast.particles.length +
-  //             this.northwest.particles.length +
-  //             this.southeast.particles.length +
-  //             this.southwest.particles.length;
-
-  //         if (len <= this.capacity) {
-  //             this.particles.push(
-  //               ...this.northeast.particles,
-  //               ...this.northwest.particles,
-  //               ...this.southeast.particles,
-  //               ...this.southwest.particles
-  //             );
-
-  //             this.divided = false;
-  //             this.northeast = null;
-  //             this.northwest = null;
-  //             this.southeast = null;
-  //             this.southwest = null;
-  //         }
-  //     } else {
-  //         if (!this.divided) return;
-  //         this.northeast.remove_nodes();
-  //         this.northwest.remove_nodes();
-  //         this.southeast.remove_nodes();
-  //         this.southwest.remove_nodes();
-  //     }
-  // }
-
+  
   subdivide() {
       if (this.divided) return;
 

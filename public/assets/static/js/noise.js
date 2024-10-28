@@ -3,27 +3,30 @@ const ctx = canvas.getContext("2d");
 const expand_button = document.getElementById("expand_button");
 const plus_button = document.getElementById("plus_button");
 const minus_button = document.getElementById("minus_button");
-const FRICTION = 0.4, PARTICLE_SIZE = 5, MIN_DISTANCE = 5, MAX_DISTANCE = 30, is_mobile = () => /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+const FRICTION = 0.4,
+    PARTICLE_SIZE = 5,
+    MIN_DISTANCE = 5,
+    MAX_DISTANCE = 30,
+    is_mobile = () => /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 let CUSTOM_MULTIPLIER = is_mobile() ? 3 : 10;
 let quadtree = new QuadTree(new Rectangle(canvas.width / 2, canvas.height / 2, canvas.width, canvas.height));
 const particles = [];
 
-const attraction_dct = 
-{
-    b: { 
-        b: 0.32, 
-        m: -0.4, 
-        p: -0.4 
+const attraction_dct = {
+    b: {
+        b: 0.32,
+        m: -0.4,
+        p: -0.4
     },
-    m: { 
-        b: 0.4, 
-        m: 0.1, 
+    m: {
+        b: 0.4,
+        m: 0.1,
         p: -0.2
     },
-    p: { 
-        b: 0.4, 
-        m: 0, 
-        p: -0.15 
+    p: {
+        b: 0.4,
+        m: 0,
+        p: -0.15
     },
 };
 
@@ -31,7 +34,13 @@ const attraction_dct =
 const random = (size) => Math.random() * size;
 
 const particle = (k, p, c, b) => {
-    return { "key": k, "points": p, "velocity": new Point(0, 0), "color": c, "bounds": b };
+    return {
+        "key": k,
+        "points": p,
+        "velocity": new Point(0, 0),
+        "color": c,
+        "bounds": b
+    };
 }
 
 const create = (k, amount, color, b) => {
@@ -42,7 +51,7 @@ const create = (k, amount, color, b) => {
 
 const redraw_tree = () => {
     quadtree = new QuadTree(new Rectangle(canvas.width / 2, canvas.height / 2, canvas.width, canvas.height));
-    for (let i = 0; i  < particles.length; i++) {
+    for (let i = 0; i < particles.length; i++) {
         quadtree.insert(particles[i]);
     }
 }
@@ -64,11 +73,11 @@ const calc_next_positions = () => {
     for (let i = 0; i < particles.length; i++) {
         let fx = 0.0;
         let fy = 0.0;
-        
+
         const seeker = particles[i];
         const rect = new Rectangle(seeker.points.x, seeker.points.y, MAX_DISTANCE, MAX_DISTANCE);
         const targets = quadtree.query(rect, []);
-        
+
         for (let j = 0; j < targets.length; j++) {
             const target = targets[j];
             const attraction = attraction_dct[seeker.key][target.key];
@@ -76,8 +85,7 @@ const calc_next_positions = () => {
             if (seeker.bounds || target.bounds) {
                 dx = seeker.points.x - target.points.x;
                 dy = seeker.points.y - target.points.y;
-            }
-            else {
+            } else {
                 dx = Math.abs(seeker.points.x - target.points.x);
                 dy = Math.abs(seeker.points.y - target.points.y);
                 if (dx > canvas.width >> 1) dx = canvas.width - dx;
@@ -89,7 +97,7 @@ const calc_next_positions = () => {
             fx += F * dx;
             fy += F * dy;
         }
-        
+
         seeker.velocity.x = (seeker.velocity.x + fx) * FRICTION;
         seeker.velocity.y = (seeker.velocity.y + fy) * FRICTION;
         seeker.points.x = (seeker.points.x + seeker.velocity.x + canvas.width) % canvas.width;
@@ -113,7 +121,7 @@ const update_particles = () => {
 }
 
 expand_button.addEventListener("click", (_) => {
-    const main = document.getElementsByTagName("main")[0];   
+    const main = document.getElementsByTagName("main")[0];
     const height = canvas.height == 300 ? 73 : 300;
     document.getElementsByTagName("header")[0].style.height = `${height}px`;
     document.getElementsByClassName("fakeHeader")[0].style.height = `${height}px`;

@@ -49,7 +49,7 @@ const create = (k, amount, color, b) => {
     }
 }
 
-const redraw_tree = () => {
+const recreate_tree = () => {
     quadtree = new QuadTree(new Rectangle(canvas.width / 2, canvas.height / 2, canvas.width, canvas.height));
     for (let i = 0; i < particles.length; i++) {
         quadtree.insert(particles[i]);
@@ -60,10 +60,10 @@ const create_particles = (multiplier = 1) => {
     create("b", 70 * multiplier, "#3875ea", true);
     create("m", 15 * multiplier, "magenta", true);
     create("p", 150 * multiplier, "#a62161", false);
-    redraw_tree();
+    recreate_tree();
 }
 
-const redraw_particles = () => {
+const recreate_particles = () => {
     const multiplier = canvas.height == 300 ? CUSTOM_MULTIPLIER : 1;
     particles.length = 0;
     create_particles(multiplier);
@@ -110,36 +110,60 @@ const draw = (x, y, c, w, h) => {
     ctx.fillRect(x, y, w, h);
 }
 
+let current_update_frame;
 const update_particles = () => {
     calc_next_positions();
-    redraw_tree();
+    recreate_tree();
+    redraw_particles();
+    current_update_frame = requestAnimationFrame(update_particles);
+}
+
+const redraw_particles = () => {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     for (let i = 0; i < particles.length; i++) {
         draw(particles[i].points.x, particles[i].points.y, particles[i].color, PARTICLE_SIZE, PARTICLE_SIZE);
     }
-    requestAnimationFrame(update_particles);
+}
+
+const bezier = (t, initial, p1, p2, final) => {
+    return (1 - t) * (1 - t) * (1 - t) * initial +
+        3 * (1 - t) * (1 - t) * t * p1 +
+        3 * (1 - t) * t * t * p2 +
+        t * t * t * final;
 }
 
 expand_button.addEventListener("click", (_) => {
     const main = document.getElementsByTagName("main")[0];
-    const height = canvas.height == 300 ? 73 : 300;
-    document.getElementsByTagName("header")[0].style.height = `${height}px`;
-    document.getElementsByClassName("fakeHeader")[0].style.height = `${height}px`;
+    const newHeight = canvas.height === 300 ? 73 : 300;
+    document.getElementsByTagName("header")[0].style.height = `${newHeight}px`;
+    document.getElementsByClassName("fakeHeader")[0].style.height = `${newHeight}px`;
+    main.style.marginTop = `${newHeight}px`;
     document.getElementById("expand_button_triangle").classList.toggle("triangle_rotate");
     if (!is_mobile()) document.getElementById("counter").classList.toggle("invisible");
-
-    main.style.marginTop = `${height}px`;
-    canvas.height = height;
-
-    redraw_particles();
+    cancelAnimationFrame(current_update_frame);
+    animateCanvas(0.0, canvas.height, newHeight);
 });
+
+const animateCanvas = (index, start, stop) => {
+    if (index <= 1) {
+        canvas.height = parseInt(bezier(index, start, 0.25, 0.25, stop));
+        requestAnimationFrame(() => animateCanvas(index + 0.01, start, stop));
+        recreate_particles();
+        redraw_particles();
+    }
+    else {
+        canvas.height = stop;
+        recreate_particles();
+        update_particles();
+    }
+}
 
 plus_button.addEventListener("click", (_) => {
     if (CUSTOM_MULTIPLIER >= 30) return;
     CUSTOM_MULTIPLIER++;
     minus_button.disabled = false;
     minus_button.classList.remove("disabled");
-    redraw_particles();
+    recreate_particles();
     if (CUSTOM_MULTIPLIER >= 30) {
         plus_button.disabled = true;
         plus_button.classList.add("disabled");
@@ -151,7 +175,7 @@ minus_button.addEventListener("click", (_) => {
     plus_button.disabled = false;
     plus_button.classList.remove("disabled");
     CUSTOM_MULTIPLIER--;
-    redraw_particles();
+    recreate_particles();
     if (CUSTOM_MULTIPLIER <= 1) {
         minus_button.disabled = true;
         minus_button.classList.add("disabled");
@@ -161,7 +185,7 @@ minus_button.addEventListener("click", (_) => {
 addEventListener("resize", (_) => {
     canvas.width = window.innerWidth;
     canvas.height = document.getElementsByClassName("fakeHeader")[0].offsetHeight;
-    redraw_particles();
+    recreate_particles();
 });
 
 window.dispatchEvent(new CustomEvent("resize"));

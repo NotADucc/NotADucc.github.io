@@ -1,5 +1,8 @@
 const canvas = document.getElementById("noise");
 const ctx = canvas.getContext("2d");
+const header = document.getElementsByTagName("header")[0];
+const fake_header = document.getElementsByClassName("fakeHeader")[0];
+const main = document.getElementsByTagName("main")[0];
 const expand_button = document.getElementById("expand_button");
 const plus_button = document.getElementById("plus_button");
 const minus_button = document.getElementById("minus_button");
@@ -35,11 +38,11 @@ const random = (size) => Math.random() * size;
 
 const particle = (k, p, c, b) => {
     return {
-        "key": k,
-        "points": p,
-        "velocity": new Point(0, 0),
-        "color": c,
-        "bounds": b
+        key: k,
+        points: p,
+        velocity: new Point(0, 0),
+        color: c,
+        bounds: b
     };
 }
 
@@ -125,34 +128,55 @@ const redraw_particles = () => {
     }
 }
 
-const bezier = (t, initial, p1, p2, final) => {
-    return (1 - t) * (1 - t) * (1 - t) * initial +
-        3 * (1 - t) * (1 - t) * t * p1 +
-        3 * (1 - t) * t * t * p2 +
-        t * t * t * final;
+const bezier = (x1, y1, x2, y2) => {
+    const _bezier = (t, p0, p1, p2, p3) => {
+        return (
+            (1 - t) ** 4 * p0 +
+            3 * (1 - t) ** 2 * t * p1 +
+            3 * (1 - t) * t ** 2 * p2 +
+            t ** 3 * p3
+        );
+    }
+
+    return (t) => {
+        let low = 0, high = 1, epsilon = 0.01, x;
+        while (high - low > epsilon) {
+            const mid = (low + high) / 2;
+            x = _bezier(mid, 0, x1, x2, 1);
+            if (x < t) low = mid;
+            else high = mid;
+        }
+        
+        return _bezier(low, 0, y1, y2, 1);
+    };
 }
 
+const easingFunction = bezier(0.45, 0.1, 0.25, 1);
+
 expand_button.addEventListener("click", (_) => {
-    const main = document.getElementsByTagName("main")[0];
     const newHeight = canvas.height === 300 ? 73 : 300;
-    document.getElementsByTagName("header")[0].style.height = `${newHeight}px`;
-    document.getElementsByClassName("fakeHeader")[0].style.height = `${newHeight}px`;
-    main.style.marginTop = `${newHeight}px`;
     document.getElementById("expand_button_triangle").classList.toggle("triangle_rotate");
     if (!is_mobile()) document.getElementById("counter").classList.toggle("invisible");
     cancelAnimationFrame(current_update_frame);
-    animateCanvas(0.0, canvas.height, newHeight);
+    animate_header(0.0, canvas.height, newHeight);
 });
 
-const animateCanvas = (index, start, stop) => {
+const animate_header = (index, start, stop) => {
     if (index <= 1) {
-        canvas.height = parseInt(bezier(index, start, 0.25, 0.25, stop));
-        requestAnimationFrame(() => animateCanvas(index + 0.01, start, stop));
+        const newHeight = parseInt(start + (stop - start) * easingFunction(index));
+        canvas.height = newHeight;
+        header.style.height = `${newHeight}px`;
+        fake_header.style.height = `${newHeight}px`;
+        main.style.marginTop = `${newHeight}px`;
+        requestAnimationFrame(() => animate_header(index + 0.01, start, stop));
         recreate_particles();
         redraw_particles();
     }
     else {
         canvas.height = stop;
+        header.style.height = `${stop}px`;
+        fake_header.style.height = `${stop}px`;
+        main.style.marginTop = `${stop}px`;
         recreate_particles();
         update_particles();
     }
@@ -184,7 +208,7 @@ minus_button.addEventListener("click", (_) => {
 
 addEventListener("resize", (_) => {
     canvas.width = window.innerWidth;
-    canvas.height = document.getElementsByClassName("fakeHeader")[0].offsetHeight;
+    canvas.height = fake_header.offsetHeight;
     recreate_particles();
 });
 

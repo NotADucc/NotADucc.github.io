@@ -14,7 +14,6 @@ main {
 	flex-direction: column; 
 	justify-content: center; 
 	align-items: center;
-	transition: margin-top 1s ease;
 }
 
 main > div {
@@ -99,7 +98,6 @@ canvas {
 	top: 0;
 	z-index: 1;
 	background-color: #171717;
-	transition: height 1s ease;
 }
 
 header {
@@ -111,7 +109,6 @@ header {
 	z-index: 3;
 	padding-left: 0.5rem;
 	padding-right: 0.5rem; 
-	transition: height 1s ease;
 	border-bottom: solid;
 	border-bottom-width: 1px; 
 	border-color: #ffffff; 

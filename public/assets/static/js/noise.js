@@ -31,10 +31,11 @@ const attraction_dct = {
         m: 0,
         p: -0.15
     },
-};
+}
 
 
 const random = (size) => Math.random() * size;
+const get_multiplier = () => canvas.height == 300 ? CUSTOM_MULTIPLIER : 1;
 
 const particle = (k, p, c, b) => {
     return {
@@ -46,13 +47,13 @@ const particle = (k, p, c, b) => {
     };
 }
 
-const create = (k, amount, color, b) => {
+const create_particle = (k, amount, color, b) => {
     for (let i = 0; i < amount; i++) {
         particles.push(particle(k, new Point(random(canvas.width), random(canvas.height)), color, b));
     }
 }
 
-const recreate_tree = () => {
+const create_tree = () => {
     quadtree = new QuadTree(new Rectangle(canvas.width / 2, canvas.height / 2, canvas.width, canvas.height));
     for (let i = 0; i < particles.length; i++) {
         quadtree.insert(particles[i]);
@@ -60,17 +61,14 @@ const recreate_tree = () => {
 }
 
 const create_particles = (multiplier = 1) => {
-    create("b", 70 * multiplier, "#3875ea", true);
-    create("m", 15 * multiplier, "magenta", true);
-    create("p", 150 * multiplier, "#a62161", false);
-    recreate_tree();
-}
-
-const recreate_particles = () => {
-    const multiplier = canvas.height == 300 ? CUSTOM_MULTIPLIER : 1;
     particles.length = 0;
-    create_particles(multiplier);
-};
+    console.log(multiplier);
+    
+    create_particle("b", 70 * multiplier, "#3875ea", true);
+    create_particle("m", 15 * multiplier, "magenta", true);
+    create_particle("p", 150 * multiplier, "#a62161", false);
+    create_tree();
+}
 
 const calc_next_positions = () => {
     for (let i = 0; i < particles.length; i++) {
@@ -116,12 +114,12 @@ const draw = (x, y, c, w, h) => {
 let current_update_frame;
 const update_particles = () => {
     calc_next_positions();
-    recreate_tree();
-    redraw_particles();
+    create_tree();
+    draw_particles();
     current_update_frame = requestAnimationFrame(update_particles);
 }
 
-const redraw_particles = () => {
+const draw_particles = () => {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     for (let i = 0; i < particles.length; i++) {
         draw(particles[i].points.x, particles[i].points.y, particles[i].color, PARTICLE_SIZE, PARTICLE_SIZE);
@@ -165,19 +163,15 @@ const animate_header = (index, start, stop) => {
     if (index <= 1) {
         const newHeight = parseInt(start + (stop - start) * easingFunction(index));
         canvas.height = newHeight;
-        header.style.height = `${newHeight}px`;
-        fake_header.style.height = `${newHeight}px`;
-        main.style.marginTop = `${newHeight}px`;
+        header.style.height = fake_header.style.height = main.style.marginTop = `${newHeight}px`;
         requestAnimationFrame(() => animate_header(index + 0.01, start, stop));
-        recreate_particles();
-        redraw_particles();
+        create_particles(1);
+        draw_particles();
     }
     else {
         canvas.height = stop;
-        header.style.height = `${stop}px`;
-        fake_header.style.height = `${stop}px`;
-        main.style.marginTop = `${stop}px`;
-        recreate_particles();
+        header.style.height = fake_header.style.height = main.style.marginTop = `${stop}px`;
+        create_particles(get_multiplier());
         update_particles();
     }
 }
@@ -187,7 +181,7 @@ plus_button.addEventListener("click", (_) => {
     CUSTOM_MULTIPLIER++;
     minus_button.disabled = false;
     minus_button.classList.remove("disabled");
-    recreate_particles();
+    create_particles(get_multiplier());
     if (CUSTOM_MULTIPLIER >= 30) {
         plus_button.disabled = true;
         plus_button.classList.add("disabled");
@@ -199,7 +193,7 @@ minus_button.addEventListener("click", (_) => {
     plus_button.disabled = false;
     plus_button.classList.remove("disabled");
     CUSTOM_MULTIPLIER--;
-    recreate_particles();
+    create_particles(get_multiplier());
     if (CUSTOM_MULTIPLIER <= 1) {
         minus_button.disabled = true;
         minus_button.classList.add("disabled");
@@ -209,7 +203,7 @@ minus_button.addEventListener("click", (_) => {
 addEventListener("resize", (_) => {
     canvas.width = window.innerWidth;
     canvas.height = fake_header.offsetHeight;
-    recreate_particles();
+    create_particles(get_multiplier());
 });
 
 window.dispatchEvent(new CustomEvent("resize"));

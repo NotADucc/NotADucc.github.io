@@ -62,8 +62,6 @@ const create_tree = () => {
 
 const create_particles = (multiplier = 1) => {
     particles.length = 0;
-    console.log(multiplier);
-    
     create_particle("b", 70 * multiplier, "#3875ea", true);
     create_particle("m", 15 * multiplier, "magenta", true);
     create_particle("p", 150 * multiplier, "#a62161", false);
@@ -201,6 +199,7 @@ minus_button.addEventListener("click", (_) => {
 });
 
 addEventListener("resize", (_) => {
+    if (canvas.width === window.innerWidth) return;
     canvas.width = window.innerWidth;
     canvas.height = fake_header.offsetHeight;
     create_particles(get_multiplier());

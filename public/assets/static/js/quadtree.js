@@ -80,12 +80,7 @@ class QuadTree {
   }
 
   query(range, found) {
-      if (!this.boundary.intersects(range)) {
-          return found;
-      }
-
-
-      if (!range.intersects(this.boundary)) {
+      if (!this.boundary.intersects(range) || !range.intersects(this.boundary)) {
           return found;
       }
 

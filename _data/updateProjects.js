@@ -1,7 +1,7 @@
 const projects = 
 [
     {
-        "title": "Mogcord",
+        "title": "Mogcord - WOP",
         "under_title": "A simple messaging platform",
         "image": "mogcord.png",
         "tools": ["Rust", "MongoDB", "REST API", "JWT", "Auth", "AlpineJs", "HTMX", "Tailwind"],

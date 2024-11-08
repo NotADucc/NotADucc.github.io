@@ -32,7 +32,7 @@ class Rectangle {
 class QuadTree {
   constructor(boundary) {
       this.boundary = boundary;
-      this.capacity = 16;
+      this.capacity = 64;
       this.particles = [];
       this.divided = false;
   }

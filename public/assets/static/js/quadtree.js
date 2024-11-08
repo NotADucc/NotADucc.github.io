@@ -35,6 +35,10 @@ class QuadTree {
       this.capacity = 64;
       this.particles = [];
       this.divided = false;
+      this.northeast = null;
+      this.northwest = null;
+      this.southeast = null;
+      this.southwest = null;
   }
 
   insert(particle) {

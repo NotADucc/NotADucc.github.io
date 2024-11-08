@@ -47,12 +47,6 @@ const particle = (k, p, c, b) => {
     };
 }
 
-const create_particle = (k, amount, color, b) => {
-    for (let i = 0; i < amount; i++) {
-        particles.push(particle(k, new Point(random(canvas.width), random(canvas.height)), color, b));
-    }
-}
-
 const create_tree = () => {
     quadtree = new QuadTree(new Rectangle(canvas.width / 2, canvas.height / 2, canvas.width, canvas.height));
     for (let i = 0; i < particles.length; i++) {
@@ -61,10 +55,16 @@ const create_tree = () => {
 }
 
 const create_particles = (multiplier = 1) => {
+    const add_particles = (k, amount, color, b) => {
+        for (let i = 0; i < amount; i++) {
+            particles.push(particle(k, new Point(random(canvas.width), random(canvas.height)), color, b));
+        }
+    }
+
     particles.length = 0;
-    create_particle("b", 70 * multiplier, "#3875ea", true);
-    create_particle("m", 15 * multiplier, "magenta", true);
-    create_particle("p", 150 * multiplier, "#a62161", false);
+    add_particles("b", 70 * multiplier, "#3875ea", true);
+    add_particles("m", 15 * multiplier, "magenta", true);
+    add_particles("p", 150 * multiplier, "#a62161", false);
     create_tree();
 }
 

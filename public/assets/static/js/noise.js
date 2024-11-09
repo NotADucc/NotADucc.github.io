@@ -15,7 +15,7 @@ const FRICTION = 0.4,
     random = (size) => Math.random() * size,
     easingFunction = bezier(0.45, 0.1, 0.25, 1);
 let CUSTOM_MULTIPLIER = is_mobile() ? 3 : 10;
-let quadtree = new QuadTree(new Rectangle(canvas.width / 2, canvas.height / 2, canvas.width, canvas.height));
+let quadtree;
 const particles = []; let positions, colors, saved_len = 0;
 const attraction_dct = {
     b: {

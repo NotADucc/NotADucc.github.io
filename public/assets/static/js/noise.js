@@ -15,7 +15,7 @@ const FRICTION = 0.4,
     random = (size) => Math.random() * size,
     easingFunction = bezier(0.45, 0.1, 0.25, 1);
 let CUSTOM_MULTIPLIER = is_mobile() ? 3 : 10;
-let quadtree = new QuadTree(new Rectangle(canvas.width / 2, canvas.height / 2, canvas.width, canvas.height));
+let quadtree;
 const particles = []; let positions, colors, saved_len = 0;
 const attraction_dct = {
     b: {
@@ -44,8 +44,9 @@ const create_tree = () => {
     }
 }
 
-const particle = (k, p, c, b) => {
+const particle = (id, k, p, c, b) => {
     return {
+        id,
         key: k,
         position: p,
         velocity: [0, 0],
@@ -56,14 +57,14 @@ const particle = (k, p, c, b) => {
 
 const add_particles = (k, amount, color, b) => {
     for (let i = 0; i < amount; i++) {
-        particles.push(particle(k, [random(canvas.width), random(canvas.height)], color, b));
+        particles.push(particle(particles.length, k, [random(canvas.width), random(canvas.height)], color, b));
     }
 }
 
 const create_particles = (multiplier = 1) => {
     particles.length = 0;
     add_particles("b", 70 * multiplier, [0.22, 0.45, 0.91, 1, "#3875ea"], true);
-    add_particles("m", 15 * multiplier, [1, 0, 1, 1, "ff00ff"], true);
+    add_particles("m", 25 * multiplier, [1, 0, 1, 1, "ff00ff"], true);
     add_particles("p", 150 * multiplier, [0.65, 0.13, 0.38, 1, "#a62161"], false);
     create_tree();
 }
@@ -111,7 +112,8 @@ const calc_next_positions = () => {
 let current_update_frame;
 const update_particles = () => {
     calc_next_positions();
-    create_tree();
+    quadtree.update_tree(quadtree);
+    quadtree.remove_nodes();
     draw_particles();
     current_update_frame = requestAnimationFrame(update_particles);
 }

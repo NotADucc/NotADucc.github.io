@@ -41,6 +41,58 @@ class Point {
         this.southwest = null;
     }
   
+    update_tree(main_tree) {
+        if (!this.divided) {
+            let new_len = this.particles.length;
+            for (let i = 0; i < new_len;) {
+                if (!this.boundary.contains(this.particles[i].position[0], this.particles[i].position[1])) {
+                    main_tree.insert(this.particles[i]);
+                    this.particles[i] = this.particles[new_len - 1];
+                    new_len--;
+                } else {
+                    i++;
+                }
+            }
+
+            this.particles.length = new_len;
+        } else {
+            this.northeast.update_tree(main_tree);
+            this.northwest.update_tree(main_tree);
+            this.southeast.update_tree(main_tree);
+            this.southwest.update_tree(main_tree);
+        } 
+    }
+
+    remove_nodes() {
+        if (this.divided) {
+            if (!(this.northeast.divided || this.northwest.divided || this.southeast.divided || this.southwest.divided)) {
+                const len = this.northeast.particles.length +
+                this.northwest.particles.length +
+                this.southeast.particles.length +
+                this.southwest.particles.length;
+                if (len <= this.capacity) {
+                    this.particles.push(
+                        ...this.northeast.particles,
+                        ...this.northwest.particles,
+                        ...this.southeast.particles,
+                        ...this.southwest.particles
+                    );
+                    this.divided = false;
+                    this.northeast = null;
+                    this.northwest = null;
+                    this.southeast = null;
+                    this.southwest = null;
+                }
+            }
+        } else {
+            this.northeast.remove_nodes();
+            this.northwest.remove_nodes();
+            this.southeast.remove_nodes();
+            this.southwest.remove_nodes();
+        }
+    }
+
+
     insert(particle) {
         if (!this.boundary.contains(particle.position[0], particle.position[1])) {
             return false;

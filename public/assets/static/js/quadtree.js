@@ -41,46 +41,50 @@ class Point {
         this.southwest = null;
     }
   
-    remove_particle(old_x, old_y, new_particle) {
-        if (!this.boundary.contains(old_x, old_y)) return false;
+    update_tree(main_tree) {
         if (!this.divided) {
-            if (this.boundary.contains(new_particle.position[0], new_particle.position[1])) {
-                return false;
+            let new_len = this.particles.length;
+            for (let i = 0; i < new_len;) {
+                if (!this.boundary.contains(this.particles[i].position[0], this.particles[i].position[1])) {
+                    main_tree.insert(this.particles[i]);
+                    this.particles[i] = this.particles[new_len - 1];
+                    new_len--;
+                } else {
+                    i++;
+                }
             }
 
-            const index = this.particles.findIndex(p => p.id === new_particle.id);
-            this.particles.splice(index, 1);
-
-            return true;
+            this.particles.length = new_len;
         } else {
-            return this.northeast.remove_particle(old_x, old_y, new_particle)
-                || this.northwest.remove_particle(old_x, old_y, new_particle)
-                || this.southeast.remove_particle(old_x, old_y, new_particle)
-                || this.southwest.remove_particle(old_x, old_y, new_particle);
-        }
+            this.northeast.update_tree(main_tree);
+            this.northwest.update_tree(main_tree);
+            this.southeast.update_tree(main_tree);
+            this.southwest.update_tree(main_tree);
+        } 
     }
 
     remove_nodes() {
-        if (this.divided && !(this.northeast.divided || this.northwest.divided || this.southeast.divided || this.southwest.divided)) {
-            const len = this.northeast.particles.length +
+        if (this.divided) {
+            if (!(this.northeast.divided || this.northwest.divided || this.southeast.divided || this.southwest.divided)) {
+                const len = this.northeast.particles.length +
                 this.northwest.particles.length +
                 this.southeast.particles.length +
                 this.southwest.particles.length;
-            if (len <= this.capacity) {
-                this.particles.push(
-                    ...this.northeast.particles,
-                    ...this.northwest.particles,
-                    ...this.southeast.particles,
-                    ...this.southwest.particles
-                );
-                this.divided = false;
-                this.northeast = null;
-                this.northwest = null;
-                this.southeast = null;
-                this.southwest = null;
+                if (len <= this.capacity) {
+                    this.particles.push(
+                        ...this.northeast.particles,
+                        ...this.northwest.particles,
+                        ...this.southeast.particles,
+                        ...this.southwest.particles
+                    );
+                    this.divided = false;
+                    this.northeast = null;
+                    this.northwest = null;
+                    this.southeast = null;
+                    this.southwest = null;
+                }
             }
         } else {
-            if (!this.divided) return;
             this.northeast.remove_nodes();
             this.northwest.remove_nodes();
             this.southeast.remove_nodes();

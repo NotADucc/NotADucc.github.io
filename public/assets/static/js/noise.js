@@ -44,8 +44,9 @@ const create_tree = () => {
     }
 }
 
-const particle = (k, p, c, b) => {
+const particle = (id, k, p, c, b) => {
     return {
+        id,
         key: k,
         position: p,
         velocity: [0, 0],
@@ -56,7 +57,7 @@ const particle = (k, p, c, b) => {
 
 const add_particles = (k, amount, color, b) => {
     for (let i = 0; i < amount; i++) {
-        particles.push(particle(k, [random(canvas.width), random(canvas.height)], color, b));
+        particles.push(particle(particles.length, k, [random(canvas.width), random(canvas.height)], color, b));
     }
 }
 
@@ -101,17 +102,20 @@ const calc_next_positions = () => {
             fy += F * dy;
         }
 
+        const old_x = seeker.position[0], old_y = seeker.position[1];
         seeker.velocity[0] = (seeker.velocity[0] + fx) * FRICTION;
         seeker.velocity[1] = (seeker.velocity[1] + fy) * FRICTION;
         seeker.position[0] = (seeker.position[0] + seeker.velocity[0] + canvas_width) % canvas_width;
         seeker.position[1] = (seeker.position[1] + seeker.velocity[1] + canvas_height) % canvas_height;
+
+        if(quadtree.remove_particle(old_x, old_y, seeker)) quadtree.insert(seeker);
     }
 }
 
 let current_update_frame;
 const update_particles = () => {
     calc_next_positions();
-    create_tree();
+    quadtree.remove_nodes();
     draw_particles();
     current_update_frame = requestAnimationFrame(update_particles);
 }

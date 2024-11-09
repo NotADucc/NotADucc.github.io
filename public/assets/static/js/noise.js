@@ -250,8 +250,8 @@ const init = () => {
 
         draw_particles = () => {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            for (const p in particles) {
-                draw(p.position[0], p.position[1], p.color[4], PARTICLE_SIZE, PARTICLE_SIZE);
+            for (let i = 0; i < particles.length; i++) {
+                draw(particles[i].position[0], particles[i].position[1], particles[i].color[4], PARTICLE_SIZE, PARTICLE_SIZE);
             }
         }
     }

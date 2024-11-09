@@ -131,7 +131,7 @@ class Point {
   
         this.divided = true;
   
-        for (const p of this.particles) this.insert(p);
+        for (let p of this.particles) this.insert(p);
         this.particles = [];
     }
   
@@ -140,7 +140,7 @@ class Point {
             return found;
         }
   
-        for (const p of this.particles) {
+        for (let p of this.particles) {
             if (range.contains(p.position[0], p.position[1])) {
                 found.push(p);
             }

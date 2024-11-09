@@ -1,5 +1,5 @@
 const canvas = document.getElementById("noise");
-const ctx = canvas.getContext("2d");
+let ctx;
 const header = document.getElementsByTagName("header")[0];
 const fake_header = document.getElementsByClassName("fakeHeader")[0];
 const main = document.getElementsByTagName("main")[0];
@@ -7,14 +7,16 @@ const expand_button = document.getElementById("expand_button");
 const plus_button = document.getElementById("plus_button");
 const minus_button = document.getElementById("minus_button");
 const FRICTION = 0.4,
-    PARTICLE_SIZE = 5,
+    PARTICLE_SIZE = 5.0,
     MIN_DISTANCE = 5,
     MAX_DISTANCE = 30,
-    is_mobile = () => /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    is_mobile = () => /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent),
+    get_multiplier = () => canvas.height == 300 ? CUSTOM_MULTIPLIER : 1,
+    random = (size) => Math.random() * size,
+    easingFunction = bezier(0.45, 0.1, 0.25, 1);
 let CUSTOM_MULTIPLIER = is_mobile() ? 3 : 10;
 let quadtree = new QuadTree(new Rectangle(canvas.width / 2, canvas.height / 2, canvas.width, canvas.height));
-const particles = [];
-
+const particles = []; let positions, colors, saved_len = 0;
 const attraction_dct = {
     b: {
         b: 0.32,
@@ -32,20 +34,8 @@ const attraction_dct = {
         p: -0.15
     },
 }
-
-
-const random = (size) => Math.random() * size;
-const get_multiplier = () => canvas.height == 300 ? CUSTOM_MULTIPLIER : 1;
-
-const particle = (k, p, c, b) => {
-    return {
-        key: k,
-        points: p,
-        velocity: new Point(0, 0),
-        color: c,
-        bounds: b
-    };
-}
+// gets overwritten depending on ctx
+let draw_particles = () => {}, update_viewport = () => {};
 
 const create_tree = () => {
     quadtree = new QuadTree(new Rectangle(canvas.width / 2, canvas.height / 2, canvas.width, canvas.height));
@@ -54,59 +44,68 @@ const create_tree = () => {
     }
 }
 
-const create_particles = (multiplier = 1) => {
-    const add_particles = (k, amount, color, b) => {
-        for (let i = 0; i < amount; i++) {
-            particles.push(particle(k, new Point(random(canvas.width), random(canvas.height)), color, b));
-        }
-    }
+const particle = (k, p, c, b) => {
+    return {
+        key: k,
+        position: p,
+        velocity: [0, 0],
+        color: c,
+        bounds: b
+    };
+}
 
+const add_particles = (k, amount, color, b) => {
+    for (let i = 0; i < amount; i++) {
+        particles.push(particle(k, [random(canvas.width), random(canvas.height)], color, b));
+    }
+}
+
+const create_particles = (multiplier = 1) => {
     particles.length = 0;
-    add_particles("b", 70 * multiplier, "#3875ea", true);
-    add_particles("m", 15 * multiplier, "magenta", true);
-    add_particles("p", 150 * multiplier, "#a62161", false);
+    add_particles("b", 70 * multiplier, [0.22, 0.45, 0.91, 1, "#3875ea"], true);
+    add_particles("m", 15 * multiplier, [1, 0, 1, 1, "ff00ff"], true);
+    add_particles("p", 150 * multiplier, [0.65, 0.13, 0.38, 1, "#a62161"], false);
     create_tree();
 }
 
 const calc_next_positions = () => {
+    const canvas_width = canvas.width;
+    const canvas_height = canvas.height;
     for (let i = 0; i < particles.length; i++) {
         let fx = 0.0;
         let fy = 0.0;
 
         const seeker = particles[i];
-        const rect = new Rectangle(seeker.points.x, seeker.points.y, MAX_DISTANCE, MAX_DISTANCE);
+        const rect = new Rectangle(seeker.position[0], seeker.position[1], MAX_DISTANCE, MAX_DISTANCE);
         const targets = quadtree.query(rect, []);
 
         for (let j = 0; j < targets.length; j++) {
             const target = targets[j];
             const attraction = attraction_dct[seeker.key][target.key];
             if (attraction == 0) continue;
+            let dx, dy;
             if (seeker.bounds || target.bounds) {
-                dx = seeker.points.x - target.points.x;
-                dy = seeker.points.y - target.points.y;
+                dx = seeker.position[0] - target.position[0];
+                dy = seeker.position[1] - target.position[1];
             } else {
-                dx = Math.abs(seeker.points.x - target.points.x);
-                dy = Math.abs(seeker.points.y - target.points.y);
-                if (dx > canvas.width >> 1) dx = canvas.width - dx;
-                if (dy > canvas.height >> 1) dy = canvas.height - dy;
+                dx = Math.abs(seeker.position[0] - target.position[0]);
+                dy = Math.abs(seeker.position[1] - target.position[1]);
+                if (dx > canvas_width >> 1) dx = canvas_width - dx;
+                if (dy > canvas_height >> 1) dy = canvas_height - dy;
             }
-            const d = Math.sqrt(dx * dx + dy * dy);
-            if (d == 0 || d > MAX_DISTANCE) continue;
-            const F = (d <= MIN_DISTANCE ? 0.3 : -attraction) / d;
+            const d = dx * dx + dy * dy;
+            if (d == 0 || d > MAX_DISTANCE * MAX_DISTANCE) continue;
+            const d_sqrt = Math.sqrt(d);
+            const F = (d_sqrt <= MIN_DISTANCE ? 0.3 : -attraction) / d_sqrt;
             fx += F * dx;
             fy += F * dy;
         }
 
-        seeker.velocity.x = (seeker.velocity.x + fx) * FRICTION;
-        seeker.velocity.y = (seeker.velocity.y + fy) * FRICTION;
-        seeker.points.x = (seeker.points.x + seeker.velocity.x + canvas.width) % canvas.width;
-        seeker.points.y = (seeker.points.y + seeker.velocity.y + canvas.height) % canvas.height;
+        seeker.velocity[0] = (seeker.velocity[0] + fx) * FRICTION;
+        seeker.velocity[1] = (seeker.velocity[1] + fy) * FRICTION;
+        seeker.position[0] = (seeker.position[0] + seeker.velocity[0] + canvas_width) % canvas_width;
+        seeker.position[1] = (seeker.position[1] + seeker.velocity[1] + canvas_height) % canvas_height;
     }
-}
-
-const draw = (x, y, c, w, h) => {
-    ctx.fillStyle = c;
-    ctx.fillRect(x, y, w, h);
 }
 
 let current_update_frame;
@@ -117,51 +116,12 @@ const update_particles = () => {
     current_update_frame = requestAnimationFrame(update_particles);
 }
 
-const draw_particles = () => {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    for (let i = 0; i < particles.length; i++) {
-        draw(particles[i].points.x, particles[i].points.y, particles[i].color, PARTICLE_SIZE, PARTICLE_SIZE);
-    }
-}
-
-const bezier = (x1, y1, x2, y2) => {
-    const _bezier = (t, p0, p1, p2, p3) => {
-        return (
-            (1 - t) ** 4 * p0 +
-            3 * (1 - t) ** 2 * t * p1 +
-            3 * (1 - t) * t ** 2 * p2 +
-            t ** 3 * p3
-        );
-    }
-
-    return (t) => {
-        let low = 0, high = 1, epsilon = 0.01, x;
-        while (high - low > epsilon) {
-            const mid = (low + high) / 2;
-            x = _bezier(mid, 0, x1, x2, 1);
-            if (x < t) low = mid;
-            else high = mid;
-        }
-        
-        return _bezier(low, 0, y1, y2, 1);
-    };
-}
-
-const easingFunction = bezier(0.45, 0.1, 0.25, 1);
-
-expand_button.addEventListener("click", (_) => {
-    const newHeight = canvas.height === 300 ? 73 : 300;
-    document.getElementById("expand_button_triangle").classList.toggle("triangle_rotate");
-    if (!is_mobile()) document.getElementById("counter").classList.toggle("invisible");
-    cancelAnimationFrame(current_update_frame);
-    animate_header(0.0, canvas.height, newHeight);
-});
-
 const animate_header = (index, start, stop) => {
     if (index <= 1) {
-        const newHeight = parseInt(start + (stop - start) * easingFunction(index));
+        const newHeight = start + (stop - start) * easingFunction(index);
         canvas.height = newHeight;
         header.style.height = fake_header.style.height = main.style.marginTop = `${newHeight}px`;
+        update_viewport();
         requestAnimationFrame(() => animate_header(index + 0.01, start, stop));
         create_particles(1);
         draw_particles();
@@ -169,10 +129,144 @@ const animate_header = (index, start, stop) => {
     else {
         canvas.height = stop;
         header.style.height = fake_header.style.height = main.style.marginTop = `${stop}px`;
+        update_viewport();
         create_particles(get_multiplier());
         update_particles();
     }
 }
+
+
+const init = () => {
+    ctx = canvas.getContext('webgl');
+    if (ctx) {
+        update_viewport = () => {
+            ctx.viewport(0, 0, ctx.drawingBufferWidth, ctx.drawingBufferHeight);
+        }
+        const vertexShaderSrc = `
+            precision lowp float;
+            attribute vec2 a_position;
+            attribute vec4 a_color;
+            uniform vec2 u_resolution;
+            uniform float u_pointSize;
+            varying vec4 v_color;
+        
+            void main() {
+                vec2 zeroToOne = a_position / u_resolution;
+                vec2 zeroToTwo = zeroToOne * 2.0;
+                vec2 clipSpace = zeroToTwo - 1.0;
+        
+                gl_Position = vec4(clipSpace * vec2(1, -1), 0, 1);
+                gl_PointSize  = u_pointSize;
+                v_color = a_color;
+            }
+        `;
+
+        const fragmentShaderSrc = `
+            precision lowp float;
+            varying vec4 v_color;
+
+            void main() {
+                gl_FragColor = v_color;
+            }
+        `;
+
+        const createShader = (ctx, type, source) => {
+            const shader = ctx.createShader(type);
+            ctx.shaderSource(shader, source);
+            ctx.compileShader(shader);
+            if (!ctx.getShaderParameter(shader, ctx.COMPILE_STATUS)) {
+                console.error("Shader compile error: ", ctx.getShaderInfoLog(shader));
+                ctx.deleteShader(shader);
+                return null;
+            }
+            return shader;
+        }
+
+        const vertexShader = createShader(ctx, ctx.VERTEX_SHADER, vertexShaderSrc);
+        const fragmentShader = createShader(ctx, ctx.FRAGMENT_SHADER, fragmentShaderSrc);
+
+        const program = ctx.createProgram();
+        ctx.attachShader(program, vertexShader);
+        ctx.attachShader(program, fragmentShader);
+        ctx.linkProgram(program);
+
+        if (!ctx.getProgramParameter(program, ctx.LINK_STATUS)) {
+            console.error("Program linking error: ", ctx.getProgramInfoLog(program));
+            return;
+        }
+
+        const positionLocation = ctx.getAttribLocation(program, "a_position");
+        const colorLocation = ctx.getAttribLocation(program, "a_color");
+        const resolutionLocation = ctx.getUniformLocation(program, "u_resolution");
+        const uPointSizeLocation  = ctx.getUniformLocation(program, "u_pointSize");
+        
+        const positionBuffer = ctx.createBuffer();
+        const colorBuffer = ctx.createBuffer();
+        
+        draw_particles = () => {   
+            if (particles.length !== saved_len) {
+                positions = new Float32Array(particles.length << 1);
+                colors = new Float32Array(particles.length << 2);
+                saved_len = particles.length;
+            }
+            
+            for (let i = 0; i < particles.length; i++) {
+                const prtl = particles[i];
+                positions[i << 1] = prtl.position[0];
+                positions[(i << 1) + 1] = prtl.position[1];
+                colors[(i << 2)] = prtl.color[0];
+                colors[(i << 2) + 1] = prtl.color[1];
+                colors[(i << 2) + 2] = prtl.color[2];
+                colors[(i << 2) + 3] = 1;
+            }
+            
+            ctx.bindBuffer(ctx.ARRAY_BUFFER, positionBuffer);
+            ctx.bufferData(ctx.ARRAY_BUFFER, positions, ctx.DYNAMIC_DRAW);
+            ctx.enableVertexAttribArray(positionLocation);
+            ctx.vertexAttribPointer(positionLocation, 2, ctx.FLOAT, false, 0, 0);
+            
+            ctx.bindBuffer(ctx.ARRAY_BUFFER, colorBuffer);
+            ctx.bufferData(ctx.ARRAY_BUFFER, colors, ctx.DYNAMIC_DRAW);
+            ctx.enableVertexAttribArray(colorLocation);
+            ctx.vertexAttribPointer(colorLocation, 4, ctx.FLOAT, false, 0, 0);
+            
+            ctx.useProgram(program);
+            ctx.uniform2f(resolutionLocation, canvas.width, canvas.height);
+            ctx.uniform1f(uPointSizeLocation, PARTICLE_SIZE);
+            ctx.clear(ctx.COLOR_BUFFER_BIT);
+            
+            ctx.drawArrays(ctx.position, 0, particles.length);
+        }
+
+    } else {
+        ctx = canvas.getContext('2d');
+
+        const draw = (x, y, c, w, h) => {
+            ctx.fillStyle = c;
+            ctx.fillRect(x, y, w, h);
+        }
+
+        draw_particles = () => {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = 0; i < particles.length; i++) {
+                draw(particles[i].position[0], particles[i].position[1], particles[i].color[4], PARTICLE_SIZE, PARTICLE_SIZE);
+            }
+        }
+    }
+    window.dispatchEvent(new CustomEvent("resize"));
+    update_particles();
+}
+
+
+// EVENT LISTENERS
+
+expand_button.addEventListener("click", (_) => {
+  const newHeight = canvas.height === 300 ? 73 : 300;
+  document.getElementById("expand_button_triangle").classList.toggle("triangle_rotate");
+  if (!is_mobile()) document.getElementById("counter").classList.toggle("invisible");
+  cancelAnimationFrame(current_update_frame);
+  animate_header(0.0, canvas.height, newHeight);
+});
 
 plus_button.addEventListener("click", (_) => {
     if (CUSTOM_MULTIPLIER >= 30) return;
@@ -202,8 +296,8 @@ addEventListener("resize", (_) => {
     if (canvas.width === window.innerWidth) return;
     canvas.width = window.innerWidth;
     canvas.height = fake_header.offsetHeight;
+    update_viewport();
     create_particles(get_multiplier());
 });
 
-window.dispatchEvent(new CustomEvent("resize"));
-addEventListener("load", update_particles);
+addEventListener("load", init);

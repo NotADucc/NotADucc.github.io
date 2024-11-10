@@ -10,8 +10,10 @@ const FRICTION = 0.4,
     PARTICLE_SIZE = 5.0,
     MIN_DISTANCE = 5,
     MAX_DISTANCE = 30,
+    CANVAS_MIN_HEIGHT = 73,
+    CANVAS_MAX_HEIGHT = 300, 
     is_mobile = () => /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent),
-    get_multiplier = () => canvas.height == 300 ? CUSTOM_MULTIPLIER : 1,
+    get_multiplier = () => canvas.height == CANVAS_MAX_HEIGHT ? CUSTOM_MULTIPLIER : 1,
     random = (size) => Math.random() * size,
     easingFunction = bezier(0.45, 0.1, 0.25, 1);
 let CUSTOM_MULTIPLIER = is_mobile() ? 3 : 10;
@@ -263,7 +265,7 @@ const init = () => {
 // EVENT LISTENERS
 
 expand_button.addEventListener("click", (_) => {
-  const newHeight = canvas.height === 300 ? 73 : 300;
+  const newHeight = canvas.height === CANVAS_MAX_HEIGHT ? CANVAS_MIN_HEIGHT : CANVAS_MAX_HEIGHT;
   document.getElementById("expand_button_triangle").classList.toggle("triangle_rotate");
   if (!is_mobile()) document.getElementById("counter").classList.toggle("invisible");
   cancelAnimationFrame(current_update_frame);

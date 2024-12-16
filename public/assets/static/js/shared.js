@@ -1,4 +1,35 @@
-class QuadTree {
+class Point {
+    constructor(x, y) {
+        this.x = x;
+        this.y = y;
+    }
+  }
+  
+  class Rectangle {
+    constructor(x, y, w, h) {
+        this.x = x;
+        this.y = y;
+        this.w = w;
+        this.h = h;
+    }
+  
+    contains(x, y) {
+        return (x >= this.x - this.w &&
+            x <= this.x + this.w &&
+            y >= this.y - this.h &&
+            y <= this.y + this.h);
+    }
+  
+  
+    intersects(range) {
+          return !(range.x - range.w > this.x + this.w ||
+              range.x + range.w < this.x - this.w ||
+              range.y - range.h > this.y + this.h ||
+              range.y + range.h < this.y - this.h);
+      }
+  }
+  
+  class QuadTree {
     constructor(boundary) {
         this.boundary = boundary;
         this.capacity = 64;

@@ -300,7 +300,8 @@ minus_button.addEventListener("click", (_) => {
 });
 
 addEventListener("resize", (_) => {
-    if (canvas.width === window.innerWidth && canvas.innerHeight === get_canvas_height()) return;
+    if (canvas.width === window.innerWidth && (is_mobile() || canvas.innerHeight === get_canvas_height())) 
+        return;
     canvas.width = window.innerWidth;
     const height = get_canvas_height();
     canvas.height = height;

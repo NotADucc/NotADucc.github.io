@@ -6,14 +6,16 @@ const main = document.getElementsByTagName("main")[0];
 const expand_button = document.getElementById("expand_button");
 const plus_button = document.getElementById("plus_button");
 const minus_button = document.getElementById("minus_button");
+let IS_EXPANDED = false;
 const FRICTION = 0.4,
     PARTICLE_SIZE = 5.0,
     MIN_DISTANCE = 5,
     MAX_DISTANCE = 30,
+	MAX_PACRTICLE_MULTIPLIER = 30,
     CANVAS_MIN_HEIGHT = 73,
-    CANVAS_MAX_HEIGHT = 300, 
     is_mobile = () => /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent),
-    get_multiplier = () => canvas.height == CANVAS_MAX_HEIGHT ? CUSTOM_MULTIPLIER : 1,
+    get_multiplier = () => canvas.height == CANVAS_MIN_HEIGHT ? 1 : CUSTOM_MULTIPLIER,
+	get_canvas_height = () => IS_EXPANDED ? window.innerHeight : CANVAS_MIN_HEIGHT;
     random = (size) => Math.random() * size,
     easingFunction = bezier(0.45, 0.1, 0.25, 1);
 let CUSTOM_MULTIPLIER = is_mobile() ? 3 : 10;
@@ -265,20 +267,21 @@ const init = () => {
 // EVENT LISTENERS
 
 expand_button.addEventListener("click", (_) => {
-  const newHeight = canvas.height === CANVAS_MAX_HEIGHT ? CANVAS_MIN_HEIGHT : CANVAS_MAX_HEIGHT;
-  document.getElementById("expand_button_triangle").classList.toggle("triangle_rotate");
-  if (!is_mobile()) document.getElementById("counter").classList.toggle("invisible");
-  cancelAnimationFrame(current_update_frame);
-  animate_header(0.0, canvas.height, newHeight);
+    IS_EXPANDED = !IS_EXPANDED;
+    const newHeight = get_canvas_height();
+    document.getElementById("expand_button_triangle").classList.toggle("triangle_rotate");
+    if (!is_mobile()) document.getElementById("counter").classList.toggle("invisible");
+    cancelAnimationFrame(current_update_frame);
+    animate_header(0.0, canvas.height, newHeight);
 });
 
 plus_button.addEventListener("click", (_) => {
-    if (CUSTOM_MULTIPLIER >= 30) return;
+    if (CUSTOM_MULTIPLIER >= MAX_PACRTICLE_MULTIPLIER) return;
     CUSTOM_MULTIPLIER++;
     minus_button.disabled = false;
     minus_button.classList.remove("disabled");
     create_particles(get_multiplier());
-    if (CUSTOM_MULTIPLIER >= 30) {
+    if (CUSTOM_MULTIPLIER >= MAX_PACRTICLE_MULTIPLIER) {
         plus_button.disabled = true;
         plus_button.classList.add("disabled");
     }
@@ -297,9 +300,11 @@ minus_button.addEventListener("click", (_) => {
 });
 
 addEventListener("resize", (_) => {
-    if (canvas.width === window.innerWidth) return;
+    if (canvas.width === window.innerWidth && canvas.innerHeight === get_canvas_height()) return;
     canvas.width = window.innerWidth;
-    canvas.height = fake_header.offsetHeight;
+    const height = get_canvas_height();
+    canvas.height = height;
+    header.style.height = fake_header.style.height = main.style.marginTop = `${height}px`;
     update_viewport();
     create_particles(get_multiplier());
 });

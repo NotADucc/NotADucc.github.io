@@ -15,7 +15,7 @@ const FRICTION = 0.4,
     CANVAS_MIN_HEIGHT = 73,
     is_mobile = () => /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent),
     get_multiplier = () => canvas.height == CANVAS_MIN_HEIGHT ? 1 : CUSTOM_MULTIPLIER,
-	get_canvas_height = () => IS_EXPANDED ? window.innerHeight : CANVAS_MIN_HEIGHT;
+	get_canvas_height = () => IS_EXPANDED ? is_mobile() ? window.innerHeight >> 1 : window.innerHeight : CANVAS_MIN_HEIGHT;
     random = (size) => Math.random() * size,
     easingFunction = bezier(0.45, 0.1, 0.25, 1);
 let CUSTOM_MULTIPLIER = is_mobile() ? 3 : 10;

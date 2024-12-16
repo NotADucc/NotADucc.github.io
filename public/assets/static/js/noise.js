@@ -11,7 +11,7 @@ const FRICTION = 0.4,
     PARTICLE_SIZE = 5.0,
     MIN_DISTANCE = 5,
     MAX_DISTANCE = 30,
-	MAX_PACRTICLE_MULTIPLIER = 30,
+	MAX_PARTICLE_MULTIPLIER = 30,
     CANVAS_MIN_HEIGHT = 73,
     is_mobile = () => /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent),
     get_multiplier = () => canvas.height == CANVAS_MIN_HEIGHT ? 1 : CUSTOM_MULTIPLIER,
@@ -276,12 +276,12 @@ expand_button.addEventListener("click", (_) => {
 });
 
 plus_button.addEventListener("click", (_) => {
-    if (CUSTOM_MULTIPLIER >= MAX_PACRTICLE_MULTIPLIER) return;
+    if (CUSTOM_MULTIPLIER >= MAX_PARTICLE_MULTIPLIER) return;
     CUSTOM_MULTIPLIER++;
     minus_button.disabled = false;
     minus_button.classList.remove("disabled");
     create_particles(get_multiplier());
-    if (CUSTOM_MULTIPLIER >= MAX_PACRTICLE_MULTIPLIER) {
+    if (CUSTOM_MULTIPLIER >= MAX_PARTICLE_MULTIPLIER) {
         plus_button.disabled = true;
         plus_button.classList.add("disabled");
     }

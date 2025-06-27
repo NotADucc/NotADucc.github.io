@@ -1,7 +1,6 @@
 const canvas = document.getElementById("noise");
 let ctx;
 const header = document.getElementsByTagName("header")[0];
-const fake_header = document.getElementsByClassName("fakeHeader")[0];
 const main = document.getElementsByTagName("main")[0];
 const expand_button = document.getElementById("expand_button");
 const plus_button = document.getElementById("plus_button");
@@ -126,7 +125,7 @@ const animate_header = (index, start, stop) => {
     if (index <= 1) {
         const newHeight = start + (stop - start) * easingFunction(index);
         canvas.height = newHeight;
-        header.style.height = fake_header.style.height = main.style.marginTop = `${newHeight}px`;
+        header.style.height = main.style.marginTop = `${newHeight}px`;
         update_viewport();
         requestAnimationFrame(() => animate_header(index + 0.01, start, stop));
         create_particles(1);
@@ -134,7 +133,7 @@ const animate_header = (index, start, stop) => {
     }
     else {
         canvas.height = stop;
-        header.style.height = fake_header.style.height = main.style.marginTop = `${stop}px`;
+        header.style.height = main.style.marginTop = `${stop}px`;
         update_viewport();
         create_particles(get_multiplier());
         update_particles();
@@ -305,7 +304,7 @@ addEventListener("resize", (_) => {
     canvas.width = window.innerWidth;
     const height = get_canvas_height();
     canvas.height = height;
-    header.style.height = fake_header.style.height = main.style.marginTop = `${height}px`;
+    header.style.height = main.style.marginTop = `${height}px`;
     update_viewport();
     create_particles(get_multiplier());
 });

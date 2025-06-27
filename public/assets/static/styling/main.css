@@ -67,13 +67,22 @@ main h1 {
 	font-size: medium;
 }
 
-.img-fluid {
+.img {
 	height: auto;
 	max-width: 100%;
+}
+
+.img-pop {
+	max-height: 60vh;
+	display: block;
+  	margin: auto;
+}
+
+.fluid {
 	transition: transform 0.3s ease-in-out;
 }
 
-.img-fluid:hover {
+.fluid:hover {
 	transform: scale(1.05);
 }
 
@@ -139,7 +148,6 @@ header .link {
 	color: #ffffff; 
 	white-space: nowrap; 
 }
-
 
 .button {
 	padding-top: 0.625rem;
@@ -311,11 +319,11 @@ footer .icon {
 	fill: currentColor; 
 }
 
-.link, .icon {
-	-webkit-transition: color 0.5s ease-out;
-	-moz-transition: color 0.5s ease-out;
-	-o-transition: color 0.5s ease-out;
-	transition: color 0.5s ease-out;
+.link, .icon, .close {
+	-webkit-transition: color 0.3s ease-out;
+	-moz-transition: color 0.3s ease-out;
+	-o-transition: color 0.3s ease-out;
+	transition: color 0.3s ease-out;
 }
 
 .link:hover, .icon:hover {
@@ -377,4 +385,54 @@ footer .icon {
 	main > div {
 		width: 60%; 
 	}
+}
+
+.overlay {
+	position: fixed;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	background: rgba(0, 0, 0, 0.7);
+	transition: opacity 300ms;
+	visibility: hidden;
+	opacity: 0;
+}
+
+.overlay:target {
+	visibility: visible;
+	opacity: 1;
+}
+
+.popup {
+	padding: 20px;
+	background: #171717;
+	border-radius: 5px;
+	position: fixed;
+	transition: all 0.6s ease-in-out;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+}
+
+.popup .close {
+	position: absolute;
+	top: 20px;
+	right: 30px;
+	width: 30px;
+	height: 30px;
+	background-color: #262626;
+	color: white;
+	font-size: 30px;
+	font-weight: bold;
+	text-align: center;
+	line-height: 28px;
+	text-decoration: none;
+	border-radius: 50%;
+	border: none;
+	cursor: pointer;
+}
+
+.popup .close:hover {
+	color: #3875ea;
 }

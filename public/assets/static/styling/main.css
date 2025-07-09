@@ -21,6 +21,15 @@ main > div {
 	width: 100%; 
 	text-align: justify; 
 	color: #ffffff; 
+	@media (min-width: 600px) {
+		width: 80%; 
+	}
+	@media (min-width: 900px) {
+		width: 70%; 
+	}
+	@media (min-width: 1400px) {
+		width: 60%; 
+	}
 }
 
 main h1 {
@@ -29,12 +38,23 @@ main h1 {
 	font-size: 1.5rem;
 	line-height: 2rem; 
 	font-weight: 800; 
+	@media (min-width: 900px) {
+		font-size: 2.25rem;
+		line-height: 2.5rem; 
+	}
 }
 
 .project-container {
 	display: grid;
 	padding: 10px;
 	margin-bottom: 20px;
+	@media (min-width: 900px) {
+		grid-template-columns: repeat(2, 1fr); 
+	}
+
+	@media (min-width: 1400px) {
+		grid-template-columns: repeat(3, 1fr); 
+	}
 }
 
 .project-item {
@@ -67,6 +87,17 @@ main h1 {
 	font-size: medium;
 }
 
+.project-description {
+	@media (max-width: 600px) {
+		max-height: 30vh;
+		overflow-y: auto;
+	}
+	@media (min-width: 600px) {
+		max-height: 20vh;
+		overflow-y: auto;
+	}
+}
+
 .img {
 	height: auto;
 	max-width: 100%;
@@ -80,10 +111,9 @@ main h1 {
 
 .fluid {
 	transition: transform 0.3s ease-in-out;
-}
-
-.fluid:hover {
-	transform: scale(1.05);
+	&:hover {
+		transform: scale(1.05);
+	}
 }
 
 .tools {
@@ -112,6 +142,10 @@ header {
 	border-bottom-width: 1px; 
 	background-color: #171717;
 	border-color: #ffffff; 
+	@media (min-width: 600px) {
+		padding-left: 1rem;
+		padding-right: 1rem; 
+	}
 }
 
 header .container {
@@ -123,6 +157,11 @@ header .container {
 	margin-right: auto;
 	padding-top: 0.625rem;
 	padding-bottom: 0.625rem; 
+
+	@media (min-width: 600px) {
+		margin-top: 0; 
+		flex-direction: row; 
+	}
 }
 
 header a {
@@ -159,7 +198,7 @@ header .link {
 .disabled {
 	pointer-events: none;
 	opacity: 0.3;
-  }
+}
 
 #expand_button_triangle {
 	width: 0;
@@ -227,6 +266,9 @@ header .link {
 	display: flex;
 	flex-direction: row;
 	animation: appear 1s;
+	@media (max-width: 600px) {
+		display: none;
+	}
 }
 
 #counter.invisible {
@@ -315,10 +357,9 @@ footer .icon {
 	-moz-transition: color 0.3s ease-out;
 	-o-transition: color 0.3s ease-out;
 	transition: color 0.3s ease-out;
-}
-
-.link:hover, .icon:hover {
-	color: #3875ea !important;
+	&:hover {
+		color: #3875ea !important;
+	}
 }
 
 .arrow {
@@ -336,48 +377,6 @@ footer .icon {
 	-webkit-transform: rotate(45deg);
 }
 
-@media (max-width: 600px) {
-	#counter {
-		display: none;
-	}
-}
-
-@media (min-width: 600px) {
-	main > div {
-		width: 80%; 
-	}
-	header {
-		padding-left: 1rem;
-		padding-right: 1rem; 
-	}
-	footer > .container {
-		margin-top: 0; 
-		flex-direction: row; 
-	}
-}
-
-@media (min-width: 900px) {
-	.project-container { 
-		grid-template-columns: repeat(2, 1fr); 
-	}
-	main > div {
-		width: 70%; 
-	}
-	main h1 {
-		font-size: 2.25rem;
-		line-height: 2.5rem; 
-	}
-}
-
-@media (min-width: 1400px) {
-	.project-container { 
-		grid-template-columns: repeat(3, 1fr); 
-	}
-	main > div {
-		width: 60%; 
-	}
-}
-
 .overlay {
 	position: fixed;
 	top: 0;
@@ -388,11 +387,11 @@ footer .icon {
 	transition: opacity 300ms;
 	visibility: hidden;
 	opacity: 0;
-}
-
-.overlay:target {
-	visibility: visible;
-	opacity: 1;
+	z-index: 222;
+	&:target {
+		visibility: visible;
+		opacity: 1;
+	}
 }
 
 .popup {
@@ -400,10 +399,28 @@ footer .icon {
 	background: #171717;
 	border-radius: 5px;
 	position: fixed;
+	top: var(--popup-pos);
+	left: var(--popup-pos);
+	transform: translate(calc(-1 * var(--popup-pos)), calc(-1 * var(--popup-pos)));
 	transition: all 0.6s ease-in-out;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
+
+	@media (max-width: 600px) {
+		top: 10%;
+		left: 0%;
+		transform: translate(0, 0);
+	}
+
+	@media (min-width: 600px) {
+		--popup-pos: 30%;
+	}
+
+	@media (min-width: 900px) {
+		--popup-pos: 40%;
+	}
+
+	@media (min-width: 1400px) {
+		--popup-pos: 50%;
+	}
 }
 
 .popup .close {
@@ -422,8 +439,8 @@ footer .icon {
 	border-radius: 50%;
 	border: none;
 	cursor: pointer;
-}
 
-.popup .close:hover {
-	color: #3875ea;
+	&:hover {
+		color: #3875ea;
+	}
 }

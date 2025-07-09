@@ -81,12 +81,12 @@ projects.forEach((x, idx) => {
                     </div>
                 </div>
             </div>
-            <div id="popup${idx}" class="overlay" onclick="location.href='#';">
+            <div id="popup${idx}" class="overlay" onclick="location.href='#ignore'; history.pushState('', document.title, window.location.pathname);">
                 <div class="popup" onclick="event.stopPropagation();">
                     <img src="public/assets/img/${x.image}" class="img img-pop" loading="lazy" alt="${x.image}-screenshot">
                     <h3 class="project-title">${x.title}</h3>
                     <h4><i>${x.under_title}</i></h4>
-                    <a class="close" href="#">&times;</a>
+                    <a class="close" onclick="location.href='#ignore'; history.pushState('', document.title, window.location.pathname);">&times;</a>
                     <p class="project-description">
                         ${x.description}
                     </p>

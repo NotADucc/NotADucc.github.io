@@ -2,7 +2,7 @@ const is_mobile = () => /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Oper
     random = (size) => Math.random() * size,
     easingFunction = bezier(0.45, 0.1, 0.25, 1);
 
-let ctx, quadtree;
+let ctx;
 
 const DOM_elements = {
     canvas: document.getElementById("noise"),
@@ -18,111 +18,117 @@ const DOM_elements = {
 const canvas_info = {
     FRICTION: 0.4,
     PARTICLE_SIZE: 5.0,
-    MIN_DISTANCE: 5,
+    MIN_DISTANCE: 6,
     MAX_DISTANCE: 30,
+    MAX_DISTANCE_SQ: this.MAX_DISTANCE * this.MAX_DISTANCE,
     MAX_PARTICLE_MULTIPLIER: 30,
     CANVAS_MIN_HEIGHT: 73,
     is_expanded: false,
-    custom_multiplier: is_mobile() ? 3 : 10,
-    get_multiplier: () => DOM_elements.canvas.height <= canvas_info.CANVAS_MIN_HEIGHT ? 1 : canvas_info.custom_multiplier,
+    multiplier: is_mobile() ? 3 : 10,
+    get_redraw_multiplier: () => DOM_elements.canvas.height <= canvas_info.CANVAS_MIN_HEIGHT ? 1 : canvas_info.multiplier,
     get_canvas_height: () => canvas_info.is_expanded ? is_mobile() ? window.innerHeight >> 1 : window.innerHeight : canvas_info.CANVAS_MIN_HEIGHT,
 }
 
-const particles = [];
-const particle_info = {
-    c1: {
-        color: [0.22, 0.45, 0.91, 1, "#3875ea"],
-        count: 70,
-        bounds: true,
-        attraction:{
-            c1: 0.32,
-            c2: -0.4,
-            c3: -0.4
+const particle_system = {
+    particles: [],
+    quadtree: null,
+    get length() {
+        return this.particles.length;
+    },
+    create_particles(multiplier) {
+        this.clear_particles();
+        this.quadtree = new QuadTree(
+            new Rectangle(DOM_elements.canvas.width / 2, DOM_elements.canvas.height / 2, DOM_elements.canvas.width, DOM_elements.canvas.height)
+        );
+        for (const [key, value] of this.info.entries()) {
+            const add_amount = value.count * multiplier;
+            for (let i = 0; i < add_amount; i++) {
+                const particle = {
+                    key: key, 
+                    position: [random(DOM_elements.canvas.width), random(DOM_elements.canvas.height)], 
+                    velocity: [0, 0],
+                    color: value.color, 
+                    bounds: value.bounds
+                };
+                this.particles.push(particle);
+                this.quadtree.insert(particle);
+            }
         }
     },
-    c2: {
-        color: [1, 0, 1, 1, "#ff00ff"],
-        count: 25,
-        bounds: true,
-        attraction:{
-            c1: 0.4,
-            c2: 0.1,
-            c3: -0.2
-        }
+    clear_particles() {
+        this.particles.length = 0;
+        this.quadtree = null;
     },
-    c3: {
-        color: [0.65, 0.13, 0.38, 1, "#a62161"],
-        count: 150,
-        bounds: false,
-        attraction:{
-            c1: 0.4,
-            c2: 0,
-            c3: -0.15
-        }
+    update_positions() {
+        calc_next_positions();
+        this.quadtree.update_tree(this.quadtree);
+        this.quadtree.remove_nodes();
     },
+    query_particles(rect) {
+        return this.quadtree.query(rect, []);
+    },
+    info: [
+        {
+            color: [0.22, 0.45, 0.91, 1, "#3875ea"],
+            count: 70,
+            bounds: true,
+            attraction: [
+                0.32,
+                -0.4,
+                -0.4
+            ]
+        },
+        {
+            color: [1, 0, 1, 1, "#ff00ff"],
+            count: 25,
+            bounds: true,
+            attraction: [
+                0.4,
+                0.1,
+                -0.2
+            ]
+        },
+        {
+            color: [0.65, 0.13, 0.38, 1, "#a62161"],
+            count: 150,
+            bounds: false,
+            attraction: [
+                0.4,
+                0,
+                -0.15
+            ]
+        },
+    ]
 }
 
 // gets overwritten depending on ctx
 let draw_particles = () => {}, update_viewport = () => {};
 
-const create_tree = () => {
-    quadtree = new QuadTree(new Rectangle(DOM_elements.canvas.width / 2, DOM_elements.canvas.height / 2, DOM_elements.canvas.width, DOM_elements.canvas.height));
-    for (let i = 0; i < particles.length; i++) {
-        quadtree.insert(particles[i]);
-    }
-}
-
-const particle = (k, p, c, b) => {
-    return {
-        key: k,
-        position: p,
-        velocity: [0, 0],
-        color: c,
-        bounds: b
-    };
-}
-
-const add_particles = (k, amount, color, b) => {
-    for (let i = 0; i < amount; i++) {
-        particles.push(particle(k, [random(DOM_elements.canvas.width), random(DOM_elements.canvas.height)], color, b));
-    }
-}
-
-const create_particles = (multiplier) => {
-    particles.length = 0;
-    for (const [key, value] of Object.entries(particle_info)) {
-        add_particles(key, value.count * multiplier, value.color, value.bounds);
-    }
-    create_tree();
-}
-
 const calc_next_positions = () => {
     const canvas_width = DOM_elements.canvas.width;
     const canvas_height = DOM_elements.canvas.height;
-    for (let i = 0; i < particles.length; i++) {
+    for (let i = 0; i < particle_system.length; i++) {
         let fx = 0.0;
         let fy = 0.0;
 
-        const seeker = particles[i];
+        const seeker = particle_system.particles[i];
         const rect = new Rectangle(seeker.position[0], seeker.position[1], canvas_info.MAX_DISTANCE, canvas_info.MAX_DISTANCE);
-        const targets = quadtree.query(rect, []);
+        const targets = particle_system.query_particles(rect);
 
         for (let j = 0; j < targets.length; j++) {
             const target = targets[j];
-            const attraction = particle_info[seeker.key].attraction[target.key];
+            const attraction = particle_system.info[seeker.key].attraction[target.key];
             if (attraction == 0) continue;
-            let dx, dy;
-            if (seeker.bounds || target.bounds) {
-                dx = seeker.position[0] - target.position[0];
-                dy = seeker.position[1] - target.position[1];
-            } else {
-                dx = Math.abs(seeker.position[0] - target.position[0]);
-                dy = Math.abs(seeker.position[1] - target.position[1]);
+            let dx = seeker.position[0] - target.position[0];
+            let dy = seeker.position[1] - target.position[1];
+            if (!seeker.bounds && !target.bounds) {
+                dx = Math.abs(dx);
+                dy = Math.abs(dy);
                 if (dx > canvas_width >> 1) dx = canvas_width - dx;
                 if (dy > canvas_height >> 1) dy = canvas_height - dy;
             }
             const d = dx * dx + dy * dy;
-            if (d == 0 || d > canvas_info.MAX_DISTANCE * canvas_info.MAX_DISTANCE) continue;
+            if (d == 0 || d > canvas_info.MAX_DISTANCE_SQ) continue;
             const d_sqrt = Math.sqrt(d);
             const F = (d_sqrt <= canvas_info.MIN_DISTANCE ? 0.3 : -attraction) / d_sqrt;
             fx += F * dx;
@@ -138,9 +144,7 @@ const calc_next_positions = () => {
 
 let current_update_frame;
 const update_particles = () => {
-    calc_next_positions();
-    quadtree.update_tree(quadtree);
-    quadtree.remove_nodes();
+    particle_system.update_positions();
     draw_particles();
     current_update_frame = requestAnimationFrame(update_particles);
 }
@@ -160,13 +164,13 @@ const animate_header = (index, start, stop) => {
         update_height(new_height);
         update_viewport();
         requestAnimationFrame(() => animate_header(index + 0.01, start, stop));
-        create_particles(1);
+        particle_system.create_particles(1);
         draw_particles();
     }
     else {
         update_height(stop);
         update_viewport();
-        create_particles(canvas_info.get_multiplier());
+        particle_system.create_particles(canvas_info.get_redraw_multiplier());
         update_particles();
     }
 }
@@ -240,16 +244,16 @@ const init = () => {
         const colorBuffer = ctx.createBuffer();
         
         draw_particles = () => {   
-            const positions = new Float32Array(particles.length << 1);
-            const colors = new Float32Array(particles.length << 2);
+            const positions = new Float32Array(particle_system.length << 1);
+            const colors = new Float32Array(particle_system.length << 2);
             
-            for (let i = 0; i < particles.length; i++) {
-                const prtl = particles[i];
-                positions[i << 1] = prtl.position[0];
-                positions[(i << 1) + 1] = prtl.position[1];
-                colors[(i << 2)] = prtl.color[0];
-                colors[(i << 2) + 1] = prtl.color[1];
-                colors[(i << 2) + 2] = prtl.color[2];
+            for (let i = 0; i < particle_system.length; i++) {
+                const particle = particle_system.particles[i];
+                positions[i << 1] = particle.position[0];
+                positions[(i << 1) + 1] = particle.position[1];
+                colors[(i << 2)] = particle.color[0];
+                colors[(i << 2) + 1] = particle.color[1];
+                colors[(i << 2) + 2] = particle.color[2];
                 colors[(i << 2) + 3] = 1;
             }
             
@@ -268,7 +272,7 @@ const init = () => {
             ctx.uniform1f(uPointSizeLocation, canvas_info.PARTICLE_SIZE);
             ctx.clear(ctx.COLOR_BUFFER_BIT);
             
-            ctx.drawArrays(ctx.position, 0, particles.length);
+            ctx.drawArrays(ctx.position, 0, particle_system.length);
         }
 
     } else {
@@ -281,8 +285,9 @@ const init = () => {
 
         draw_particles = () => {
             ctx.clearRect(0, 0, DOM_elements.canvas.width, DOM_elements.canvas.height);
-            for (let i = 0; i < particles.length; i++) {
-                draw(particles[i].position[0], particles[i].position[1], particles[i].color[4], canvas_info.PARTICLE_SIZE, canvas_info.PARTICLE_SIZE);
+            for (let i = 0; i < particle_system.length; i++) {
+                const particle = particle_system.particles[i];
+                draw(particle.position[0], particle.position[1], particle.color[4], canvas_info.PARTICLE_SIZE, canvas_info.PARTICLE_SIZE);
             }
         }
     }
@@ -302,23 +307,19 @@ DOM_elements.expand_button.addEventListener("click", (_) => {
     animate_header(0.0, DOM_elements.canvas.height, new_height);
 });
 
+function change_multiplier(delta) {
+    const new_multiplier = canvas_info.multiplier + delta;
 
-function update_buttons() {
-    DOM_elements.plus_button.disabled = canvas_info.custom_multiplier >= canvas_info.MAX_PARTICLE_MULTIPLIER;
-    DOM_elements.minus_button.disabled = canvas_info.custom_multiplier <= 1;
+    if (new_multiplier < 1 || new_multiplier > canvas_info.MAX_PARTICLE_MULTIPLIER) return;
+
+    canvas_info.multiplier = new_multiplier;
+    particle_system.create_particles(canvas_info.get_redraw_multiplier());
+
+    DOM_elements.plus_button.disabled = canvas_info.multiplier >= canvas_info.MAX_PARTICLE_MULTIPLIER;
+    DOM_elements.minus_button.disabled = canvas_info.multiplier <= 1;
 
     DOM_elements.plus_button.classList.toggle("disabled", DOM_elements.plus_button.disabled);
     DOM_elements.minus_button.classList.toggle("disabled", DOM_elements.minus_button.disabled);
-}
-
-function change_multiplier(delta) {
-    const newMultiplier = canvas_info.custom_multiplier + delta;
-
-    if (newMultiplier < 1 || newMultiplier > canvas_info.MAX_PARTICLE_MULTIPLIER) return;
-
-    canvas_info.custom_multiplier = newMultiplier;
-    create_particles(canvas_info.get_multiplier());
-    update_buttons();
 }
 
 DOM_elements.plus_button.addEventListener("click", () => change_multiplier(1));
@@ -331,7 +332,7 @@ addEventListener("resize", (_) => {
     update_width(window.innerWidth);
     update_height(height);
     update_viewport();
-    create_particles(canvas_info.get_multiplier());
+    particle_system.create_particles(canvas_info.get_redraw_multiplier());
 });
 
 addEventListener("load", init);

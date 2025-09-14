@@ -19,6 +19,7 @@ const canvas_info = {
     FRICTION: 0.4,
     PARTICLE_SIZE: 5.0,
     MIN_DISTANCE: 6,
+    MIN_DISTANCE_SQ: this.MIN_DISTANCE * this.MIN_DISTANCE,
     MAX_DISTANCE: 30,
     MAX_DISTANCE_SQ: this.MAX_DISTANCE * this.MAX_DISTANCE,
     MAX_PARTICLE_MULTIPLIER: 30,
@@ -127,10 +128,14 @@ const calc_next_positions = () => {
                 if (dx > canvas_width >> 1) dx = canvas_width - dx;
                 if (dy > canvas_height >> 1) dy = canvas_height - dy;
             }
+
             const d = dx * dx + dy * dy;
             if (d == 0 || d > canvas_info.MAX_DISTANCE_SQ) continue;
+            
             const d_sqrt = Math.sqrt(d);
+            // true path fixed repulsion
             const F = (d_sqrt <= canvas_info.MIN_DISTANCE ? 0.3 : -attraction) / d_sqrt;
+
             fx += F * dx;
             fy += F * dy;
         }

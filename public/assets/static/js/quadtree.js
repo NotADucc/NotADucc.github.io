@@ -11,22 +11,27 @@ class Point {
         this.y = y;
         this.w = w;
         this.h = h;
+
+        this.minX = this.x - this.w;
+        this.maxX = this.x + this.w;
+        this.minY = this.y - this.h;
+        this.maxY = this.y + this.h;
     }
   
     contains(x, y) {
-        return (x >= this.x - this.w &&
-            x <= this.x + this.w &&
-            y >= this.y - this.h &&
-            y <= this.y + this.h);
+        return x >= this.minX &
+            x <= this.maxX &
+            y >= this.minY &
+            y <= this.maxY;
     }
   
   
     intersects(range) {
-          return !(range.x - range.w > this.x + this.w ||
-              range.x + range.w < this.x - this.w ||
-              range.y - range.h > this.y + this.h ||
-              range.y + range.h < this.y - this.h);
-      }
+        return this.maxX >= range.minX &
+           this.minX <= range.maxX &
+           this.maxY >= range.minY &
+           this.minY <= range.maxY;
+    }
   }
   
   class QuadTree {

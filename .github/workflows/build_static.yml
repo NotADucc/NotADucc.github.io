@@ -20,20 +20,17 @@ jobs:
         with:
             node-version: 16
 
-      - name: Install minifiers
-        run: npm install -g terser html-minifier-terser csso-cli
-
       - name: Build page index file
         run: node ./src/site_builder/updateProjects.js
 
-      - name: Minify JS files
-        run: find ./src/static_site -type f -name "*.js" -exec terser {} -o {} \;
-
-      - name: Minify CSS files
-        run: find ./src/static_site -type f -name "*.css" -exec csso {} --output {} \;
-
-      - name: Minify HTML files
-        run: find ./src/static_site -type f -name "*.html" -exec html-minifier-terser --collapse-whitespace --remove-comments --minify-css true --minify-js true -o {} {} \;
+      - name: auto minify the files
+        uses: nizarmah/auto-minify@v3
+        with: 
+            overwrite: true
+      - name: auto commit the minified files
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+            commit_message: "refactor: JS and CSS have been minified files"
 
       - name: Check for modified files
         id: git-check

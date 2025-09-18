@@ -1,8 +1,343 @@
-const is_mobile=()=>/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent),random=b=>Math.random()*b,easingFunction=bezier(.45,.1,.25,1);let ctx;const DOM_elements={canvas:document.getElementById("noise"),header:document.getElementsByTagName("header")[0],main:document.getElementsByTagName("main")[0],expand_button:document.getElementById("expand_button"),expand_button_triangle:document.getElementById("expand_button_triangle"),plus_button:document.getElementById("plus_button"),minus_button:document.getElementById("minus_button"),counter:document.getElementById("counter")},canvas_info={FRICTION:.4,PARTICLE_SIZE:5,MIN_DISTANCE:6,MIN_DISTANCE_SQ:this.MIN_DISTANCE*this.MIN_DISTANCE,MAX_DISTANCE:30,MAX_DISTANCE_SQ:this.MAX_DISTANCE*this.MAX_DISTANCE,MAX_PARTICLE_MULTIPLIER:30,CANVAS_MIN_HEIGHT:73,is_expanded:!1,multiplier:is_mobile()?3:10,get_redraw_multiplier:()=>DOM_elements.canvas.height<=canvas_info.CANVAS_MIN_HEIGHT?1:canvas_info.multiplier,get_canvas_height:()=>canvas_info.is_expanded?is_mobile()?window.innerHeight>>1:window.innerHeight:canvas_info.CANVAS_MIN_HEIGHT},particle_system={particles:[],quadtree:null,get length(){return this.particles.length},create_particles(e){this.clear_particles(),this.quadtree=new QuadTree(new Rectangle(DOM_elements.canvas.width/2,DOM_elements.canvas.height/2,DOM_elements.canvas.width,DOM_elements.canvas.height));for(const[d,b]of this.info.entries()){const c=b.count*e;for(let e=0;e<c;e++){const c={key:d,position:[random(DOM_elements.canvas.width),random(DOM_elements.canvas.height)],velocity:[0,0],color:b.color,bounds:b.bounds};this.particles.push(c),this.quadtree.insert(c)}}},clear_particles(){this.particles.length=0,this.quadtree=null},update_positions(){calc_next_positions(),this.quadtree.update_tree(this.quadtree),this.quadtree.remove_nodes()},query_particles(b){return this.quadtree.query(b,[])},info:[{color:[.22,.45,.91,1,"#3875ea"],count:70,bounds:!0,attraction:[.32,-.4,-.4]},{color:[1,0,1,1,"#ff00ff"],count:25,bounds:!0,attraction:[.4,.1,-.2]},{color:[.65,.13,.38,1,"#a62161"],count:150,bounds:!1,attraction:[.4,0,-.15]}]};let draw_particles=()=>{},update_viewport=()=>{};const calc_next_positions=()=>{var e=Math.abs;const a=DOM_elements.canvas.width,b=DOM_elements.canvas.height;for(let c=0;c<particle_system.length;c++){let p=0,q=0;const f=particle_system.particles[c],d=new Rectangle(f.position[0],f.position[1],canvas_info.MAX_DISTANCE,canvas_info.MAX_DISTANCE),g=particle_system.query_particles(d);for(let c=0;c<g.length;c++){const h=g[c],i=particle_system.info[f.key].attraction[h.key];if(0==i)continue;let j=f.position[0]-h.position[0],k=f.position[1]-h.position[1];f.bounds||h.bounds||(j=e(j),k=e(k),j>a>>1&&(j=a-j),k>b>>1&&(k=b-k));const l=j*j+k*k;if(0==l||l>canvas_info.MAX_DISTANCE_SQ)continue;const m=Math.sqrt(l),d=(m<=canvas_info.MIN_DISTANCE?.3:-i)/m;p+=d*j,q+=d*k}f.velocity[0]=(f.velocity[0]+p)*canvas_info.FRICTION,f.velocity[1]=(f.velocity[1]+q)*canvas_info.FRICTION,f.position[0]=(f.position[0]+f.velocity[0]+a)%a,f.position[1]=(f.position[1]+f.velocity[1]+b)%b}};let current_update_frame;const update_particles=()=>{particle_system.update_positions(),draw_particles(),current_update_frame=requestAnimationFrame(update_particles)},update_width=b=>{DOM_elements.canvas.width=b},update_height=b=>{DOM_elements.canvas.height=b,DOM_elements.header.style.height=DOM_elements.main.style.marginTop=`${b}px`},animate_header=(e,a,b)=>{if(1>=e){const c=a+(b-a)*easingFunction(e);update_height(c),update_viewport(),requestAnimationFrame(()=>animate_header(e+.01,a,b)),particle_system.create_particles(1),draw_particles()}else update_height(b),update_viewport(),particle_system.create_particles(canvas_info.get_redraw_multiplier()),update_particles()},init=()=>{if(ctx=DOM_elements.canvas.getContext("webgl"),ctx){update_viewport=()=>{ctx.viewport(0,0,ctx.drawingBufferWidth,ctx.drawingBufferHeight)};const k=(e,a,b)=>{const c=e.createShader(a);return e.shaderSource(c,b),e.compileShader(c),e.getShaderParameter(c,e.COMPILE_STATUS)?c:(console.error("Shader compile error: ",e.getShaderInfoLog(c)),e.deleteShader(c),null)},a=k(ctx,ctx.VERTEX_SHADER,"\n            precision lowp float;\n            attribute vec2 a_position;\n            attribute vec4 a_color;\n            uniform vec2 u_resolution;\n            uniform float u_pointSize;\n            varying vec4 v_color;\n        \n            void main() {\n                vec2 zeroToOne = a_position / u_resolution;\n                vec2 zeroToTwo = zeroToOne * 2.0;\n                vec2 clipSpace = zeroToTwo - 1.0;\n        \n                gl_Position = vec4(clipSpace * vec2(1, -1), 0, 1);\n                gl_PointSize  = u_pointSize;\n                v_color = a_color;\n            }\n        "),b=k(ctx,ctx.FRAGMENT_SHADER,`
+const is_mobile = () => /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent),
+    random = (size) => Math.random() * size,
+    easingFunction = bezier(0.45, 0.1, 0.25, 1);
+
+let ctx;
+
+const DOM_elements = {
+    canvas: document.getElementById("noise"),
+    header: document.getElementsByTagName("header")[0],
+    main: document.getElementsByTagName("main")[0],
+    expand_button: document.getElementById("expand_button"),
+    expand_button_triangle: document.getElementById("expand_button_triangle"),
+    plus_button: document.getElementById("plus_button"),
+    minus_button: document.getElementById("minus_button"),
+    counter: document.getElementById("counter"),
+}
+
+const canvas_info = {
+    FRICTION: 0.4,
+    PARTICLE_SIZE: 5.0,
+    MIN_DISTANCE: 6,
+    MIN_DISTANCE_SQ: this.MIN_DISTANCE * this.MIN_DISTANCE,
+    MAX_DISTANCE: 30,
+    MAX_DISTANCE_SQ: this.MAX_DISTANCE * this.MAX_DISTANCE,
+    MAX_PARTICLE_MULTIPLIER: 30,
+    CANVAS_MIN_HEIGHT: 73,
+    is_expanded: false,
+    multiplier: is_mobile() ? 3 : 10,
+    get_redraw_multiplier: () => DOM_elements.canvas.height <= canvas_info.CANVAS_MIN_HEIGHT ? 1 : canvas_info.multiplier,
+    get_canvas_height: () => canvas_info.is_expanded ? is_mobile() ? window.innerHeight >> 1 : window.innerHeight : canvas_info.CANVAS_MIN_HEIGHT,
+}
+
+const particle_system = {
+    particles: [],
+    quadtree: null,
+    get length() {
+        return this.particles.length;
+    },
+    create_particles(multiplier) {
+        this.clear_particles();
+        this.quadtree = new QuadTree(
+            new Rectangle(DOM_elements.canvas.width / 2, DOM_elements.canvas.height / 2, DOM_elements.canvas.width, DOM_elements.canvas.height)
+        );
+        for (const [key, value] of this.info.entries()) {
+            const add_amount = value.count * multiplier;
+            for (let i = 0; i < add_amount; i++) {
+                const particle = {
+                    key: key, 
+                    position: [random(DOM_elements.canvas.width), random(DOM_elements.canvas.height)], 
+                    velocity: [0, 0],
+                    color: value.color, 
+                    bounds: value.bounds
+                };
+                this.particles.push(particle);
+                this.quadtree.insert(particle);
+            }
+        }
+    },
+    clear_particles() {
+        this.particles.length = 0;
+        this.quadtree = null;
+    },
+    update_positions() {
+        calc_next_positions();
+        this.quadtree.update_tree(this.quadtree);
+        this.quadtree.remove_nodes();
+    },
+    query_particles(rect) {
+        return this.quadtree.query(rect, []);
+    },
+    info: [
+        {
+            color: [0.22, 0.45, 0.91, 1, "#3875ea"],
+            count: 70,
+            bounds: true,
+            attraction: [
+                0.32,
+                -0.4,
+                -0.4
+            ]
+        },
+        {
+            color: [1, 0, 1, 1, "#ff00ff"],
+            count: 25,
+            bounds: true,
+            attraction: [
+                0.4,
+                0.1,
+                -0.2
+            ]
+        },
+        {
+            color: [0.65, 0.13, 0.38, 1, "#a62161"],
+            count: 150,
+            bounds: false,
+            attraction: [
+                0.4,
+                0,
+                -0.15
+            ]
+        },
+    ]
+}
+
+// gets overwritten depending on ctx
+let draw_particles = () => {}, update_viewport = () => {};
+
+const calc_next_positions = () => {
+    const canvas_width = DOM_elements.canvas.width;
+    const canvas_height = DOM_elements.canvas.height;
+    for (let i = 0; i < particle_system.length; i++) {
+        let fx = 0.0;
+        let fy = 0.0;
+
+        const seeker = particle_system.particles[i];
+        const rect = new Rectangle(seeker.position[0], seeker.position[1], canvas_info.MAX_DISTANCE, canvas_info.MAX_DISTANCE);
+        const targets = particle_system.query_particles(rect);
+
+        for (let j = 0; j < targets.length; j++) {
+            const target = targets[j];
+            const attraction = particle_system.info[seeker.key].attraction[target.key];
+            if (attraction == 0) continue;
+            let dx = seeker.position[0] - target.position[0];
+            let dy = seeker.position[1] - target.position[1];
+            if (!seeker.bounds && !target.bounds) {
+                dx = Math.abs(dx);
+                dy = Math.abs(dy);
+                if (dx > canvas_width >> 1) dx = canvas_width - dx;
+                if (dy > canvas_height >> 1) dy = canvas_height - dy;
+            }
+
+            const d = dx * dx + dy * dy;
+            if (d == 0 || d > canvas_info.MAX_DISTANCE_SQ) continue;
+            
+            const d_sqrt = Math.sqrt(d);
+            // true path fixed repulsion
+            const F = (d_sqrt <= canvas_info.MIN_DISTANCE ? 0.3 : -attraction) / d_sqrt;
+
+            fx += F * dx;
+            fy += F * dy;
+        }
+
+        seeker.velocity[0] = (seeker.velocity[0] + fx) * canvas_info.FRICTION;
+        seeker.velocity[1] = (seeker.velocity[1] + fy) * canvas_info.FRICTION;
+        seeker.position[0] = (seeker.position[0] + seeker.velocity[0] + canvas_width) % canvas_width;
+        seeker.position[1] = (seeker.position[1] + seeker.velocity[1] + canvas_height) % canvas_height;
+    }
+}
+
+let current_update_frame;
+const update_particles = () => {
+    particle_system.update_positions();
+    draw_particles();
+    current_update_frame = requestAnimationFrame(update_particles);
+}
+
+const update_width = (new_width) => {
+    DOM_elements.canvas.width = new_width;
+}
+
+const update_height = (new_height) => {
+    DOM_elements.canvas.height = new_height;
+    DOM_elements.header.style.height = DOM_elements.main.style.marginTop = `${new_height}px`;
+}
+
+const animate_header = (index, start, stop) => {
+    if (index <= 1) {
+        const new_height = start + (stop - start) * easingFunction(index);
+        update_height(new_height);
+        update_viewport();
+        requestAnimationFrame(() => animate_header(index + 0.01, start, stop));
+        particle_system.create_particles(1);
+        draw_particles();
+    }
+    else {
+        update_height(stop);
+        update_viewport();
+        particle_system.create_particles(canvas_info.get_redraw_multiplier());
+        update_particles();
+    }
+}
+
+
+const init = () => {
+    ctx = DOM_elements.canvas.getContext('webgl');
+    if (ctx) {
+        update_viewport = () => {
+            ctx.viewport(0, 0, ctx.drawingBufferWidth, ctx.drawingBufferHeight);
+        }
+        const vertexShaderSrc = `
+            precision lowp float;
+            attribute vec2 a_position;
+            attribute vec4 a_color;
+            uniform vec2 u_resolution;
+            uniform float u_pointSize;
+            varying vec4 v_color;
+        
+            void main() {
+                vec2 zeroToOne = a_position / u_resolution;
+                vec2 zeroToTwo = zeroToOne * 2.0;
+                vec2 clipSpace = zeroToTwo - 1.0;
+        
+                gl_Position = vec4(clipSpace * vec2(1, -1), 0, 1);
+                gl_PointSize  = u_pointSize;
+                v_color = a_color;
+            }
+        `;
+
+        const fragmentShaderSrc = `
             precision lowp float;
             varying vec4 v_color;
 
             void main() {
                 gl_FragColor = v_color;
             }
-        `),c=ctx.createProgram();if(ctx.attachShader(c,a),ctx.attachShader(c,b),ctx.linkProgram(c),!ctx.getProgramParameter(c,ctx.LINK_STATUS))return void console.error("Program linking error: ",ctx.getProgramInfoLog(c));const d=ctx.getAttribLocation(c,"a_position"),e=ctx.getAttribLocation(c,"a_color"),f=ctx.getUniformLocation(c,"u_resolution"),g=ctx.getUniformLocation(c,"u_pointSize"),h=ctx.createBuffer(),i=ctx.createBuffer();draw_particles=()=>{const j=new Float32Array(particle_system.length<<1),a=new Float32Array(particle_system.length<<2);for(let b=0;b<particle_system.length;b++){const c=particle_system.particles[b];j[b<<1]=c.position[0],j[(b<<1)+1]=c.position[1],a[b<<2]=c.color[0],a[(b<<2)+1]=c.color[1],a[(b<<2)+2]=c.color[2],a[(b<<2)+3]=1}ctx.bindBuffer(ctx.ARRAY_BUFFER,h),ctx.bufferData(ctx.ARRAY_BUFFER,j,ctx.DYNAMIC_DRAW),ctx.enableVertexAttribArray(d),ctx.vertexAttribPointer(d,2,ctx.FLOAT,!1,0,0),ctx.bindBuffer(ctx.ARRAY_BUFFER,i),ctx.bufferData(ctx.ARRAY_BUFFER,a,ctx.DYNAMIC_DRAW),ctx.enableVertexAttribArray(e),ctx.vertexAttribPointer(e,4,ctx.FLOAT,!1,0,0),ctx.useProgram(c),ctx.uniform2f(f,DOM_elements.canvas.width,DOM_elements.canvas.height),ctx.uniform1f(g,canvas_info.PARTICLE_SIZE),ctx.clear(ctx.COLOR_BUFFER_BIT),ctx.drawArrays(ctx.position,0,particle_system.length)}}else{ctx=DOM_elements.canvas.getContext("2d");const d=(f,a,b,d,c)=>{ctx.fillStyle=b,ctx.fillRect(f,a,d,c)};draw_particles=()=>{ctx.clearRect(0,0,DOM_elements.canvas.width,DOM_elements.canvas.height);for(let a=0;a<particle_system.length;a++){const b=particle_system.particles[a];d(b.position[0],b.position[1],b.color[4],canvas_info.PARTICLE_SIZE,canvas_info.PARTICLE_SIZE)}}}window.dispatchEvent(new CustomEvent("resize")),update_particles()};DOM_elements.expand_button.addEventListener("click",c=>{canvas_info.is_expanded=!canvas_info.is_expanded;const a=canvas_info.get_canvas_height();DOM_elements.expand_button_triangle.classList.toggle("triangle_rotate"),is_mobile()||DOM_elements.counter.classList.toggle("invisible"),cancelAnimationFrame(current_update_frame),animate_header(0,DOM_elements.canvas.height,a)});function change_multiplier(c){const a=canvas_info.multiplier+c;1>a||a>canvas_info.MAX_PARTICLE_MULTIPLIER||(canvas_info.multiplier=a,particle_system.create_particles(canvas_info.get_redraw_multiplier()),DOM_elements.plus_button.disabled=canvas_info.multiplier>=canvas_info.MAX_PARTICLE_MULTIPLIER,DOM_elements.minus_button.disabled=1>=canvas_info.multiplier,DOM_elements.plus_button.classList.toggle("disabled",DOM_elements.plus_button.disabled),DOM_elements.minus_button.classList.toggle("disabled",DOM_elements.minus_button.disabled))}DOM_elements.plus_button.addEventListener("click",()=>change_multiplier(1)),DOM_elements.minus_button.addEventListener("click",()=>change_multiplier(-1)),addEventListener("resize",c=>{const a=canvas_info.get_canvas_height();DOM_elements.canvas.width===window.innerWidth&&(is_mobile()||DOM_elements.canvas.innerHeight===a)||(update_width(window.innerWidth),update_height(a),update_viewport(),particle_system.create_particles(canvas_info.get_redraw_multiplier()))}),addEventListener("load",init);
+        `;
+
+        const createShader = (ctx, type, source) => {
+            const shader = ctx.createShader(type);
+            ctx.shaderSource(shader, source);
+            ctx.compileShader(shader);
+            if (!ctx.getShaderParameter(shader, ctx.COMPILE_STATUS)) {
+                console.error("Shader compile error: ", ctx.getShaderInfoLog(shader));
+                ctx.deleteShader(shader);
+                return null;
+            }
+            return shader;
+        }
+
+        const vertexShader = createShader(ctx, ctx.VERTEX_SHADER, vertexShaderSrc);
+        const fragmentShader = createShader(ctx, ctx.FRAGMENT_SHADER, fragmentShaderSrc);
+
+        const program = ctx.createProgram();
+        ctx.attachShader(program, vertexShader);
+        ctx.attachShader(program, fragmentShader);
+        ctx.linkProgram(program);
+
+        if (!ctx.getProgramParameter(program, ctx.LINK_STATUS)) {
+            console.error("Program linking error: ", ctx.getProgramInfoLog(program));
+            return;
+        }
+
+        const positionLocation = ctx.getAttribLocation(program, "a_position");
+        const colorLocation = ctx.getAttribLocation(program, "a_color");
+        const resolutionLocation = ctx.getUniformLocation(program, "u_resolution");
+        const uPointSizeLocation  = ctx.getUniformLocation(program, "u_pointSize");
+        
+        const positionBuffer = ctx.createBuffer();
+        const colorBuffer = ctx.createBuffer();
+        
+        draw_particles = () => {   
+            const positions = new Float32Array(particle_system.length << 1);
+            const colors = new Float32Array(particle_system.length << 2);
+            
+            for (let i = 0; i < particle_system.length; i++) {
+                const particle = particle_system.particles[i];
+                positions[i << 1] = particle.position[0];
+                positions[(i << 1) + 1] = particle.position[1];
+                colors[(i << 2)] = particle.color[0];
+                colors[(i << 2) + 1] = particle.color[1];
+                colors[(i << 2) + 2] = particle.color[2];
+                colors[(i << 2) + 3] = 1;
+            }
+            
+            ctx.bindBuffer(ctx.ARRAY_BUFFER, positionBuffer);
+            ctx.bufferData(ctx.ARRAY_BUFFER, positions, ctx.DYNAMIC_DRAW);
+            ctx.enableVertexAttribArray(positionLocation);
+            ctx.vertexAttribPointer(positionLocation, 2, ctx.FLOAT, false, 0, 0);
+            
+            ctx.bindBuffer(ctx.ARRAY_BUFFER, colorBuffer);
+            ctx.bufferData(ctx.ARRAY_BUFFER, colors, ctx.DYNAMIC_DRAW);
+            ctx.enableVertexAttribArray(colorLocation);
+            ctx.vertexAttribPointer(colorLocation, 4, ctx.FLOAT, false, 0, 0);
+            
+            ctx.useProgram(program);
+            ctx.uniform2f(resolutionLocation, DOM_elements.canvas.width, DOM_elements.canvas.height);
+            ctx.uniform1f(uPointSizeLocation, canvas_info.PARTICLE_SIZE);
+            ctx.clear(ctx.COLOR_BUFFER_BIT);
+            
+            ctx.drawArrays(ctx.position, 0, particle_system.length);
+        }
+
+    } else {
+        ctx = DOM_elements.canvas.getContext('2d');
+
+        const draw = (x, y, c, w, h) => {
+            ctx.fillStyle = c;
+            ctx.fillRect(x, y, w, h);
+        }
+
+        draw_particles = () => {
+            ctx.clearRect(0, 0, DOM_elements.canvas.width, DOM_elements.canvas.height);
+            for (let i = 0; i < particle_system.length; i++) {
+                const particle = particle_system.particles[i];
+                draw(particle.position[0], particle.position[1], particle.color[4], canvas_info.PARTICLE_SIZE, canvas_info.PARTICLE_SIZE);
+            }
+        }
+    }
+    window.dispatchEvent(new CustomEvent("resize"));
+    update_particles();
+}
+
+
+// EVENT LISTENERS
+
+DOM_elements.expand_button.addEventListener("click", (_) => {
+    canvas_info.is_expanded = !canvas_info.is_expanded;
+    const new_height = canvas_info.get_canvas_height();
+    DOM_elements.expand_button_triangle.classList.toggle("triangle_rotate");
+    if (!is_mobile()) DOM_elements.counter.classList.toggle("invisible");
+    cancelAnimationFrame(current_update_frame);
+    animate_header(0.0, DOM_elements.canvas.height, new_height);
+});
+
+function change_multiplier(delta) {
+    const new_multiplier = canvas_info.multiplier + delta;
+
+    if (new_multiplier < 1 || new_multiplier > canvas_info.MAX_PARTICLE_MULTIPLIER) return;
+
+    canvas_info.multiplier = new_multiplier;
+    particle_system.create_particles(canvas_info.get_redraw_multiplier());
+
+    DOM_elements.plus_button.disabled = canvas_info.multiplier >= canvas_info.MAX_PARTICLE_MULTIPLIER;
+    DOM_elements.minus_button.disabled = canvas_info.multiplier <= 1;
+
+    DOM_elements.plus_button.classList.toggle("disabled", DOM_elements.plus_button.disabled);
+    DOM_elements.minus_button.classList.toggle("disabled", DOM_elements.minus_button.disabled);
+}
+
+DOM_elements.plus_button.addEventListener("click", () => change_multiplier(1));
+DOM_elements.minus_button.addEventListener("click", () => change_multiplier(-1));
+
+addEventListener("resize", (_) => {
+    const height = canvas_info.get_canvas_height();
+    if (DOM_elements.canvas.width === window.innerWidth && (is_mobile() || DOM_elements.canvas.innerHeight === height)) 
+        return;
+    update_width(window.innerWidth);
+    update_height(height);
+    update_viewport();
+    particle_system.create_particles(canvas_info.get_redraw_multiplier());
+});
+
+addEventListener("load", init);

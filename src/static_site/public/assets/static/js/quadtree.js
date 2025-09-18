@@ -1,1 +1,163 @@
-class Point{constructor(c,a){this.x=c,this.y=a}}class Rectangle{constructor(e,a,b,c){this.x=e,this.y=a,this.w=b,this.h=c,this.minX=this.x-this.w,this.maxX=this.x+this.w,this.minY=this.y-this.h,this.maxY=this.y+this.h}contains(c,a){return c>=this.minX&c<=this.maxX&a>=this.minY&a<=this.maxY}intersects(b){return this.maxX>=b.minX&this.minX<=b.maxX&this.maxY>=b.minY&this.minY<=b.maxY}}class QuadTree{constructor(b){this.boundary=b,this.capacity=64,this.particles=[],this.divided=!1,this.northeast=null,this.northwest=null,this.southeast=null,this.southwest=null}update_tree(d){if(!this.divided){let a=this.particles.length;for(let b=0;b<a;)this.boundary.contains(this.particles[b].position[0],this.particles[b].position[1])?b++:(d.insert(this.particles[b]),this.particles[b]=this.particles[a-1],a--);this.particles.length=a}else this.northeast.update_tree(d),this.northwest.update_tree(d),this.southeast.update_tree(d),this.southwest.update_tree(d)}remove_nodes(){if(!this.divided)this.northeast.remove_nodes(),this.northwest.remove_nodes(),this.southeast.remove_nodes(),this.southwest.remove_nodes();else if(!(this.northeast.divided||this.northwest.divided||this.southeast.divided||this.southwest.divided)){const b=this.northeast.particles.length+this.northwest.particles.length+this.southeast.particles.length+this.southwest.particles.length;b<=this.capacity&&(this.particles.push(...this.northeast.particles,...this.northwest.particles,...this.southeast.particles,...this.southwest.particles),this.divided=!1,this.northeast=null,this.northwest=null,this.southeast=null,this.southwest=null)}}insert(b){return!!this.boundary.contains(b.position[0],b.position[1])&&(!this.divided&&this.particles.length<this.capacity?(this.particles.push(b),!0):(this.subdivide(),this.northeast.insert(b)||this.northwest.insert(b)||this.southeast.insert(b)||this.southwest.insert(b)))}subdivide(){if(!this.divided){let i=this.boundary.x,a=this.boundary.y,b=this.boundary.w/2,c=this.boundary.h/2,d=new Rectangle(i+b,a-c,b,c);this.northeast=new QuadTree(d);let e=new Rectangle(i-b,a-c,b,c);this.northwest=new QuadTree(e);let f=new Rectangle(i+b,a+c,b,c);this.southeast=new QuadTree(f);let g=new Rectangle(i-b,a+c,b,c);this.southwest=new QuadTree(g),this.divided=!0;for(let b of this.particles)this.insert(b);this.particles=[]}}query(d,a){if(!this.boundary.intersects(d)||!d.intersects(this.boundary))return a;for(let b of this.particles)d.contains(b.position[0],b.position[1])&&a.push(b);return this.divided&&(this.northwest.query(d,a),this.northeast.query(d,a),this.southwest.query(d,a),this.southeast.query(d,a)),a}}
+class Point {
+    constructor(x, y) {
+        this.x = x;
+        this.y = y;
+    }
+  }
+  
+  class Rectangle {
+    constructor(x, y, w, h) {
+        this.x = x;
+        this.y = y;
+        this.w = w;
+        this.h = h;
+
+        this.minX = this.x - this.w;
+        this.maxX = this.x + this.w;
+        this.minY = this.y - this.h;
+        this.maxY = this.y + this.h;
+    }
+  
+    contains(x, y) {
+        return x >= this.minX &
+            x <= this.maxX &
+            y >= this.minY &
+            y <= this.maxY;
+    }
+  
+  
+    intersects(range) {
+        return this.maxX >= range.minX &
+           this.minX <= range.maxX &
+           this.maxY >= range.minY &
+           this.minY <= range.maxY;
+    }
+  }
+  
+  class QuadTree {
+    constructor(boundary) {
+        this.boundary = boundary;
+        this.capacity = 64;
+        this.particles = [];
+        this.divided = false;
+        this.northeast = null;
+        this.northwest = null;
+        this.southeast = null;
+        this.southwest = null;
+    }
+  
+    update_tree(main_tree) {
+        if (!this.divided) {
+            let new_len = this.particles.length;
+            for (let i = 0; i < new_len;) {
+                if (!this.boundary.contains(this.particles[i].position[0], this.particles[i].position[1])) {
+                    main_tree.insert(this.particles[i]);
+                    this.particles[i] = this.particles[new_len - 1];
+                    new_len--;
+                } else {
+                    i++;
+                }
+            }
+
+            this.particles.length = new_len;
+        } else {
+            this.northeast.update_tree(main_tree);
+            this.northwest.update_tree(main_tree);
+            this.southeast.update_tree(main_tree);
+            this.southwest.update_tree(main_tree);
+        } 
+    }
+
+    remove_nodes() {
+        if (this.divided) {
+            if (!(this.northeast.divided || this.northwest.divided || this.southeast.divided || this.southwest.divided)) {
+                const len = this.northeast.particles.length +
+                this.northwest.particles.length +
+                this.southeast.particles.length +
+                this.southwest.particles.length;
+                if (len <= this.capacity) {
+                    this.particles.push(
+                        ...this.northeast.particles,
+                        ...this.northwest.particles,
+                        ...this.southeast.particles,
+                        ...this.southwest.particles
+                    );
+                    this.divided = false;
+                    this.northeast = null;
+                    this.northwest = null;
+                    this.southeast = null;
+                    this.southwest = null;
+                }
+            }
+        } else {
+            this.northeast.remove_nodes();
+            this.northwest.remove_nodes();
+            this.southeast.remove_nodes();
+            this.southwest.remove_nodes();
+        }
+    }
+
+
+    insert(particle) {
+        if (!this.boundary.contains(particle.position[0], particle.position[1])) {
+            return false;
+        }
+  
+        if (!this.divided && this.particles.length < this.capacity) {
+            this.particles.push(particle);
+            return true;
+        } else {
+            this.subdivide();
+  
+            return this.northeast.insert(particle) ||
+                this.northwest.insert(particle) ||
+                this.southeast.insert(particle) ||
+                this.southwest.insert(particle);
+        }
+    }
+    
+    subdivide() {
+        if (this.divided) return;
+  
+        let x = this.boundary.x;
+        let y = this.boundary.y;
+        let w = this.boundary.w / 2;
+        let h = this.boundary.h / 2;
+  
+        let ne = new Rectangle(x + w, y - h, w, h);
+        this.northeast = new QuadTree(ne);
+        let nw = new Rectangle(x - w, y - h, w, h);
+        this.northwest = new QuadTree(nw);
+        let se = new Rectangle(x + w, y + h, w, h);
+        this.southeast = new QuadTree(se);
+        let sw = new Rectangle(x - w, y + h, w, h);
+        this.southwest = new QuadTree(sw);
+  
+  
+        this.divided = true;
+  
+        for (let p of this.particles) this.insert(p);
+        this.particles = [];
+    }
+  
+    query(range, found) {
+        if (!this.boundary.intersects(range) || !range.intersects(this.boundary)) {
+            return found;
+        }
+  
+        for (let p of this.particles) {
+            if (range.contains(p.position[0], p.position[1])) {
+                found.push(p);
+            }
+        }
+  
+        if (this.divided) {
+            this.northwest.query(range, found);
+            this.northeast.query(range, found);
+            this.southwest.query(range, found);
+            this.southeast.query(range, found);
+        }
+  
+        return found;
+    }
+  }

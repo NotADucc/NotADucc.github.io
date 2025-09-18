@@ -1,1 +1,22 @@
-const bezier=(j,a,k,b)=>{const c=(f,a,b,c,d)=>(1-f)**4*a+3*(1-f)**2*f*b+3*(1-f)*f**2*c+f**3*d;return d=>{let e,f=0,l=1;for(;.01<l-f;){const a=(f+l)/2;e=c(a,0,j,k,1),e<d?f=a:l=a}return c(f,0,a,b,1)}};
+const bezier = (x1, y1, x2, y2) => {
+    const _bezier = (t, p0, p1, p2, p3) => {
+        return (
+            (1 - t) ** 4 * p0 +
+            3 * (1 - t) ** 2 * t * p1 +
+            3 * (1 - t) * t ** 2 * p2 +
+            t ** 3 * p3
+        );
+    }
+
+    return (t) => {
+        let low = 0, high = 1, epsilon = 0.01, x;
+        while (high - low > epsilon) {
+            const mid = (low + high) / 2;
+            x = _bezier(mid, 0, x1, x2, 1);
+            if (x < t) low = mid;
+            else high = mid;
+        }
+        
+        return _bezier(low, 0, y1, y2, 1);
+    };
+}

@@ -23,14 +23,16 @@ jobs:
       - name: Build page index file
         run: node ./src/site_builder/updateProjects.js
 
-      - name: auto minify the files
-        uses: nizarmah/auto-minify@v3
-        with: 
-            overwrite: true
-      - name: auto commit the minified files
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-            commit_message: "refactor: JS and CSS have been minified files"
+      - run: npm install -g terser html-minifier-terser clean-css-cli
+
+      - name: Minify JS
+        run: find ./src/static_site -type f -name "*.js" -exec terser {} -o {} \;
+
+      - name: Minify CSS files
+        run: find ./src/static_site -type f -name "*.css" -exec cleancss -o {} {} \;
+
+      - name: Minify HTML files
+        run: find ./src/static_site -type f -name "*.html" -exec html-minifier-terser --collapse-whitespace --remove-comments -o {} {} \;
 
       - name: Check for modified files
         id: git-check
@@ -42,7 +44,7 @@ jobs:
             git config --global user.email "robertohelper@outlook.com"
             git config --global user.name "Gwilom-Bot"
             git add .
-            git commit -am "refactor: Update static project files" || true
+            git commit -am "refactor: Updated static project files (generated index and minified files)" || true
             git push || git pull --rebase && git push
 
       - name: Upload site artifact

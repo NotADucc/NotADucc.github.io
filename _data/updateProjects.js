@@ -115,16 +115,14 @@ Object.entries(tiles).forEach(([title, tile]) => {
         arr.push(`
             <div>
                 <div class="tile-item">
-                    <div>
-                        <a class="tile-link" href="#popup-${title}${idx}">
-                            ${mini_img}
-                            <div class="tile-content">
-                                <h3 class="tile-title">${props.title}</h3>
-                                <h4><i>${props.under_title}</i></h4>
-                                <p class="tools">${props.tools.join(' | ')}</p>
-                            </div>
-                        </a>
-                    </div>
+                    <a class="tile-link" href="#popup-${title}${idx}">
+                        ${mini_img}
+                        <div class="tile-content">
+                            <h3 class="tile-title">${props.title}</h3>
+                            <h4><i>${props.under_title}</i></h4>
+                            <p class="tools">${props.tools.join(' | ')}</p>
+                        </div>
+                    </a>
                 </div>
                 <div id="popup-${title}${idx}" class="overlay" onclick="location.href='#ignore'; history.pushState('', document.title, window.location.pathname);">
                     <div class="popup" onclick="event.stopPropagation();">

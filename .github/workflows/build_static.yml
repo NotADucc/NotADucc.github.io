@@ -25,8 +25,14 @@ jobs:
 
       - run: npm install -g sass terser html-minifier-terser clean-css-cli
 
-      - name: Compile SCSS-like CSS
-        run: find ./src/static_site -type f -name "*.css" -exec sass {} {} \;
+      - name: Rename .css to .scss, compile, and restore
+        run: |
+          find ./src/static_site -type f -name "*.css" | while read file; do
+            tmp="${file%.css}.scss"
+            cp "$file" "$tmp"
+            npx sass --no-source-map "$tmp" "$file"
+            rm "$tmp"
+          done
 
       - name: Minify JS
         run: find ./src/static_site -type f -name "*.js" -exec terser {} -o {} \;

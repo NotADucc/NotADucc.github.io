@@ -44,7 +44,7 @@ main h1 {
 	}
 }
 
-.project-container {
+.tile-container {
 	display: grid;
 	padding: 10px;
 	margin-bottom: 20px;
@@ -57,11 +57,20 @@ main h1 {
 	}
 }
 
-.project-item {
+.tile-item {
 	display: flex;
 	align-items: stretch;
 	padding: 10px;
 	animation: slide-up .5s ease;
+}
+
+.tile-link {
+	text-decoration: none;
+	color: inherit;
+	&:visited, &:hover, &:focus :{
+		text-decoration: none;
+		color: inherit;
+	}
 }
 
 @keyframes slide-up {
@@ -74,20 +83,20 @@ main h1 {
 	}
 }
 
-.project-title {
+.tile-title {
 	font-size: 1.25rem;
 }
 
-.project-content {
+.tile-content {
 	margin-left: 1rem;
 	margin-right: 1rem;
 }
 
-.project-content, .project-description, .tools {
+.tile-content, .tile-description, .tools {
 	font-size: medium;
 }
 
-.project-description {
+.tile-description {
 	@media (max-width: 600px) {
 		max-height: 30vh;
 		overflow-y: auto;

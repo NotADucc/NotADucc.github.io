@@ -23,21 +23,11 @@ jobs:
       - name: Build page index file
         run: node ./src/site_builder/updateProjects.js
 
-        # js and css minifier
-      - name: auto minify the files
-        uses: nizarmah/auto-minify@v3
-        with: 
-            overwrite: true
-      - name: auto commit the minified files
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-            commit_message: "refactor: JS and CSS have been minified files"
-
-        # html minifier
+        # html minifier but it's also a CSS and JS for some reason
       - run: npm install -g html-minifier
 
       - name: Minify HTML files
-        run: find ./src/static_site -type f -name "*.html" -exec html-minifier --collapse-whitespace --remove-comments --minify-css true --minify-js true \;
+        run: for i in ./src/static_site/*.html; do html-minifier -exec html-minifier --collapse-whitespace --remove-comments --minify-css true --minify-js true $i -o $i; done
 
       - name: Check for modified files
         id: git-check
@@ -49,7 +39,7 @@ jobs:
             git config --global user.email "robertohelper@outlook.com"
             git config --global user.name "Gwilom-Bot"
             git add .
-            git commit -am "refactor: Update static project files" || true
+            git commit -am "refactor: Updated static project files (generated index and minified files)" || true
             git push || git pull --rebase && git push
 
       - name: Upload site artifact

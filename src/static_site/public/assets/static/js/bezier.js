@@ -1,1 +1,1 @@
-const bezier=(a,b,c,d)=>{const e=(a,b,c,d,e)=>(1-a)**4*b+3*(1-a)**2*a*c+3*(1-a)*a**2*d+a**3*e;return f=>{let g,h=0,i=1;for(;i-h>.01;){const b=(h+i)/2;g=e(b,0,a,c,1),g<f?h=b:i=b}return e(h,0,b,d,1)}};
+const bezier=(j,a,k,b)=>{const c=(f,a,b,c,d)=>(1-f)**4*a+3*(1-f)**2*f*b+3*(1-f)*f**2*c+f**3*d;return d=>{let e,f=0,l=1;for(;.01<l-f;){const a=(f+l)/2;e=c(a,0,j,k,1),e<d?f=a:l=a}return c(f,0,a,b,1)}};

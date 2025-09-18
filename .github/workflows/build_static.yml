@@ -15,28 +15,31 @@ jobs:
       - name: check out the repository
         uses: actions/checkout@v4
 
-      - name: auto minify the files
-        uses: nizarmah/auto-minify@v3
-        with: 
-            overwrite: true
-      - name: auto commit the minified files
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-            commit_message: "refactor: updated js/css to minified files"
-
       - name: Use Node.js (dependency)
         uses: actions/setup-node@v3
         with:
             node-version: 16
 
-      - name: static file projects
+      - name: Install minifiers
+        run: npm install -g terser html-minifier-terser csso-cli
+
+      - name: Build page index file
         run: node ./src/site_builder/updateProjects.js
+
+      - name: Minify JS files
+        run: find ./src/static_site -type f -name "*.js" -exec terser {} -o {} \;
+
+      - name: Minify CSS files
+        run: find ./src/static_site -type f -name "*.css" -exec csso {} --output {} \;
+
+      - name: Minify HTML files
+        run: find ./src/static_site -type f -name "*.html" -exec html-minifier-terser --collapse-whitespace --remove-comments --minify-css true --minify-js true -o {} {} \;
 
       - name: Check for modified files
         id: git-check
         run: echo modified=$(if git diff-index --quiet HEAD --; then echo "false"; else echo "true"; fi) >> $GITHUB_OUTPUT
 
-      - name: Push
+      - name: Push to branch
         if: steps.git-check.outputs.modified == 'true'
         run: |
             git config --global user.email "robertohelper@outlook.com"
@@ -49,7 +52,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: static-site
-          path: '.'
+          path: './src/static_site'
 
   deploy:
     needs: build-static-site

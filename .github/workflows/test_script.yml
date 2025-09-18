@@ -37,7 +37,7 @@ jobs:
       - run: npm install -g html-minifier
 
       - name: Minify HTML files
-        run: find ./static_site -type f -name "*.html" -exec html-minifier --collapse-whitespace --remove-comments --minify-css true --minify-js true \;
+        run: find ./src/static_site -type f -name "*.html" -exec html-minifier --collapse-whitespace --remove-comments --minify-css true --minify-js true \;
 
       - name: Check for modified files
         id: git-check

@@ -1,7 +1,8 @@
 name: build
 
 on:
-  workflow_dispatch:
+  push:
+    branches: [ "testing" ]
 
 concurrency:
   group: "pages"
@@ -56,3 +57,4 @@ jobs:
         with:
           name: static-site
           path: '.'
+

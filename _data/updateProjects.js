@@ -1,3 +1,7 @@
+const icons = {
+    'github': `<i class="fa fa-github github-in-line icon"></i>`,
+    'link': `<i class="fa fa-link icon"></i>`
+}
 const tiles = 
 {
     "Projects" :
@@ -8,6 +12,13 @@ const tiles =
             "image": "osrs-hiscore.png",
             "tools": ["Python", "PyTest", "Scraping"],
             "description": "This project is a data tool built around Old School RuneScape player Hiscores. It helps organize and filter player information, such as skills and boss achievements, and can save these results for later use. The tool can also analyze groups of players to highlight patterns, like averages or highest scores. In addition, it provides quick access to individual player profiles.",
+            "links": 
+            [
+                {
+                    "url": "https://github.com/NotADucc/osrs-hiscores-scrape",
+                    "icon": icons.github
+                }
+            ]
         },
         {
             "title": ".Inside",
@@ -22,6 +33,13 @@ const tiles =
             "image": "mogcord.png",
             "tools": ["Rust", "MongoDB", "REST API", "JWT", "Auth", "AlpineJs", "HTMX", "Tailwind"],
             "description": "A messaging platform which allows the user to chat with individuals or with a group of people.",
+            "links": 
+            [
+                {
+                    "url": "https://github.com/MogInc/Mogcord",
+                    "icon": icons.github
+                }
+            ]
         },
         {
             "title": "Follow-up system",
@@ -74,6 +92,17 @@ const tiles =
             "image": "aoc.png",
             "tools": [],
             "description": "An annual holiday-themed event featuring a series of 50 daily programming puzzles, released one per day from December 1st to December 25th.",
+            "links": 
+            [
+                {
+                    "url": "https://github.com/NotADucc/AoC",
+                    "icon": icons.github
+                },
+                {
+                    "url": "https://adventofcode.com/",
+                    "icon": icons.link
+                }
+            ]
         },
         {
             "title": "LeetCode",
@@ -81,15 +110,33 @@ const tiles =
             "image": "leetcode.png",
             "tools": [],
             "description": "A popular online platform providing a vast library of coding and algorithmic problems used by software developers to improve their skills, practice for technical interviews, and participate in coding competitions.",
+            "links": 
+            [
+                {
+                    "url": "https://github.com/NotADucc/LeetCode",
+                    "icon": icons.github
+                },
+                {
+                    "url": "https://leetcode.com/u/Gwilom/",
+                    "icon": icons.link
+                }
+            ]
         },
     ],
     "Contributions":
     [
         {
             "title": "NeetCode",
-            "under_title": "Community-Driven Coding Interview Resource",
+            "under_title": "Community-Driven Coding Resource",
             "tools": [],
             "description": "I contributed solutions to NeetCode, a platform for coding interview preparation, by implementing efficient answers to algorithm and data structure challenges that support learners in mastering problem-solving techniques.",
+            "links": 
+            [
+                {
+                    "url": "https://github.com/neetcode-gh/leetcode",
+                    "icon": icons.github
+                },
+            ]
         },
     ]
 }
@@ -106,11 +153,21 @@ Object.entries(tiles).forEach(([title, tile]) => {
     tile.forEach((props, idx) => {
         let mini_img = '';
         let big_img = '';
+        let links = '';
         if (props.image)
         {
             const img = props.image?.split('.');
             mini_img = `<img src="public/assets/img/${img[0]}.mini.${img[1]}" class="img fluid" loading="lazy" alt="${props.image}-screenshot">`
             big_img = `<img src="public/assets/img/${props.image}" class="img img-pop" loading="lazy" alt="${props.image}-screenshot">`
+        }
+        if (props.links)
+        {
+            links = props.links.map((link) => 
+                `<a href="${link.url}" class="tile-link tile-title-link" target="_blank" rel="noopener noreferrer">
+                    ${link.icon}
+                </a>
+                `
+            ).join(''); 
         }
         arr.push(`
             <div>
@@ -118,7 +175,10 @@ Object.entries(tiles).forEach(([title, tile]) => {
                     <a class="tile-link" href="#popup-${title}${idx}">
                         ${mini_img}
                         <div class="tile-content">
-                            <h3 class="tile-title">${props.title}</h3>
+                            <h3 class="tile-title">
+                            ${props.title} 
+                            ${links}
+                            </h3>
                             <h4><i>${props.under_title}</i></h4>
                             <p class="tools">${props.tools.join(' | ')}</p>
                         </div>
@@ -143,7 +203,6 @@ Object.entries(tiles).forEach(([title, tile]) => {
 arr.push(split[1]);
 
 const output = arr.join('');
-
 fs.writeFileSync('index.html', output, {
     encoding: 'utf8',
-});
+})

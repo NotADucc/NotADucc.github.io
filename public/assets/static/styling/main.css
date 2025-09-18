@@ -19,7 +19,6 @@ main {
 main > div {
 	margin-top: 1rem; 
 	width: 100%; 
-	text-align: justify; 
 	color: #ffffff; 
 	@media (min-width: 600px) {
 		width: 80%; 
@@ -60,6 +59,7 @@ main h1 {
 .tile-item {
 	display: flex;
 	align-items: stretch;
+	flex-direction: column;
 	padding: 10px;
 	animation: slide-up .5s ease;
 }
@@ -85,7 +85,14 @@ main h1 {
 
 .tile-title {
 	font-size: 1.25rem;
+	display: flex;
 }
+
+.tile-title-link {
+	padding-left: 0.5em;
+		color: #ffffff; 
+}
+
 
 .tile-content {
 	margin-left: 1rem;
@@ -343,21 +350,16 @@ footer .copyright {
 	color: #D1D5DB; 
 }
 
-footer .svg {
-	display: flex; 
-	margin-left: -0.5rem;
-	margin-right: -0.5rem; 
-}
-
 footer a {
 	margin-left: 0.5rem;
 	margin-right: 0.5rem; 
 	color: #ffffff; 
 }
 
-footer .icon {
-	width: 1.25rem; 
-	height: 1.25rem; 
+.icon {
+	width: 25px; 
+	height: 25px; 
+	font-size: 25px;
 	fill: currentColor; 
 }
 

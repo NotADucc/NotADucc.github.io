@@ -143,7 +143,7 @@ const tiles =
 
 const fs = require("fs");
 
-const template = fs.readFileSync("./_data/index_template.html", { encoding: 'utf8' });
+const template = fs.readFileSync("./src/site_builder/index_template.html", { encoding: 'utf8' });
 const split = template.split('<div class="tile-container"></div>')
 const arr = [];
 arr.push(split[0]);
@@ -203,6 +203,6 @@ Object.entries(tiles).forEach(([title, tile]) => {
 arr.push(split[1]);
 
 const output = arr.join('');
-fs.writeFileSync('index.html', output, {
+fs.writeFileSync('src/static_site/index.html', output, {
     encoding: 'utf8',
 })

@@ -30,7 +30,7 @@ jobs:
             node-version: 16
 
       - name: static file projects
-        run: node ./_data/updateProjects.js
+        run: node ./src/site_builder/updateProjects.js
 
       - name: Check for modified files
         id: git-check
@@ -73,7 +73,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: '.'
+          path: './src/static_site'
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4

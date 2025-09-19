@@ -312,7 +312,7 @@ DOM_elements.expand_button.addEventListener("click", (_) => {
     animate_header(0.0, DOM_elements.canvas.height, new_height);
 });
 
-function change_multiplier(delta) {
+const change_multiplier = (delta) => {
     const new_multiplier = canvas_info.multiplier + delta;
 
     if (new_multiplier < 1 || new_multiplier > canvas_info.MAX_PARTICLE_MULTIPLIER) return;

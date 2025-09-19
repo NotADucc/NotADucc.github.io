@@ -2,7 +2,7 @@ const icons = {
     'github': `<i class="fa fa-github github-in-line icon"></i>`,
     'link': `<i class="fa fa-link icon"></i>`
 }
-const tiles = 
+const main_data = 
 {
     "Projects" :
     [
@@ -90,7 +90,6 @@ const tiles =
             "title": "Advent of Code",
             "under_title": "Holiday-themed event",
             "image": "aoc.png",
-            "tools": [],
             "description": "An annual holiday-themed event featuring a series of 50 daily programming puzzles, released one per day from December 1st to December 25th.",
             "links": 
             [
@@ -108,7 +107,6 @@ const tiles =
             "title": "LeetCode",
             "under_title": "Algorithm library",
             "image": "leetcode.png",
-            "tools": [],
             "description": "A popular online platform providing a vast library of coding and algorithmic problems used by software developers to improve their skills, practice for technical interviews, and participate in coding competitions.",
             "links": 
             [
@@ -128,7 +126,6 @@ const tiles =
         {
             "title": "NeetCode",
             "under_title": "Community-Driven Coding Resource",
-            "tools": [],
             "description": "I contributed solutions to NeetCode, a platform for coding interview preparation, by implementing efficient answers to algorithm and data structure challenges that support learners in mastering problem-solving techniques.",
             "links": 
             [
@@ -147,23 +144,23 @@ const template = fs.readFileSync("./src/site_builder/index_template.html", { enc
 const split = template.split('<div class="tile-container"></div>')
 const arr = [];
 arr.push(split[0]);
-Object.entries(tiles).forEach(([title, tile]) => {
+Object.entries(main_data).forEach(([title, tiles]) => {
     arr.push(`<h2>${title}</h2>`);
     arr.push('<div class="tile-container">');
-    tile.forEach((props, idx) => {
-        let mini_img = '';
-        let big_img = '';
-        let links = '';
-        if (props.image)
+    tiles.forEach((tile, idx) => {
+        const joined_tools = tile.tools?.join(' | ') || '';
+        let mini_img = big_img = links = '';
+        if (tile.image)
         {
-            const img = props.image?.split('.');
-            mini_img = `<img src="public/assets/img/${img[0]}.mini.${img[1]}" class="img fluid" loading="lazy" alt="${props.image}-screenshot">`
-            big_img = `<img src="public/assets/img/${props.image}" class="img img-pop" loading="lazy" alt="${props.image}-screenshot">`
+            const img = tile.image?.split('.');
+            mini_img = `<img src="public/assets/img/${img[0]}.mini.${img[1]}" class="img fluid" loading="lazy" alt="${tile.image}-screenshot">`
+            big_img = `<img src="public/assets/img/${tile.image}" class="img img-pop" loading="lazy" alt="${tile.image}-screenshot">`
         }
-        if (props.links)
+        if (tile.links)
         {
-            links = props.links.map((link) => 
-                `<a href="${link.url}" class="tile-link tile-title-link" target="_blank" rel="noopener noreferrer">
+            links = tile.links.map((link) => 
+                `
+                <a href="${link.url}" class="tile-link tile-title-link" target="_blank" rel="noopener noreferrer">
                     ${link.icon}
                 </a>
                 `
@@ -172,26 +169,29 @@ Object.entries(tiles).forEach(([title, tile]) => {
         arr.push(`
             <div>
                 <div class="tile-item">
-                    <a class="tile-link" href="#popup-${title}${idx}">
+                     <a class="tile-link" href="#popup-${title}${idx}">
                         ${mini_img}
-                        <div class="tile-content">
-                            <h3 class="tile-title">
-                            ${props.title} 
-                            ${links}
-                            </h3>
-                            <h4><i>${props.under_title}</i></h4>
-                            <p class="tools">${props.tools.join(' | ')}</p>
-                        </div>
                     </a>
+                    <div class="tile-content">
+                        <h3 class="tile-title">
+                        <a class="tile-link" href="#popup-${title}${idx}">
+                            ${tile.title} 
+                        </a>
+                        ${links}
+                        </h3>
+                        <h4><i>${tile.under_title}</i></h4>
+                        <p class="tools">${joined_tools}</p>
+                    </div>
                 </div>
                 <div id="popup-${title}${idx}" class="overlay" onclick="location.href='#ignore'; history.pushState('', document.title, window.location.pathname);">
                     <div class="popup" onclick="event.stopPropagation();">
                         ${big_img}
-                        <h3 class="tile-title">${props.title}</h3>
-                        <h4><i>${props.under_title}</i></h4>
+                        <h3 class="tile-title">${tile.title}</h3>
+                        <h4><i>${tile.under_title}</i></h4>
+                        <p class="tools">${joined_tools}</p>
                         <a class="close" onclick="location.href='#ignore'; history.pushState('', document.title, window.location.pathname);">&times;</a>
                         <p class="tile-description">
-                            ${props.description}
+                            ${tile.description}
                         </p>
                     </div>
                 </div>
@@ -205,4 +205,4 @@ arr.push(split[1]);
 const output = arr.join('');
 fs.writeFileSync('src/static_site/index.html', output, {
     encoding: 'utf8',
-})
+});

@@ -276,8 +276,8 @@ const init = () => {
             ctx.uniform2f(resolutionLocation, DOM_elements.canvas.width, DOM_elements.canvas.height);
             ctx.uniform1f(uPointSizeLocation, canvas_info.PARTICLE_SIZE);
             ctx.clear(ctx.COLOR_BUFFER_BIT);
-            
-            ctx.drawArrays(ctx.position, 0, particle_system.length);
+
+            ctx.drawArrays(ctx.POINTS, 0, particle_system.length);
         }
 
     } else {

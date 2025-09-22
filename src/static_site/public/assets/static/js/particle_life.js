@@ -1,3 +1,6 @@
+import { bezier } from './bezier.js';
+import { Rectangle, QuadTree } from './quadtree.js';
+
 const is_mobile = () => /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent),
     random = (size) => Math.random() * size,
     easingFunction = bezier(0.45, 0.1, 0.25, 1);
@@ -19,9 +22,9 @@ const canvas_info = {
     FRICTION: 0.4,
     PARTICLE_SIZE: 5.0,
     MIN_DISTANCE: 6,
-    MIN_DISTANCE_SQ: this.MIN_DISTANCE * this.MIN_DISTANCE,
+    get MIN_DISTANCE_SQ() { return this.MIN_DISTANCE * this.MIN_DISTANCE; },
     MAX_DISTANCE: 30,
-    MAX_DISTANCE_SQ: this.MAX_DISTANCE * this.MAX_DISTANCE,
+    get MAX_DISTANCE_SQ() { return this.MAX_DISTANCE * this.MAX_DISTANCE; },
     MAX_PARTICLE_MULTIPLIER: 30,
     CANVAS_MIN_HEIGHT: 73,
     is_expanded: false,
@@ -71,7 +74,7 @@ const particle_system = {
     info: [
         {
             color: [0.22, 0.45, 0.91, 1, "#3875ea"],
-            count: 70,
+            count: 75,
             bounds: true,
             attraction: [
                 0.32,
@@ -182,17 +185,22 @@ const animate_header = (index, start, stop) => {
 
 
 const init = () => {
-    ctx = DOM_elements.canvas.getContext('webgl');
+    ctx = DOM_elements.canvas.getContext('webgl2');
     if (ctx) {
+        const gl = ctx;
+
         update_viewport = () => {
-            ctx.viewport(0, 0, ctx.drawingBufferWidth, ctx.drawingBufferHeight);
+            gl.viewport(0, 0, ctx.drawingBufferWidth, ctx.drawingBufferHeight);
         }
         const vertexShaderSrc = `
             precision lowp float;
+
             attribute vec2 a_position;
             attribute vec4 a_color;
+
             uniform vec2 u_resolution;
             uniform float u_pointSize;
+            
             varying vec4 v_color;
         
             void main() {
@@ -215,38 +223,40 @@ const init = () => {
             }
         `;
 
-        const createShader = (ctx, type, source) => {
-            const shader = ctx.createShader(type);
-            ctx.shaderSource(shader, source);
-            ctx.compileShader(shader);
-            if (!ctx.getShaderParameter(shader, ctx.COMPILE_STATUS)) {
-                console.error("Shader compile error: ", ctx.getShaderInfoLog(shader));
-                ctx.deleteShader(shader);
+        const createShader = (gl, type, source) => {
+            const shader = gl.createShader(type);
+            gl.shaderSource(shader, source);
+            gl.compileShader(shader);
+            if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+                console.error("Shader compile error: ", gl.getShaderInfoLog(shader));
+                gl.deleteShader(shader);
                 return null;
             }
             return shader;
         }
 
-        const vertexShader = createShader(ctx, ctx.VERTEX_SHADER, vertexShaderSrc);
-        const fragmentShader = createShader(ctx, ctx.FRAGMENT_SHADER, fragmentShaderSrc);
 
-        const program = ctx.createProgram();
-        ctx.attachShader(program, vertexShader);
-        ctx.attachShader(program, fragmentShader);
-        ctx.linkProgram(program);
+
+        const vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexShaderSrc);
+        const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSrc);
+
+        const program = gl.createProgram();
+        gl.attachShader(program, vertexShader);
+        gl.attachShader(program, fragmentShader);
+        gl.linkProgram(program);
 
         if (!ctx.getProgramParameter(program, ctx.LINK_STATUS)) {
             console.error("Program linking error: ", ctx.getProgramInfoLog(program));
             return;
         }
 
-        const positionLocation = ctx.getAttribLocation(program, "a_position");
-        const colorLocation = ctx.getAttribLocation(program, "a_color");
-        const resolutionLocation = ctx.getUniformLocation(program, "u_resolution");
-        const uPointSizeLocation  = ctx.getUniformLocation(program, "u_pointSize");
+        const positionLocation = gl.getAttribLocation(program, "a_position");
+        const colorLocation = gl.getAttribLocation(program, "a_color");
+        const resolutionLocation = gl.getUniformLocation(program, "u_resolution");
+        const uPointSizeLocation  = gl.getUniformLocation(program, "u_pointSize");
         
-        const positionBuffer = ctx.createBuffer();
-        const colorBuffer = ctx.createBuffer();
+        const positionBuffer = gl.createBuffer();
+        const colorBuffer = gl.createBuffer();
         
         draw_particles = () => {   
             const positions = new Float32Array(particle_system.length << 1);
@@ -262,22 +272,22 @@ const init = () => {
                 colors[(i << 2) + 3] = 1;
             }
             
-            ctx.bindBuffer(ctx.ARRAY_BUFFER, positionBuffer);
-            ctx.bufferData(ctx.ARRAY_BUFFER, positions, ctx.DYNAMIC_DRAW);
-            ctx.enableVertexAttribArray(positionLocation);
-            ctx.vertexAttribPointer(positionLocation, 2, ctx.FLOAT, false, 0, 0);
+            gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+            gl.bufferData(gl.ARRAY_BUFFER, positions, gl.DYNAMIC_DRAW);
+            gl.enableVertexAttribArray(positionLocation);
+            gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
             
-            ctx.bindBuffer(ctx.ARRAY_BUFFER, colorBuffer);
-            ctx.bufferData(ctx.ARRAY_BUFFER, colors, ctx.DYNAMIC_DRAW);
-            ctx.enableVertexAttribArray(colorLocation);
-            ctx.vertexAttribPointer(colorLocation, 4, ctx.FLOAT, false, 0, 0);
+            gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
+            gl.bufferData(gl.ARRAY_BUFFER, colors, gl.DYNAMIC_DRAW);
+            gl.enableVertexAttribArray(colorLocation);
+            gl.vertexAttribPointer(colorLocation, 4, gl.FLOAT, false, 0, 0);
             
-            ctx.useProgram(program);
-            ctx.uniform2f(resolutionLocation, DOM_elements.canvas.width, DOM_elements.canvas.height);
-            ctx.uniform1f(uPointSizeLocation, canvas_info.PARTICLE_SIZE);
-            ctx.clear(ctx.COLOR_BUFFER_BIT);
+            gl.useProgram(program);
+            gl.uniform2f(resolutionLocation, DOM_elements.canvas.width, DOM_elements.canvas.height);
+            gl.uniform1f(uPointSizeLocation, canvas_info.PARTICLE_SIZE);
+            gl.clear(gl.COLOR_BUFFER_BIT);
 
-            ctx.drawArrays(ctx.POINTS, 0, particle_system.length);
+            gl.drawArrays(gl.POINTS, 0, particle_system.length);
         }
 
     } else {

@@ -1,4 +1,4 @@
-const bezier = (x1, y1, x2, y2) => {
+export const bezier = (x1, y1, x2, y2) => {
     const _bezier = (t, p0, p1, p2, p3) => {
         return (
             (1 - t) ** 4 * p0 +

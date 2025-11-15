@@ -90,7 +90,7 @@ const main_data =
             "title": "Advent of Code",
             "under_title": "Holiday-themed event",
             "image": "aoc.png",
-            "description": "An annual holiday-themed event featuring a series of 50 daily programming puzzles, released one per day from December 1st to December 25th.",
+            "description": "An annual holiday-themed event featuring a series of 50 daily programming puzzles, released one per day (two parts per day) from December 1st to December 25th.",
             "links": 
             [
                 {

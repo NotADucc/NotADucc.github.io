@@ -10,7 +10,10 @@ const main_data =
             "title": "OSRS Hiscore scrape",
             "under_title": "Scripts to interact with OSRS hiscores.",
             "image": "osrs-hiscore.png",
-            "tools": ["Python", "PyTest", "Scraping"],
+            "tools": [
+				"Python", 
+				"PyTest"
+			],
             "description": "This project is a data tool built around Old School RuneScape player Hiscores. It helps organize and filter player information, such as skills and boss achievements, and can save these results for later use. The tool can also analyze groups of players to highlight patterns, like averages or highest scores. In addition, it provides quick access to individual player profiles.",
             "links": 
             [
@@ -20,18 +23,55 @@ const main_data =
                 }
             ]
         },
+		{
+            "title": "Nodo",
+            "under_title": "Accessible Social Messaging for Safe and Inclusive Connections",
+            "image": "nodo.jpg",
+            "tools": [
+				".NET",
+				"C#", 
+				"Blazor WebAssembly", 
+				"FastEndPoints", 
+				"Entity Framework Core", 
+				"SignalR", 
+				"Serilog",
+				"Tailwind"
+			],
+            "description": "Nodo is an accessible chat messaging platform designed for people with disabilities, focusing on safety, inclusion, and meaningful social interaction. The app enables users to connect and build friendships by matching based on shared interests. Beyond messaging, Nodo includes an educational section that addresses sensitive and often taboo topics in a clear and supportive way. To enhance user safety, the platform also features a monitoring system that can alert a supervisor if a conversation becomes concerning or potentially unsafe.",
+            "links": 
+            [
+                {
+                    "url": "https://github.com/NotADucc/Nodo",
+                    "icon": icons.github
+                }
+            ]
+        },
         {
             "title": ".Inside",
             "under_title": "A visitor registration tool",
             "image": "inside.png",
-            "tools": [".NET", "C#", "ASP.NET Core", "REST API", "WPF", "ADO.NET", "SQL Server", "MySQL", "XUnit", "Moq"],
+            "tools": [
+				".NET", 
+				"C#", 
+				"ASP.NET Core", 
+				"WPF", 
+				"XUnit", 
+				"Moq"
+			],
             "description": "A business park with a central reception wanted an application to register visitors to the park. This is necessary for fire safety, so that it is always known who is present on the site. Everyone visiting one of the companies must first register at the reception. To make this process as fast as possible, visitors are given the opportunity to register themselves via a touchscreen provided at the entrance. Through the touchscreen, they can enter their own information and the person they have an appointment with. Upon departure, visitors can check out again using the same touchscreen. We ensure that the privacy of visitors is respected in accordance with GDPR regulations. Visitors that came with a car can park at the car park.",
         },
         {
             "title": "Mogcord - WOP",
             "under_title": "A simple messaging platform",
             "image": "mogcord.png",
-            "tools": ["Rust", "MongoDB", "REST API", "JWT", "Auth", "AlpineJs", "HTMX", "Tailwind"],
+            "tools": [
+				"Rust", 
+				"MongoDB", 
+				"JWT", 
+				"AlpineJs", 
+				"HTMX", 
+				"Tailwind"
+			],
             "description": "A messaging platform which allows the user to chat with individuals or with a group of people.",
             "links": 
             [
@@ -45,42 +85,77 @@ const main_data =
             "title": "Follow-up system",
             "under_title": "An interactive platform for tests",
             "image": "web3.png",
-            "tools": ["React", "Node.Js", "REST API", "JWT", "Auth", "Express", "WebSockets", "MySQL", "Tailwind"],
+            "tools": [
+				"React", 
+				"Node.Js", 
+				"JWT", 
+				"Express", 
+				"WebSockets", 
+				"MySQL", 
+				"Tailwind"
+			],
             "description": "A follow-up system where teachers can monitor or modify the timer for a test, see asked questions, and extra requested time by students in real time. Also allows the teacher to import bulk csv data.",
         },
         {
             "title": "Electronic Receipts",
             "under_title": "Tool created to manage expenses",
             "image": "electronic-receipts.png",
-            "tools": [".NET Framework", "C#", "Winforms", "Entity Framework Core", "SQL Server", "SAP Crystal Reports", "OpenXML"],
+            "tools": [
+				".NET Framework", 
+				"C#", 
+				"Winforms", 
+				"Entity Framework Core", 
+				"SQL Server", 
+				"SAP Crystal Reports", 
+				"OpenXML"
+			],
             "description": "An internal bookkeeping tool, it allows users to manage expenses made for customers or generate PDFs and Excel reports.",
         },
         {
             "title": "Monkeys",
             "under_title": "Optimal escape simulation",
             "image": "monkeys.png",
-            "tools": [".NET", "C#", "MongoDB", "Bitmap"],
+            "tools": [
+				".NET", 
+				"C#", 
+				"MongoDB",
+			],
             "description": "Developed a simulation project focused on performance optimization. The challenge involved running large-scale simulations with complex interactions, which initially took minutes to hours to complete. By applying efficient algorithms and restructuring the system into manageable chunks, execution time was reduced to just a few seconds."
         },
         {
             "title": "Mog Site",
             "under_title": "Personal tool hub",
             "image": "mogsite.png",
-            "tools": [".NET", "C#", "ASP .NET CORE", "Angular.Js", "JWT", "Auth", "Private Nuget", "Tailwind", "'Next.Js'"],
+            "tools": [
+				".NET", 
+				"C#", 
+				"ASP .NET CORE", 
+				"Angular.Js", 
+				"JWT", 
+				"Tailwind", 
+			],
             "description": "Developed a centralized platform to consolidate all frequently used tools in one place, improving accessibility and workflow efficiency.",
         },
         {
             "title": "Mogsweeper",
             "under_title": "Minesweeper clone",
             "image": "mogsweeper.png",
-            "tools": [".NET", "C#", "WPF"],
+            "tools": [
+				".NET", 
+				"C#", 
+				"WPF"
+			],
             "description": "Built a functional clone of Minesweeper game using .NET WPF. Event-driven programming, and clean implementation of game logic while recreating a familiar and interactive user experience.",
         },
         {
             "title": "Restaurant manager",
             "under_title": "REST API to book and manage reservations",
             "image": "web4.png",
-            "tools": ["ASP .NET CORE", "C#", "XUNIT", "Moq", "REST API", "ADO.NET", "SQL Server",],
+            "tools": [
+				"ASP .NET CORE", 
+				"C#", 
+				"SQL Server",
+			],
             "description": "Created a REST API for managing restaurant reservations, enabling viewing, booking, and updating of reservations.",
         },
     ],

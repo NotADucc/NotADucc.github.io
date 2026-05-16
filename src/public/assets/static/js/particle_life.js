@@ -22,9 +22,9 @@ const canvas_info = {
     FRICTION: 0.4,
     PARTICLE_SIZE: 5.0,
     MIN_DISTANCE: 6,
-    get MIN_DISTANCE_SQ() { return this.MIN_DISTANCE * this.MIN_DISTANCE; },
+    MIN_DISTANCE_SQ: 36,
     MAX_DISTANCE: 30,
-    get MAX_DISTANCE_SQ() { return this.MAX_DISTANCE * this.MAX_DISTANCE; },
+    MAX_DISTANCE_SQ: 900,
     MAX_PARTICLE_MULTIPLIER: 30,
     CANVAS_MIN_HEIGHT: 73,
     is_expanded: false,
@@ -35,13 +35,13 @@ const canvas_info = {
 
 const particle_system = {
     particles: [],
-    quadtree: null,
+    container: null,
     get length() {
         return this.particles.length;
     },
     create_particles(multiplier) {
         this.clear_particles();
-        this.quadtree = new QuadTree(
+        this.container = new QuadTree(
             new Rectangle(DOM_elements.canvas.width / 2, DOM_elements.canvas.height / 2, DOM_elements.canvas.width, DOM_elements.canvas.height)
         );
         for (const [key, value] of this.info.entries()) {
@@ -55,21 +55,61 @@ const particle_system = {
                     bounds: value.bounds
                 };
                 this.particles.push(particle);
-                this.quadtree.insert(particle);
+                this.container.insert(particle);
             }
         }
     },
     clear_particles() {
         this.particles.length = 0;
-        this.quadtree = null;
+        this.container = null;
     },
     update_positions() {
-        calc_next_positions();
-        this.quadtree.update_tree(this.quadtree);
-        this.quadtree.remove_nodes();
+        const canvas_width = DOM_elements.canvas.width;
+        const canvas_height = DOM_elements.canvas.height;
+        for (let i = 0; i < particle_system.length; i++) {
+            let fx = 0.0;
+            let fy = 0.0;
+
+            const seeker = particle_system.particles[i];
+            const rect = new Rectangle(seeker.position[0], seeker.position[1], canvas_info.MAX_DISTANCE, canvas_info.MAX_DISTANCE);
+            const targets = particle_system.query_particles(rect);
+            const seeker_attractions = particle_system.info[seeker.key].attraction;
+
+            for (let j = 0; j < targets.length; j++) {
+                const target = targets[j];
+                const attraction = seeker_attractions[target.key];
+                if (attraction == 0) continue;
+                let dx = seeker.position[0] - target.position[0];
+                let dy = seeker.position[1] - target.position[1];
+                if (!seeker.bounds && !target.bounds) {
+                    dx = Math.abs(dx);
+                    dy = Math.abs(dy);
+                    if (dx > canvas_width >> 1) dx = canvas_width - dx;
+                    if (dy > canvas_height >> 1) dy = canvas_height - dy;
+                }
+
+                const d = dx * dx + dy * dy;
+                if (d == 0 || d > canvas_info.MAX_DISTANCE_SQ) continue;
+                
+                const d_sqrt = Math.sqrt(d);
+                // true path fixed repulsion
+                const F = (d_sqrt <= canvas_info.MIN_DISTANCE ? 0.3 : -attraction) / d_sqrt;
+
+                fx += F * dx;
+                fy += F * dy;
+            }
+
+            seeker.velocity[0] = (seeker.velocity[0] + fx) * canvas_info.FRICTION;
+            seeker.velocity[1] = (seeker.velocity[1] + fy) * canvas_info.FRICTION;
+            seeker.position[0] = (seeker.position[0] + seeker.velocity[0] + canvas_width) % canvas_width;
+            seeker.position[1] = (seeker.position[1] + seeker.velocity[1] + canvas_height) % canvas_height;
+        }
+        // cleanup quadtree
+        this.container.update_tree(this.container);
+        this.container.remove_nodes();
     },
     query_particles(rect) {
-        return this.quadtree.query(rect, []);
+        return this.container.query(rect, []);
     },
     info: [
         {
@@ -108,53 +148,11 @@ const particle_system = {
 // gets overwritten depending on ctx
 let draw_particles = () => {}, update_viewport = () => {};
 
-const calc_next_positions = () => {
-    const canvas_width = DOM_elements.canvas.width;
-    const canvas_height = DOM_elements.canvas.height;
-    for (let i = 0; i < particle_system.length; i++) {
-        let fx = 0.0;
-        let fy = 0.0;
-
-        const seeker = particle_system.particles[i];
-        const rect = new Rectangle(seeker.position[0], seeker.position[1], canvas_info.MAX_DISTANCE, canvas_info.MAX_DISTANCE);
-        const targets = particle_system.query_particles(rect);
-
-        for (let j = 0; j < targets.length; j++) {
-            const target = targets[j];
-            const attraction = particle_system.info[seeker.key].attraction[target.key];
-            if (attraction == 0) continue;
-            let dx = seeker.position[0] - target.position[0];
-            let dy = seeker.position[1] - target.position[1];
-            if (!seeker.bounds && !target.bounds) {
-                dx = Math.abs(dx);
-                dy = Math.abs(dy);
-                if (dx > canvas_width >> 1) dx = canvas_width - dx;
-                if (dy > canvas_height >> 1) dy = canvas_height - dy;
-            }
-
-            const d = dx * dx + dy * dy;
-            if (d == 0 || d > canvas_info.MAX_DISTANCE_SQ) continue;
-            
-            const d_sqrt = Math.sqrt(d);
-            // true path fixed repulsion
-            const F = (d_sqrt <= canvas_info.MIN_DISTANCE ? 0.3 : -attraction) / d_sqrt;
-
-            fx += F * dx;
-            fy += F * dy;
-        }
-
-        seeker.velocity[0] = (seeker.velocity[0] + fx) * canvas_info.FRICTION;
-        seeker.velocity[1] = (seeker.velocity[1] + fy) * canvas_info.FRICTION;
-        seeker.position[0] = (seeker.position[0] + seeker.velocity[0] + canvas_width) % canvas_width;
-        seeker.position[1] = (seeker.position[1] + seeker.velocity[1] + canvas_height) % canvas_height;
-    }
-}
-
 let current_update_frame;
-const update_particles = () => {
+const particles_render_loop = () => {
     particle_system.update_positions();
     draw_particles();
-    current_update_frame = requestAnimationFrame(update_particles);
+    current_update_frame = requestAnimationFrame(particles_render_loop);
 }
 
 const update_width = (new_width) => {
@@ -179,7 +177,7 @@ const animate_header = (index, start, stop) => {
         update_height(stop);
         update_viewport();
         particle_system.create_particles(canvas_info.get_redraw_multiplier());
-        update_particles();
+        particles_render_loop();
     }
 }
 
@@ -258,9 +256,20 @@ const init = () => {
         const positionBuffer = gl.createBuffer();
         const colorBuffer = gl.createBuffer();
         
+        let positions = null;
+        let colors = null;
+
+        const ensureBuffers = () => {
+            const particleCount = particle_system.length;
+
+            if (!positions || positions.length !== particleCount * 2) {
+                positions = new Float32Array(particleCount * 2);
+                colors = new Float32Array(particleCount * 4);
+            }
+        };
+
         draw_particles = () => {   
-            const positions = new Float32Array(particle_system.length << 1);
-            const colors = new Float32Array(particle_system.length << 2);
+            ensureBuffers();
             
             for (let i = 0; i < particle_system.length; i++) {
                 const particle = particle_system.particles[i];
@@ -307,7 +316,7 @@ const init = () => {
         }
     }
     window.dispatchEvent(new CustomEvent("resize"));
-    update_particles();
+    particles_render_loop();
 }
 
 

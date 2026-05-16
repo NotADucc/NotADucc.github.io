@@ -19,17 +19,17 @@ export class Rectangle {
     }
 
     contains(x, y) {
-        return x >= this.minX &
-            x <= this.maxX &
-            y >= this.minY &
+        return x >= this.minX &&
+            x <= this.maxX &&
+            y >= this.minY &&
             y <= this.maxY;
     }
 
 
     intersects(range) {
-        return this.maxX >= range.minX &
-            this.minX <= range.maxX &
-            this.maxY >= range.minY &
+        return this.maxX >= range.minX &&
+            this.minX <= range.maxX &&
+            this.maxY >= range.minY &&
             this.minY <= range.maxY;
     }
 }
@@ -141,7 +141,7 @@ export class QuadTree {
     }
 
     query(range, found) {
-        if (!this.boundary.intersects(range) || !range.intersects(this.boundary)) {
+        if (!this.boundary.intersects(range)) {
             return found;
         }
 

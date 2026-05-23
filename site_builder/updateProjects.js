@@ -7,8 +7,8 @@ const main_data =
     "Projects" :
     [
         {
-            "title": "OSRS Hiscore scrape",
-            "under_title": "Scripts to interact with OSRS hiscores.",
+            "title": "OSRS Hiscore scraper",
+            "under_title": "CLI scripts for scraping and querying OSRS hiscores. ",
             "image": "osrs-hiscore.png",
             "tools": [
 				"Python", 

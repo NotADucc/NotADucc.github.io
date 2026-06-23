@@ -98,7 +98,7 @@ const main_data =
         },
         {
             "title": "Electronic Receipts",
-            "under_title": "Tool created to manage expenses",
+            "under_title": "Bookkeeping Management Tool (Internship)",
             "image": "electronic-receipts.png",
             "tools": [
 				".NET Framework", 
@@ -109,7 +109,12 @@ const main_data =
 				"SAP Crystal Reports", 
 				"OpenXML"
 			],
-            "description": "An internal bookkeeping tool, it allows users to manage expenses made for customers or generate PDFs and Excel reports.",
+            "description": `
+                As part of my internship at DVC Heilig Hart, I was responsible for migrating a legacy Visual Basic (VB) application to .NET C#. The application is an internal bookkeeping and order management system used by employees to manage customer-related expenses and orders.
+                The tool allows staff to create, edit, and delete customer orders through a centralized interface, streamlining administrative workflows and reducing manual paperwork. In addition, I implemented functionality to generate Excel reports, providing bookkeepers with clear overviews of orders and financial data, as well as PDF invoice generation for customer billing.
+                <br><br>
+                This project gave me hands-on experience with modernizing legacy software, working with business requirements, and developing features that directly supported the daily operations of administrative and bookkeeping staff.
+            `
         },
         {
             "title": "Monkeys",

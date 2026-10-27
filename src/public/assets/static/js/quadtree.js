@@ -12,7 +12,34 @@ export class QuadTree {
         this.southwest = null;
     }
 
-    update_tree(main_tree) {
+    update_positions() {
+        this._update_tree(this);
+        this._remove_nodes();
+    }
+
+    insert(particle) {
+        if (!this.boundary.contains(particle.position[0], particle.position[1])) {
+            return false;
+        }
+
+        if (!this.divided && this.particles.length < this.capacity) {
+            this.particles.push(particle);
+            return true;
+        } else {
+            this._subdivide();
+
+            return this.northeast.insert(particle) ||
+                this.northwest.insert(particle) ||
+                this.southeast.insert(particle) ||
+                this.southwest.insert(particle);
+        }
+    }
+
+    query(range) {
+        return this._fetch_particles(range, []);
+    }
+
+    _update_tree(main_tree) {
         if (!this.divided) {
             let new_len = this.particles.length;
             for (let i = 0; i < new_len;) {
@@ -27,14 +54,14 @@ export class QuadTree {
 
             this.particles.length = new_len;
         } else {
-            this.northeast.update_tree(main_tree);
-            this.northwest.update_tree(main_tree);
-            this.southeast.update_tree(main_tree);
-            this.southwest.update_tree(main_tree);
+            this.northeast._update_tree(main_tree);
+            this.northwest._update_tree(main_tree);
+            this.southeast._update_tree(main_tree);
+            this.southwest._update_tree(main_tree);
         }
     }
 
-    remove_nodes() {
+    _remove_nodes() {
         if (this.divided) {
             if (!(this.northeast.divided || this.northwest.divided || this.southeast.divided || this.southwest.divided)) {
                 const len = this.northeast.particles.length +
@@ -56,33 +83,14 @@ export class QuadTree {
                 }
             }
         } else {
-            this.northeast.remove_nodes();
-            this.northwest.remove_nodes();
-            this.southeast.remove_nodes();
-            this.southwest.remove_nodes();
+            this.northeast._remove_nodes();
+            this.northwest._remove_nodes();
+            this.southeast._remove_nodes();
+            this.southwest._remove_nodes();
         }
     }
 
-
-    insert(particle) {
-        if (!this.boundary.contains(particle.position[0], particle.position[1])) {
-            return false;
-        }
-
-        if (!this.divided && this.particles.length < this.capacity) {
-            this.particles.push(particle);
-            return true;
-        } else {
-            this.subdivide();
-
-            return this.northeast.insert(particle) ||
-                this.northwest.insert(particle) ||
-                this.southeast.insert(particle) ||
-                this.southwest.insert(particle);
-        }
-    }
-
-    subdivide() {
+    _subdivide() {
         if (this.divided) return;
 
         let x = this.boundary.x;
@@ -106,7 +114,7 @@ export class QuadTree {
         this.particles = [];
     }
 
-    query(range, found) {
+    _fetch_particles(range, found) {
         if (!this.boundary.intersects(range)) {
             return found;
         }
@@ -118,10 +126,10 @@ export class QuadTree {
         }
 
         if (this.divided) {
-            this.northwest.query(range, found);
-            this.northeast.query(range, found);
-            this.southwest.query(range, found);
-            this.southeast.query(range, found);
+            this.northwest._fetch_particles(range, found);
+            this.northeast._fetch_particles(range, found);
+            this.southwest._fetch_particles(range, found);
+            this.southeast._fetch_particles(range, found);
         }
 
         return found;

@@ -147,12 +147,11 @@ const particle_system = {
             seeker.position[0] = (seeker.position[0] + seeker.velocity[0] + canvas_width) % canvas_width;
             seeker.position[1] = (seeker.position[1] + seeker.velocity[1] + canvas_height) % canvas_height;
         }
-        // cleanup quadtree
-        this.container.update_tree(this.container);
-        this.container.remove_nodes();
+        // cleanup container
+        this.container.update_positions();
     },
     query_particles(rect) {
-        return this.container.query(rect, []);
+        return this.container.query(rect);
     },
     info: [
         {

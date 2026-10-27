@@ -1,5 +1,6 @@
 import { bezier } from './bezier.js';
-import { Rectangle, QuadTree } from './quadtree.js';
+import { Rectangle } from './rectangle.js';
+import { QuadTree } from './quadtree.js';
 
 const is_mobile = () => /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent),
     random = (size) => Math.random() * size,
@@ -71,22 +72,64 @@ const particle_system = {
             let fy = 0.0;
 
             const seeker = particle_system.particles[i];
-            const rect = new Rectangle(seeker.position[0], seeker.position[1], canvas_info.MAX_DISTANCE, canvas_info.MAX_DISTANCE);
-            const targets = particle_system.query_particles(rect);
+            const seeker_x = seeker.position[0];
+            const seeker_y = seeker.position[1];
+            const rect_radius = canvas_info.MAX_DISTANCE;
+
             const seeker_attractions = particle_system.info[seeker.key].attraction;
 
-            for (let j = 0; j < targets.length; j++) {
-                const target = targets[j];
+            const rect = new Rectangle(seeker_x, seeker_y, rect_radius, rect_radius)
+
+            const targets = new Set(
+                particle_system.query_particles(rect)
+            );
+
+            // horizontal borders.
+            if (seeker_x < rect_radius) {
+                rect.update(
+                    canvas_width - (rect_radius - seeker_x), seeker_y, rect_radius - seeker_x, rect_radius
+                )
+
+                for (const p of particle_system.query_particles(rect)) 
+                    targets.add(p);
+            } else if (canvas_width - seeker_x < rect_radius) {
+                rect.update(
+                    0, seeker_y, rect_radius - (canvas_width - seeker_x), rect_radius
+                )
+                for (const p of particle_system.query_particles(rect)) 
+                    targets.add(p);
+            }
+
+            // vertical borders.
+            if (seeker_y < rect_radius) {
+                rect.update(
+                    seeker_x, canvas_height - (rect_radius - seeker_y), rect_radius, rect_radius - seeker_y
+                )
+                for (const p of particle_system.query_particles(rect)) 
+                    targets.add(p);
+            } else if (canvas_height - seeker_y < rect_radius) {
+                rect.update(
+                    seeker_x, 0, rect_radius, rect_radius - (canvas_height - seeker_y)
+                )
+                for (const p of particle_system.query_particles(rect)) 
+                    targets.add(p);
+            }
+
+            for (const target of targets) {
                 const attraction = seeker_attractions[target.key];
                 if (attraction == 0) continue;
-                let dx = seeker.position[0] - target.position[0];
-                let dy = seeker.position[1] - target.position[1];
-                if (!seeker.bounds && !target.bounds) {
-                    dx = Math.abs(dx);
-                    dy = Math.abs(dy);
-                    if (dx > canvas_width >> 1) dx = canvas_width - dx;
-                    if (dy > canvas_height >> 1) dy = canvas_height - dy;
-                }
+
+                let dx = seeker_x - target.position[0];
+                let dy = seeker_y - target.position[1];
+
+                const half_width = canvas_width * 0.5;
+                const half_height = canvas_height * 0.5;
+
+                if (dx > half_width) dx -= canvas_width;
+                else if (dx < -half_width) dx += canvas_width;
+
+                if (dy > half_height) dy -= canvas_height;
+                else if (dy < -half_height) dy += canvas_height;
 
                 const d = dx * dx + dy * dy;
                 if (d == 0 || d > canvas_info.MAX_DISTANCE_SQ) continue;

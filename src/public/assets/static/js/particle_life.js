@@ -80,9 +80,7 @@ const particle_system = {
 
             const rect = new Rectangle(seeker_x, seeker_y, rect_radius, rect_radius)
 
-            const targets = new Set(
-                particle_system.query_particles(rect)
-            );
+            const targets = particle_system.query_particles(rect)
 
             // horizontal borders.
             if (seeker_x < rect_radius) {
@@ -91,13 +89,13 @@ const particle_system = {
                 )
 
                 for (const p of particle_system.query_particles(rect)) 
-                    targets.add(p);
+                    targets.push(p);
             } else if (canvas_width - seeker_x < rect_radius) {
                 rect.update(
                     0, seeker_y, rect_radius - (canvas_width - seeker_x), rect_radius
                 )
                 for (const p of particle_system.query_particles(rect)) 
-                    targets.add(p);
+                    targets.push(p);
             }
 
             // vertical borders.
@@ -106,13 +104,13 @@ const particle_system = {
                     seeker_x, canvas_height - (rect_radius - seeker_y), rect_radius, rect_radius - seeker_y
                 )
                 for (const p of particle_system.query_particles(rect)) 
-                    targets.add(p);
+                    targets.push(p);
             } else if (canvas_height - seeker_y < rect_radius) {
                 rect.update(
                     seeker_x, 0, rect_radius, rect_radius - (canvas_height - seeker_y)
                 )
                 for (const p of particle_system.query_particles(rect)) 
-                    targets.add(p);
+                    targets.push(p);
             }
 
             for (const target of targets) {

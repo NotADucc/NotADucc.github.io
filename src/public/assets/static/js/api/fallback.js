@@ -19,7 +19,7 @@ export default class Canvas2DBackend {
         this.container = new QuadTree(
             new Rectangle(this.canvas.width / 2, this.canvas.height / 2, this.canvas.width, this.canvas.height)
         );
-        for(const particle in particles) this.container.insert(particle)
+        for(const particle of particles) this.container.insert(particle)
     }
 
     step() {
@@ -32,26 +32,26 @@ export default class Canvas2DBackend {
             const seeker = this.particles[i];
             const seeker_x = seeker.position[0];
             const seeker_y = seeker.position[1];
-            const rect_radius = canvas_info.MAX_DISTANCE;
+            const rect_radius = this.settings.MAX_DISTANCE;
 
-            const seeker_attractions = particle_system.info[seeker.key].attraction;
+            const seeker_attractions = this.species[seeker.key].attraction;
 
             const rect = new Rectangle(seeker_x, seeker_y, rect_radius, rect_radius)
 
-            const targets = particle_system.query_particles(rect)
+            const targets = this._query_particles(rect)
 
             // horizontal borders.
             if (seeker_x < rect_radius) {
                 rect.update(
                     canvas_width - (rect_radius - seeker_x), seeker_y, rect_radius - seeker_x, rect_radius
                 )
-                for (const p of particle_system.query_particles(rect)) 
+                for (const p of this._query_particles(rect)) 
                     targets.push(p);
             } else if (canvas_width - seeker_x < rect_radius) {
                 rect.update(
                     0, seeker_y, rect_radius - (canvas_width - seeker_x), rect_radius
                 )
-                for (const p of particle_system.query_particles(rect)) 
+                for (const p of this._query_particles(rect)) 
                     targets.push(p);
             }
 
@@ -60,13 +60,13 @@ export default class Canvas2DBackend {
                 rect.update(
                     seeker_x, canvas_height - (rect_radius - seeker_y), rect_radius, rect_radius - seeker_y
                 )
-                for (const p of particle_system.query_particles(rect)) 
+                for (const p of this._query_particles(rect)) 
                     targets.push(p);
             } else if (canvas_height - seeker_y < rect_radius) {
                 rect.update(
                     seeker_x, 0, rect_radius, rect_radius - (canvas_height - seeker_y)
                 )
-                for (const p of particle_system.query_particles(rect)) 
+                for (const p of this._query_particles(rect)) 
                     targets.push(p);
             }
 
@@ -87,18 +87,18 @@ export default class Canvas2DBackend {
                 else if (dy < -half_height) dy += canvas_height;
 
                 const d = dx * dx + dy * dy;
-                if (d == 0 || d > canvas_info.MAX_DISTANCE_SQ) continue;
+                if (d <= 0 || d > this.settings.MAX_DISTANCE_SQ) continue;
                 
                 const d_sqrt = Math.sqrt(d);
                 // true path fixed repulsion
-                const F = (d_sqrt <= canvas_info.MIN_DISTANCE ? 0.3 : -attraction) / d_sqrt;
+                const F = (d_sqrt <= this.settings.MIN_DISTANCE ? 0.3 : -attraction) / d_sqrt;
 
                 fx += F * dx;
                 fy += F * dy;
             }
 
-            seeker.velocity[0] = (seeker.velocity[0] + fx) * canvas_info.FRICTION;
-            seeker.velocity[1] = (seeker.velocity[1] + fy) * canvas_info.FRICTION;
+            seeker.velocity[0] = (seeker.velocity[0] + fx) * this.settings.FRICTION;
+            seeker.velocity[1] = (seeker.velocity[1] + fy) * this.settings.FRICTION;
             seeker.position[0] = (seeker.position[0] + seeker.velocity[0] + canvas_width) % canvas_width;
             seeker.position[1] = (seeker.position[1] + seeker.velocity[1] + canvas_height) % canvas_height;
         }
@@ -124,4 +124,8 @@ export default class Canvas2DBackend {
     }
 
     destroy() {}
+
+    _query_particles(rect) {
+        return this.container.query(rect);
+    }
 }

@@ -95,12 +95,12 @@ void main() {
         if (delta.y > u_resolution.y * 0.5) delta.y -= u_resolution.y;
         else if (delta.y < -u_resolution.y * 0.5) delta.y += u_resolution.y;
 
-        float d2 = dot(delta, delta);
-        if (d2 <= 0.0 || d2 > maxDistanceSq) continue;
+        float d = dot(delta, delta);
+        if (d <= 0.0 || d > maxDistanceSq) continue;
 
-        float d = sqrt(d2);
+        float d_sqrt = sqrt(d);
         float attraction = u_attraction[ownSpecies * 3 + otherSpecies];
-        float f = (d <= u_minDistance ? 0.3 : -attraction) / d;
+        float f = (d_sqrt <= u_minDistance ? 0.3 : -attraction) / d_sqrt;
         force += f * delta;
     }
 

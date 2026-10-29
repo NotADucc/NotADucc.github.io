@@ -1,5 +1,5 @@
 import { DOM_elements, is_mobile, random } from './shared.js';
-import { header_info, animate_header, counter_button_container_on_click } from './header.js';
+import { register_header_events, header_info, animate_header, counter_button_container_on_click } from './header.js';
 import {get_particle_backend_factory} from './api/api-factory.js'
 
 const PARTICLE_WORLD_INFO = {
@@ -91,6 +91,7 @@ const particles_render_loop = () => {
 }
 
 const init = () => {
+    register_header_events();
     window.dispatchEvent(new CustomEvent("resize"));
     particle_backend = get_particle_backend_factory(DOM_elements.canvas);
     create_particles(PARTICLE_WORLD_INFO.get_redraw_multiplier());
@@ -125,4 +126,4 @@ addEventListener("header-expanded", (event) => {
     );
 });
 
-addEventListener("events-loaded", init);
+addEventListener("load", init);

@@ -30,19 +30,6 @@ export const animate_header = (index, start, stop, callback_grow, callback_finis
     }
 }
 
-DOM_elements.expand_button.addEventListener("click", (_) => {
-    header_info.is_expanded = !header_info.is_expanded;
-    DOM_elements.expand_button_triangle.classList.toggle("triangle_rotate");
-    if (!is_mobile()) DOM_elements.counter_button_container.classList.toggle("invisible");
-
-    window.dispatchEvent(new CustomEvent("header-expanded", {
-        detail: {
-            current_height: DOM_elements.canvas.height,
-            new_height: header_info.get_header_height()
-        }
-    }));
-});
-
 export const counter_button_container_on_click = (delta, multiplier, lower_bound, upper_bound) => {
     const new_multiplier = multiplier + delta;
 
@@ -61,14 +48,27 @@ export const counter_button_container_on_click = (delta, multiplier, lower_bound
     }));
 }
 
-addEventListener("resize", (_) => {
-    const height = header_info.get_header_height();
-    if (DOM_elements.canvas.width === window.innerWidth && (is_mobile() || DOM_elements.canvas.innerHeight === height)) 
-        return;
-    update_header_width(window.innerWidth);
-    update_header_height(height);
+export const register_header_events = () => {
+    DOM_elements.expand_button.addEventListener("click", (_) => {
+        header_info.is_expanded = !header_info.is_expanded;
+        DOM_elements.expand_button_triangle.classList.toggle("triangle_rotate");
+        if (!is_mobile()) DOM_elements.counter_button_container.classList.toggle("invisible");
 
-    window.dispatchEvent(new CustomEvent("header-resized"));
-});
+        window.dispatchEvent(new CustomEvent("header-expanded", {
+            detail: {
+                current_height: DOM_elements.canvas.height,
+                new_height: header_info.get_header_height()
+            }
+        }));
+    });
 
-addEventListener("load", () =>  window.dispatchEvent(new CustomEvent("events-loaded")));
+    addEventListener("resize", (_) => {
+        const height = header_info.get_header_height();
+        if (DOM_elements.canvas.width === window.innerWidth && (is_mobile() || DOM_elements.canvas.innerHeight === height)) 
+            return;
+        update_header_width(window.innerWidth);
+        update_header_height(height);
+
+        window.dispatchEvent(new CustomEvent("header-resized"));
+    });
+};

@@ -28,20 +28,6 @@ function createProgram(gl, vertexSource, fragmentSource) {
     return program;
 }
 
-const CPU_VERTEX = `#version 300 es
-precision highp float;
-in vec2 a_position;
-in vec4 a_color;
-uniform vec2 u_resolution;
-uniform float u_pointSize;
-out vec4 v_color;
-void main() {
-    vec2 clip = a_position / u_resolution * 2.0 - 1.0;
-    gl_Position = vec4(clip * vec2(1.0, -1.0), 0.0, 1.0);
-    gl_PointSize = u_pointSize;
-    v_color = a_color;
-}`;
-
 const DRAW_FRAGMENT = `#version 300 es
 precision highp float;
 in vec4 v_color;

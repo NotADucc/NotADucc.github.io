@@ -68,7 +68,6 @@ const particle_system = {
                 rect.update(
                     canvas_width - (rect_radius - seeker_x), seeker_y, rect_radius - seeker_x, rect_radius
                 )
-
                 for (const p of particle_system.query_particles(rect)) 
                     targets.push(p);
             } else if (canvas_width - seeker_x < rect_radius) {

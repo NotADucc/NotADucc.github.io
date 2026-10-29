@@ -1,4 +1,4 @@
-export const bezier = (x1, y1, x2, y2) => {
+const bezier = (x1, y1, x2, y2) => {
     const _bezier = (t, p0, p1, p2, p3) => {
         return (
             (1 - t) ** 4 * p0 +
@@ -20,3 +20,5 @@ export const bezier = (x1, y1, x2, y2) => {
         return _bezier(low, 0, y1, y2, 1);
     };
 }
+
+export default bezier;

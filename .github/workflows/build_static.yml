@@ -35,13 +35,29 @@ jobs:
           done
 
       - name: Minify JS
-        run: find ./src -type f -name "*.js" -exec terser {} -o {} \;
+        run: |
+          find ./src -type f -name "*.js" -exec terser {} \
+            --compress passes=3 \
+            --mangle \
+            --module \
+            --format comments=false \
+            -o {} \;
 
       - name: Minify CSS files
         run: find ./src -type f -name "*.css" -exec cleancss -o {} {} \;
 
       - name: Minify HTML files
-        run: find ./src -type f -name "*.html" -exec html-minifier-terser --collapse-whitespace --remove-comments -o {} {} \;
+        run: |
+          find ./src -type f -name "*.html" -exec html-minifier-terser {} \
+            --collapse-whitespace \
+            --remove-comments \
+            --remove-optional-tags \
+            --remove-redundant-attributes \
+            --remove-script-type-attributes \
+            --remove-style-link-type-attributes \
+            --minify-css true \
+            --minify-js true \
+            -o {} \;
 
       - name: Check for modified files
         id: git-check

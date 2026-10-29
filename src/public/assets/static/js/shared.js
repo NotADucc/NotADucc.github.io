@@ -1,4 +1,4 @@
-import { bezier } from './bezier.js';
+import bezier from './bezier.js';
 
 export const DOM_elements = {
     canvas: document.getElementById("noise"),

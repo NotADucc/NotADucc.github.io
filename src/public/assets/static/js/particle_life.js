@@ -1,23 +1,7 @@
-import { bezier } from './bezier.js';
+import { DOM_elements, is_mobile, random } from './shared.js';
+import { header_info, animate_header, counter_button_container_on_click } from './header.js';
 import { Rectangle } from './rectangle.js';
 import { QuadTree } from './quadtree.js';
-
-const is_mobile = () => /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent),
-    random = (size) => Math.random() * size,
-    easingFunction = bezier(0.45, 0.1, 0.25, 1);
-
-let ctx;
-
-const DOM_elements = {
-    canvas: document.getElementById("noise"),
-    header: document.getElementsByTagName("header")[0],
-    main: document.getElementsByTagName("main")[0],
-    expand_button: document.getElementById("expand_button"),
-    expand_button_triangle: document.getElementById("expand_button_triangle"),
-    plus_button: document.getElementById("plus_button"),
-    minus_button: document.getElementById("minus_button"),
-    counter: document.getElementById("counter"),
-}
 
 const canvas_info = {
     FRICTION: 0.4,
@@ -27,11 +11,8 @@ const canvas_info = {
     MAX_DISTANCE: 30,
     MAX_DISTANCE_SQ: 900,
     MAX_PARTICLE_MULTIPLIER: 30,
-    CANVAS_MIN_HEIGHT: 73,
-    is_expanded: false,
     multiplier: is_mobile() ? 3 : 10,
-    get_redraw_multiplier: () => DOM_elements.canvas.height <= canvas_info.CANVAS_MIN_HEIGHT ? 1 : canvas_info.multiplier,
-    get_canvas_height: () => canvas_info.is_expanded ? is_mobile() ? window.innerHeight >> 1 : window.innerHeight : canvas_info.CANVAS_MIN_HEIGHT,
+    get_redraw_multiplier: () => DOM_elements.canvas.height <= header_info.HEADER_MIN_HEIGHT ? 1 : canvas_info.multiplier,
 }
 
 const particle_system = {
@@ -185,8 +166,19 @@ const particle_system = {
     ]
 }
 
-// gets overwritten depending on ctx
-let draw_particles = () => {};
+const ctx = DOM_elements.canvas.getContext('2d');
+let draw_particles = () => {
+    const draw = (x, y, c, w, h) => {
+        ctx.fillStyle = c;
+        ctx.fillRect(x, y, w, h);
+    };
+
+    ctx.clearRect(0, 0, DOM_elements.canvas.width, DOM_elements.canvas.height);
+    for (let i = 0; i < particle_system.length; i++) {
+        const particle = particle_system.particles[i];
+        draw(particle.position[0], particle.position[1], particle.color[4], canvas_info.PARTICLE_SIZE, canvas_info.PARTICLE_SIZE);
+    }
+};
 
 let current_update_frame;
 const particles_render_loop = () => {
@@ -195,46 +187,7 @@ const particles_render_loop = () => {
     current_update_frame = requestAnimationFrame(particles_render_loop);
 }
 
-const update_width = (new_width) => {
-    DOM_elements.canvas.width = new_width;
-}
-
-const update_height = (new_height) => {
-    DOM_elements.canvas.height = new_height;
-    DOM_elements.header.style.height = DOM_elements.main.style.marginTop = `${new_height}px`;
-}
-
-const animate_header = (index, start, stop) => {
-    if (index <= 1) {
-        const new_height = start + (stop - start) * easingFunction(index);
-        update_height(new_height);
-        requestAnimationFrame(() => animate_header(index + 0.01, start, stop));
-        particle_system.create_particles(1);
-        draw_particles();
-    }
-    else {
-        update_height(stop);
-        particle_system.create_particles(canvas_info.get_redraw_multiplier());
-        particles_render_loop();
-    }
-}
-
-
 const init = () => {
-    ctx = DOM_elements.canvas.getContext('2d');
-
-    const draw = (x, y, c, w, h) => {
-        ctx.fillStyle = c;
-        ctx.fillRect(x, y, w, h);
-    }
-
-    draw_particles = () => {
-        ctx.clearRect(0, 0, DOM_elements.canvas.width, DOM_elements.canvas.height);
-        for (let i = 0; i < particle_system.length; i++) {
-            const particle = particle_system.particles[i];
-            draw(particle.position[0], particle.position[1], particle.color[4], canvas_info.PARTICLE_SIZE, canvas_info.PARTICLE_SIZE);
-        }
-    }
     window.dispatchEvent(new CustomEvent("resize"));
     particles_render_loop();
 }
@@ -242,40 +195,30 @@ const init = () => {
 
 // EVENT LISTENERS
 
-DOM_elements.expand_button.addEventListener("click", (_) => {
-    canvas_info.is_expanded = !canvas_info.is_expanded;
-    const new_height = canvas_info.get_canvas_height();
-    DOM_elements.expand_button_triangle.classList.toggle("triangle_rotate");
-    if (!is_mobile()) DOM_elements.counter.classList.toggle("invisible");
+DOM_elements.plus_button.addEventListener("click", () => counter_button_container_on_click(1, canvas_info.multiplier, 1, canvas_info.MAX_PARTICLE_MULTIPLIER));
+DOM_elements.minus_button.addEventListener("click", () => counter_button_container_on_click(-1, canvas_info.multiplier, 1, canvas_info.MAX_PARTICLE_MULTIPLIER));
+
+addEventListener("counter-changed", (event) => {
+    canvas_info.multiplier = event.detail.multiplier;
+    particle_system.create_particles(canvas_info.get_redraw_multiplier());
+});
+
+addEventListener("header-resized",  () => particle_system.create_particles(canvas_info.get_redraw_multiplier()));
+addEventListener("header-expanded", (event) => {
     cancelAnimationFrame(current_update_frame);
-    animate_header(0.0, DOM_elements.canvas.height, new_height);
+    animate_header(
+        0.0, 
+        event.detail.current_height, 
+        event.detail.new_height,
+        () => {
+            particle_system.create_particles(1);
+            draw_particles();
+        },
+        () => {
+            particle_system.create_particles(canvas_info.get_redraw_multiplier());
+            particles_render_loop();
+        }
+    );
 });
 
-const change_multiplier = (delta) => {
-    const new_multiplier = canvas_info.multiplier + delta;
-
-    if (new_multiplier < 1 || new_multiplier > canvas_info.MAX_PARTICLE_MULTIPLIER) return;
-
-    canvas_info.multiplier = new_multiplier;
-    particle_system.create_particles(canvas_info.get_redraw_multiplier());
-
-    DOM_elements.plus_button.disabled = canvas_info.multiplier >= canvas_info.MAX_PARTICLE_MULTIPLIER;
-    DOM_elements.minus_button.disabled = canvas_info.multiplier <= 1;
-
-    DOM_elements.plus_button.classList.toggle("disabled", DOM_elements.plus_button.disabled);
-    DOM_elements.minus_button.classList.toggle("disabled", DOM_elements.minus_button.disabled);
-}
-
-DOM_elements.plus_button.addEventListener("click", () => change_multiplier(1));
-DOM_elements.minus_button.addEventListener("click", () => change_multiplier(-1));
-
-addEventListener("resize", (_) => {
-    const height = canvas_info.get_canvas_height();
-    if (DOM_elements.canvas.width === window.innerWidth && (is_mobile() || DOM_elements.canvas.innerHeight === height)) 
-        return;
-    update_width(window.innerWidth);
-    update_height(height);
-    particle_system.create_particles(canvas_info.get_redraw_multiplier());
-});
-
-addEventListener("load", init);
+addEventListener("events-loaded", init);

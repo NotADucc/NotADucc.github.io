@@ -35,7 +35,13 @@ jobs:
           done
 
       - name: Minify JS
-        run: find ./src -type f -name "*.js" -exec terser {} -o {} \;
+        run: |
+          find ./src -type f -name "*.js" -exec terser {} \
+            --compress passes=3 \
+            --mangle \
+            --module \
+            --format comments=false \
+            -o {} \;
 
       - name: Minify CSS files
         run: find ./src -type f -name "*.css" -exec cleancss -o {} {} \;

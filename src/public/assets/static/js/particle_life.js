@@ -186,7 +186,7 @@ const particle_system = {
 }
 
 // gets overwritten depending on ctx
-let draw_particles = () => {}, update_viewport = () => {};
+let draw_particles = () => {};
 
 let current_update_frame;
 const particles_render_loop = () => {
@@ -208,14 +208,12 @@ const animate_header = (index, start, stop) => {
     if (index <= 1) {
         const new_height = start + (stop - start) * easingFunction(index);
         update_height(new_height);
-        update_viewport();
         requestAnimationFrame(() => animate_header(index + 0.01, start, stop));
         particle_system.create_particles(1);
         draw_particles();
     }
     else {
         update_height(stop);
-        update_viewport();
         particle_system.create_particles(canvas_info.get_redraw_multiplier());
         particles_render_loop();
     }
@@ -223,136 +221,18 @@ const animate_header = (index, start, stop) => {
 
 
 const init = () => {
-    ctx = DOM_elements.canvas.getContext('webgl2');
-    if (ctx) {
-        const gl = ctx;
+    ctx = DOM_elements.canvas.getContext('2d');
 
-        update_viewport = () => {
-            gl.viewport(0, 0, ctx.drawingBufferWidth, ctx.drawingBufferHeight);
-        }
-        const vertexShaderSrc = `
-            precision lowp float;
+    const draw = (x, y, c, w, h) => {
+        ctx.fillStyle = c;
+        ctx.fillRect(x, y, w, h);
+    }
 
-            attribute vec2 a_position;
-            attribute vec4 a_color;
-
-            uniform vec2 u_resolution;
-            uniform float u_pointSize;
-            
-            varying vec4 v_color;
-        
-            void main() {
-                vec2 zeroToOne = a_position / u_resolution;
-                vec2 zeroToTwo = zeroToOne * 2.0;
-                vec2 clipSpace = zeroToTwo - 1.0;
-        
-                gl_Position = vec4(clipSpace * vec2(1, -1), 0, 1);
-                gl_PointSize  = u_pointSize;
-                v_color = a_color;
-            }
-        `;
-
-        const fragmentShaderSrc = `
-            precision lowp float;
-            varying vec4 v_color;
-
-            void main() {
-                gl_FragColor = v_color;
-            }
-        `;
-
-        const createShader = (gl, type, source) => {
-            const shader = gl.createShader(type);
-            gl.shaderSource(shader, source);
-            gl.compileShader(shader);
-            if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-                console.error("Shader compile error: ", gl.getShaderInfoLog(shader));
-                gl.deleteShader(shader);
-                return null;
-            }
-            return shader;
-        }
-
-
-
-        const vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexShaderSrc);
-        const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSrc);
-
-        const program = gl.createProgram();
-        gl.attachShader(program, vertexShader);
-        gl.attachShader(program, fragmentShader);
-        gl.linkProgram(program);
-
-        if (!ctx.getProgramParameter(program, ctx.LINK_STATUS)) {
-            console.error("Program linking error: ", ctx.getProgramInfoLog(program));
-            return;
-        }
-
-        const positionLocation = gl.getAttribLocation(program, "a_position");
-        const colorLocation = gl.getAttribLocation(program, "a_color");
-        const resolutionLocation = gl.getUniformLocation(program, "u_resolution");
-        const uPointSizeLocation  = gl.getUniformLocation(program, "u_pointSize");
-        
-        const positionBuffer = gl.createBuffer();
-        const colorBuffer = gl.createBuffer();
-        
-        let positions = null;
-        let colors = null;
-
-        const ensureBuffers = () => {
-            const particleCount = particle_system.length;
-
-            if (!positions || positions.length !== particleCount * 2) {
-                positions = new Float32Array(particleCount * 2);
-                colors = new Float32Array(particleCount * 4);
-            }
-        };
-
-        draw_particles = () => {   
-            ensureBuffers();
-            
-            for (let i = 0; i < particle_system.length; i++) {
-                const particle = particle_system.particles[i];
-                positions[i << 1] = particle.position[0];
-                positions[(i << 1) + 1] = particle.position[1];
-                colors[(i << 2)] = particle.color[0];
-                colors[(i << 2) + 1] = particle.color[1];
-                colors[(i << 2) + 2] = particle.color[2];
-                colors[(i << 2) + 3] = 1;
-            }
-            
-            gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-            gl.bufferData(gl.ARRAY_BUFFER, positions, gl.DYNAMIC_DRAW);
-            gl.enableVertexAttribArray(positionLocation);
-            gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
-            
-            gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
-            gl.bufferData(gl.ARRAY_BUFFER, colors, gl.DYNAMIC_DRAW);
-            gl.enableVertexAttribArray(colorLocation);
-            gl.vertexAttribPointer(colorLocation, 4, gl.FLOAT, false, 0, 0);
-            
-            gl.useProgram(program);
-            gl.uniform2f(resolutionLocation, DOM_elements.canvas.width, DOM_elements.canvas.height);
-            gl.uniform1f(uPointSizeLocation, canvas_info.PARTICLE_SIZE);
-            gl.clear(gl.COLOR_BUFFER_BIT);
-
-            gl.drawArrays(gl.POINTS, 0, particle_system.length);
-        }
-
-    } else {
-        ctx = DOM_elements.canvas.getContext('2d');
-
-        const draw = (x, y, c, w, h) => {
-            ctx.fillStyle = c;
-            ctx.fillRect(x, y, w, h);
-        }
-
-        draw_particles = () => {
-            ctx.clearRect(0, 0, DOM_elements.canvas.width, DOM_elements.canvas.height);
-            for (let i = 0; i < particle_system.length; i++) {
-                const particle = particle_system.particles[i];
-                draw(particle.position[0], particle.position[1], particle.color[4], canvas_info.PARTICLE_SIZE, canvas_info.PARTICLE_SIZE);
-            }
+    draw_particles = () => {
+        ctx.clearRect(0, 0, DOM_elements.canvas.width, DOM_elements.canvas.height);
+        for (let i = 0; i < particle_system.length; i++) {
+            const particle = particle_system.particles[i];
+            draw(particle.position[0], particle.position[1], particle.color[4], canvas_info.PARTICLE_SIZE, canvas_info.PARTICLE_SIZE);
         }
     }
     window.dispatchEvent(new CustomEvent("resize"));
@@ -395,7 +275,6 @@ addEventListener("resize", (_) => {
         return;
     update_width(window.innerWidth);
     update_height(height);
-    update_viewport();
     particle_system.create_particles(canvas_info.get_redraw_multiplier());
 });
 

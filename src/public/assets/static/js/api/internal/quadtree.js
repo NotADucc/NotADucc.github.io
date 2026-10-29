@@ -1,6 +1,6 @@
-import { Rectangle } from './rectangle.js';
+import Rectangle from './rectangle.js';
 
-export class QuadTree {
+export default class QuadTree {
     constructor(boundary) {
         this.boundary = boundary;
         this.capacity = 64;

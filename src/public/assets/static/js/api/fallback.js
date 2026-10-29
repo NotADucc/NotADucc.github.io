@@ -1,48 +1,38 @@
-import { Rectangle } from '../rectangle.js';
-import { QuadTree } from '../quadtree.js';
+import QuadTree from "./internal/quadtree.js";
+import Rectangle from "./internal/rectangle.js";
 
-
-const particle_system = {
-    particles: [],
-    container: null,
-    get length() {
-        return this.particles.length;
-    },
-    create_particles(canvas, multiplier) {
-        this.clear_particles();
-        this.container = new QuadTree(
-            new Rectangle(canvas.width / 2, canvas.height / 2, canvas.width, canvas.height)
-        );
-        for (const [key, value] of this.info.entries()) {
-            const add_amount = value.count * multiplier;
-            for (let i = 0; i < add_amount; i++) {
-                const particle = {
-                    key: key, 
-                    position: [random(canvas.width), random(canvas.height)], 
-                    velocity: [0, 0],
-                    color: value.color, 
-                    bounds: value.bounds
-                };
-                this.particles.push(particle);
-                this.container.insert(particle);
-            }
-        }
-    },
-    clear_particles() {
-        this.particles.length = 0;
+export default class Canvas2DBackend {
+    constructor(canvas) {
+        this.canvas = canvas;
+        this.particles = null;
+        this.species = null;
         this.container = null;
-    },
-    update_positions(canvas, world_info) {
-        const canvas_width = canvas.width;
-        const canvas_height = canvas.height;
-        for (let i = 0; i < particle_system.length; i++) {
+        this.settings = null;
+        this.ctx = canvas.getContext("2d");
+        if (!this.ctx) throw new Error("Canvas 2D context is unavailable.");
+    }
+
+    initialize(particles, species, settings) {
+        this.particles = particles;
+        this.species = species;
+        this.settings = settings;
+        this.container = new QuadTree(
+            new Rectangle(this.canvas.width / 2, this.canvas.height / 2, this.canvas.width, this.canvas.height)
+        );
+        for(const particle in particles) this.container.insert(particle)
+    }
+
+    step() {
+        const canvas_width = this.canvas.width;
+        const canvas_height = this.canvas.height;
+        for (let i = 0; i < this.particles.length; i++) {
             let fx = 0.0;
             let fy = 0.0;
 
-            const seeker = particle_system.particles[i];
+            const seeker = this.particles[i];
             const seeker_x = seeker.position[0];
             const seeker_y = seeker.position[1];
-            const rect_radius = world_info.MAX_DISTANCE;
+            const rect_radius = canvas_info.MAX_DISTANCE;
 
             const seeker_attractions = particle_system.info[seeker.key].attraction;
 
@@ -55,7 +45,6 @@ const particle_system = {
                 rect.update(
                     canvas_width - (rect_radius - seeker_x), seeker_y, rect_radius - seeker_x, rect_radius
                 )
-
                 for (const p of particle_system.query_particles(rect)) 
                     targets.push(p);
             } else if (canvas_width - seeker_x < rect_radius) {
@@ -98,76 +87,41 @@ const particle_system = {
                 else if (dy < -half_height) dy += canvas_height;
 
                 const d = dx * dx + dy * dy;
-                if (d == 0 || d > world_info.MAX_DISTANCE_SQ) continue;
+                if (d == 0 || d > canvas_info.MAX_DISTANCE_SQ) continue;
                 
                 const d_sqrt = Math.sqrt(d);
                 // true path fixed repulsion
-                const F = (d_sqrt <= world_info.MIN_DISTANCE ? 0.3 : -attraction) / d_sqrt;
+                const F = (d_sqrt <= canvas_info.MIN_DISTANCE ? 0.3 : -attraction) / d_sqrt;
 
                 fx += F * dx;
                 fy += F * dy;
             }
 
-            seeker.velocity[0] = (seeker.velocity[0] + fx) * world_info.FRICTION;
-            seeker.velocity[1] = (seeker.velocity[1] + fy) * world_info.FRICTION;
+            seeker.velocity[0] = (seeker.velocity[0] + fx) * canvas_info.FRICTION;
+            seeker.velocity[1] = (seeker.velocity[1] + fy) * canvas_info.FRICTION;
             seeker.position[0] = (seeker.position[0] + seeker.velocity[0] + canvas_width) % canvas_width;
             seeker.position[1] = (seeker.position[1] + seeker.velocity[1] + canvas_height) % canvas_height;
         }
         // cleanup container
         this.container.update_positions();
-    },
-    query_particles(rect) {
-        return this.container.query(rect);
-    },
-    info: [
-        {
-            color: [0.22, 0.45, 0.91, 1, "#3875ea"],
-            count: 75,
-            bounds: true,
-            attraction: [
-                0.32,
-                -0.4,
-                -0.4
-            ]
-        },
-        {
-            color: [1, 0, 1, 1, "#ff00ff"],
-            count: 25,
-            bounds: true,
-            attraction: [
-                0.4,
-                0.1,
-                -0.2
-            ]
-        },
-        {
-            color: [0.65, 0.13, 0.38, 1, "#a62161"],
-            count: 150,
-            bounds: false,
-            attraction: [
-                0.4,
-                0,
-                -0.15
-            ]
-        },
-    ]
-}
 
-export const init_ctx = (canvas) => {
-    return canvas.getContext('2d');
-}
-
-export const draw_particles_cpu = (canvas, world_info) => {
-    const draw = (x, y, c, w, h) => {
-        ctx.fillStyle = c;
-        ctx.fillRect(x, y, w, h);
     }
 
-    return draw_particles = () => {
+    render() {
+        const ctx = this.ctx;
+        const canvas = this.canvas;
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        for (let i = 0; i < particle_system.length; i++) {
-            const particle = particle_system.particles[i];
-            draw(particle.position[0], particle.position[1], particle.color[4], world_info.PARTICLE_SIZE, world_info.PARTICLE_SIZE);
+
+        for (const p of this.particles) {
+            ctx.fillStyle = p.color?.[4] ?? "#ffffff";
+            ctx.fillRect(
+                p.position[0],
+                p.position[1],
+                this.settings.PARTICLE_SIZE,
+                this.settings.PARTICLE_SIZE
+            );
         }
     }
+
+    destroy() {}
 }

@@ -154,7 +154,7 @@ export default class WebGLBackend {
         this.particles = particles;
         this.species = species;
         this.settings = settings;
-        this.gpu.initialize(particles);
+        this.gpu.initialize(particles, species);
     }
 
     resize(_width, _height) {}
@@ -163,7 +163,6 @@ export default class WebGLBackend {
         this.gpu.simulate(
             this.canvas.width,
             this.canvas.height,
-            this.species,
             this.settings
         );
     }
@@ -193,6 +192,7 @@ class GpuSimulation {
         this.positionTextures = [];
         this.velocityTextures = [];
         this.framebuffers = [];
+        this.species = null;
         this.speciesTexture = null;
         this.simVao = gl.createVertexArray();
         this.renderVao = gl.createVertexArray();
@@ -228,10 +228,11 @@ class GpuSimulation {
         this.speciesTexture = null;
     }
 
-    initialize(particles) {
+    initialize(particles, species) {
         const gl = this.gl;
         this._deleteState();
         this.count = particles.length;
+        this.species = species;
         this.width = Math.max(1, Math.ceil(Math.sqrt(this.count)));
         this.height = Math.max(1, Math.ceil(this.count / this.width));
         const texels = this.width * this.height;
@@ -279,7 +280,7 @@ class GpuSimulation {
         gl.uniform2f(gl.getUniformLocation(program, "u_resolution"), width, height);
     }
 
-    simulate(width, height, species, settings) {
+    simulate(width, height, settings) {
         const gl = this.gl;
         if (!this.count) return;
         const next = 1 - this.current;
@@ -301,7 +302,7 @@ class GpuSimulation {
         this._common(this.simProgram, width, height);
         gl.uniform1fv(
             gl.getUniformLocation(this.simProgram, "u_attraction[0]"),
-            new Float32Array(species.flatMap(s => s.attraction))
+            new Float32Array(this.species.flatMap(s => s.attraction))
         );
         gl.uniform1f(gl.getUniformLocation(this.simProgram, "u_minDistance"), settings.MIN_DISTANCE);
         gl.uniform1f(gl.getUniformLocation(this.simProgram, "u_maxDistance"), settings.MAX_DISTANCE);

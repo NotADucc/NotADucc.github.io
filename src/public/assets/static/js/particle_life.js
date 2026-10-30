@@ -70,21 +70,12 @@ const create_particles = (multiplier) => {
 };
 
 const draw_particles = () => {
-    particle_backend?.render(
-        ATTRACTION_MATRIX.particles,
-        DOM_elements.canvas.width,
-        DOM_elements.canvas.height,
-        PARTICLE_WORLD_INFO
-    );
+    particle_backend?.render();
 };
 
 
 const particles_render_loop = () => {
-    particle_backend?.step(
-        ATTRACTION_MATRIX.particles,
-        ATTRACTION_MATRIX.info,
-        PARTICLE_WORLD_INFO
-    );
+    particle_backend?.step();
 
     draw_particles();
     current_update_frame = requestAnimationFrame(particles_render_loop);

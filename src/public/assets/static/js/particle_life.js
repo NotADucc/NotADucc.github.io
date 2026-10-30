@@ -51,7 +51,7 @@ let current_update_frame = null;
 
 const create_particles = (multiplier) => {
     const particles = [];
-
+    
     for (const [key, value] of ATTRACTION_MATRIX.entries()) {
         const add_amount = value.count * multiplier;
         for (let i = 0; i < add_amount; i++) {

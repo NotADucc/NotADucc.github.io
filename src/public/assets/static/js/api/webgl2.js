@@ -1,4 +1,4 @@
-function compileShader(gl, type, source) {
+const compileShader = (gl, type, source) => {
     const shader = gl.createShader(type);
     gl.shaderSource(shader, source);
     gl.compileShader(shader);
@@ -10,16 +10,16 @@ function compileShader(gl, type, source) {
     return shader;
 }
 
-function createProgram(gl, vertexSource, fragmentSource) {
-    const vertex = compileShader(gl, gl.VERTEX_SHADER, vertexSource);
-    const fragment = compileShader(gl, gl.FRAGMENT_SHADER, fragmentSource);
-    const program = gl.createProgram();
-    gl.attachShader(program, vertex);
-    gl.attachShader(program, fragment);
-    gl.linkProgram(program);
-    gl.deleteShader(vertex);
-    gl.deleteShader(fragment);
+const createProgram = (gl, vertexSource, fragmentSource) => {
+    const shaders = [
+        compileShader(gl, gl.VERTEX_SHADER, vertexSource),
+        compileShader(gl, gl.FRAGMENT_SHADER, fragmentSource)
+    ];
 
+    const program = gl.createProgram();
+    shaders.forEach(shader => gl.attachShader(program, shader));
+    gl.linkProgram(program);
+    shaders.forEach(shader => gl.deleteShader(shader));
     if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
         const message = gl.getProgramInfoLog(program) || "Unknown program linking error";
         gl.deleteProgram(program);
@@ -137,11 +137,7 @@ export default class WebGLBackend {
         });
         if (!this.gl) throw new Error("WebGL2 is unavailable.");
         this.gl.disable(this.gl.DEPTH_TEST);
-        this.positionBuffer = null;
         this.gpu = null;
-        this.settings = null;
-        this.species = null;
-        this.particles = null;
 
         if (!this.gl.getExtension("EXT_color_buffer_float")) {
             throw new Error("GPU simulation requires EXT_color_buffer_float.");
@@ -151,20 +147,11 @@ export default class WebGLBackend {
 
 
     initialize(particles, species, settings) {
-        this.particles = particles;
-        this.species = species;
-        this.settings = settings;
-        this.gpu.initialize(particles, species);
+        this.gpu.initialize(particles, species, settings);
     }
 
-    resize(_width, _height) {}
-
     step() {
-        this.gpu.simulate(
-            this.canvas.width,
-            this.canvas.height,
-            this.settings
-        );
+        this.gpu.simulate(this.canvas.width, this.canvas.height);
     }
 
     render() {
@@ -174,7 +161,7 @@ export default class WebGLBackend {
         gl.clearColor(...this.background);
         gl.clear(gl.COLOR_BUFFER_BIT);
 
-        this.gpu.render(this.canvas.width, this.canvas.height, this.settings.PARTICLE_SIZE);
+        this.gpu.render(this.canvas.width, this.canvas.height);
     }
 
     destroy() {
@@ -194,6 +181,7 @@ class GpuSimulation {
         this.framebuffers = [];
         this.species = null;
         this.speciesTexture = null;
+        this.settings = null;
         this.simVao = gl.createVertexArray();
         this.renderVao = gl.createVertexArray();
         const fullscreenVertex = `#version 300 es
@@ -208,19 +196,23 @@ class GpuSimulation {
         const gl = this.gl;
         const texture = gl.createTexture();
         gl.bindTexture(gl.TEXTURE_2D, texture);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+        for (const [parameter, value] of [
+            [gl.TEXTURE_MIN_FILTER, gl.NEAREST],
+            [gl.TEXTURE_MAG_FILTER, gl.NEAREST],
+            [gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE],
+            [gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE]
+        ]) {
+            gl.texParameteri(gl.TEXTURE_2D, parameter, value);
+        }
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA32F, width, height, 0, gl.RGBA, gl.FLOAT, data);
         return texture;
     }
 
     _deleteState() {
         const gl = this.gl;
-        for (const t of this.positionTextures) gl.deleteTexture(t);
-        for (const t of this.velocityTextures) gl.deleteTexture(t);
-        for (const f of this.framebuffers) gl.deleteFramebuffer(f);
+        this.positionTextures.forEach(t => gl.deleteTexture(t));
+        this.velocityTextures.forEach(t => gl.deleteTexture(t));
+        this.framebuffers.forEach(f => gl.deleteFramebuffer(f));
         if (this.speciesTexture) gl.deleteTexture(this.speciesTexture);
         this.positionTextures = [];
         this.velocityTextures = [];
@@ -228,13 +220,14 @@ class GpuSimulation {
         this.speciesTexture = null;
     }
 
-    initialize(particles, species) {
+    initialize(particles, species, settings) {
         const gl = this.gl;
         this._deleteState();
         this.count = particles.length;
         this.species = species;
         this.width = Math.max(1, Math.ceil(Math.sqrt(this.count)));
         this.height = Math.max(1, Math.ceil(this.count / this.width));
+        this.settings = settings;
         const texels = this.width * this.height;
         const pos = new Float32Array(texels * 4);
         const vel = new Float32Array(texels * 4);
@@ -242,14 +235,11 @@ class GpuSimulation {
 
         for (let i = 0; i < this.count; i++) {
             const o = i * 4;
-            pos[o] = particles[i].position[0];
-            pos[o + 1] = particles[i].position[1];
-            pos[o + 3] = 1;
-            vel[o] = particles[i].velocity[0];
-            vel[o + 1] = particles[i].velocity[1];
-            vel[o + 3] = 1;
-            sp[o] = particles[i].key;
-            sp[o + 3] = 1;
+            const p = particles[i];
+            
+            pos.set([...p.position, 0, 1], o);
+            vel.set([...p.velocity, 0, 1], o);
+            sp.set([p.key, 0, 0, 1], o);
         }
 
         for (let i = 0; i < 2; i++) {
@@ -280,7 +270,7 @@ class GpuSimulation {
         gl.uniform2f(gl.getUniformLocation(program, "u_resolution"), width, height);
     }
 
-    simulate(width, height, settings) {
+    simulate(width, height) {
         const gl = this.gl;
         if (!this.count) return;
         const next = 1 - this.current;
@@ -304,15 +294,15 @@ class GpuSimulation {
             gl.getUniformLocation(this.simProgram, "u_attraction[0]"),
             new Float32Array(this.species.flatMap(s => s.attraction))
         );
-        gl.uniform1f(gl.getUniformLocation(this.simProgram, "u_minDistance"), settings.MIN_DISTANCE);
-        gl.uniform1f(gl.getUniformLocation(this.simProgram, "u_maxDistance"), settings.MAX_DISTANCE);
-        gl.uniform1f(gl.getUniformLocation(this.simProgram, "u_friction"), settings.FRICTION);
+        gl.uniform1f(gl.getUniformLocation(this.simProgram, "u_minDistance"), this.settings.MIN_DISTANCE);
+        gl.uniform1f(gl.getUniformLocation(this.simProgram, "u_maxDistance"), this.settings.MAX_DISTANCE);
+        gl.uniform1f(gl.getUniformLocation(this.simProgram, "u_friction"), this.settings.FRICTION);
         gl.drawArrays(gl.TRIANGLES, 0, 3);
         gl.bindFramebuffer(gl.FRAMEBUFFER, null);
         this.current = next;
     }
 
-    render(width, height, pointSize) {
+    render(width, height) {
         const gl = this.gl;
         gl.bindFramebuffer(gl.FRAMEBUFFER, null);
         gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
@@ -325,7 +315,7 @@ class GpuSimulation {
         gl.bindTexture(gl.TEXTURE_2D, this.speciesTexture);
         gl.uniform1i(gl.getUniformLocation(this.renderProgram, "u_species"), 1);
         this._common(this.renderProgram, width, height);
-        gl.uniform1f(gl.getUniformLocation(this.renderProgram, "u_pointSize"), pointSize);
+        gl.uniform1f(gl.getUniformLocation(this.renderProgram, "u_pointSize"), this.settings.PARTICLE_SIZE);
         gl.drawArrays(gl.POINTS, 0, this.count);
     }
 

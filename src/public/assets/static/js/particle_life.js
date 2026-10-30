@@ -17,7 +17,7 @@ const PARTICLE_WORLD_INFO = {
 const ATTRACTION_MATRIX = 
 [
     {
-        color: [0.22, 0.45, 0.91, 1, "#3875ea"],
+        color: "#3875ea",
         count: 75,
         attraction: [
             0.32,
@@ -26,7 +26,7 @@ const ATTRACTION_MATRIX =
         ]
     },
     {
-        color: [1, 0, 1, 1, "#ff00ff"],
+        color: "#ff00ff",
         count: 25,
         attraction: [
             0.4,
@@ -35,7 +35,7 @@ const ATTRACTION_MATRIX =
         ]
     },
     {
-        color: [0.65, 0.13, 0.38, 1, "#a62161"],
+        color: "#a62161",
         count: 150,
         attraction: [
             0.4,

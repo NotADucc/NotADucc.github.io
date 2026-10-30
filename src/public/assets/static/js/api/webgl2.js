@@ -105,6 +105,7 @@ uniform ivec2 u_stateSize;
 uniform int u_particleCount;
 uniform vec2 u_resolution;
 uniform float u_pointSize;
+uniform vec4 u_speciesColors[3];
 out vec4 v_color;
 ivec2 texelFor(int i) { return ivec2(i % u_stateSize.x, i / u_stateSize.x); }
 void main() {
@@ -121,9 +122,7 @@ void main() {
     vec2 clip = position / u_resolution * 2.0 - 1.0;
     gl_Position = vec4(clip * vec2(1.0, -1.0), 0.0, 1.0);
     gl_PointSize = u_pointSize;
-    if (species == 0) v_color = vec4(0.22, 0.45, 0.91, 1.0);
-    else if (species == 1) v_color = vec4(1.0, 0.0, 1.0, 1.0);
-    else v_color = vec4(0.65, 0.13, 0.38, 1.0);
+    v_color = u_speciesColors[species];
 }`;
 
 export default class WebGLBackend {
@@ -317,6 +316,20 @@ class GpuSimulation {
         this._common(this.renderProgram, width, height);
         gl.uniform1f(gl.getUniformLocation(this.renderProgram, "u_pointSize"), this.settings.PARTICLE_SIZE);
         gl.drawArrays(gl.POINTS, 0, this.count);
+
+        const hexToRGBA = hex => [
+            parseInt(hex.slice(1, 3), 16) / 255,
+            parseInt(hex.slice(3, 5), 16) / 255,
+            parseInt(hex.slice(5, 7), 16) / 255,
+            1
+        ];
+
+        gl.uniform4fv(
+            gl.getUniformLocation(this.renderProgram, "u_speciesColors[0]"),
+            new Float32Array(
+                this.species.flatMap(s => hexToRGBA(s.color))
+            )
+        );
     }
 
     destroy() {

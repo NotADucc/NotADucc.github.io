@@ -38,7 +38,7 @@ export default class Canvas2DBackend {
 
             const rect = new Rectangle(seeker_x, seeker_y, rect_radius, rect_radius)
 
-            const targets = this._query_particles(rect)
+            const targets = this.container.query(rect)
 
             // horizontal borders.
             if (seeker_x < rect_radius) {
@@ -113,7 +113,7 @@ export default class Canvas2DBackend {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
         for (const p of this.particles) {
-            ctx.fillStyle = p.color?.[4] ?? "#ffffff";
+            ctx.fillStyle = p.color ?? "#ffffff";
             ctx.fillRect(
                 p.position[0],
                 p.position[1],

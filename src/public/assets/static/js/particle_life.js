@@ -81,10 +81,10 @@ const particles_render_loop = () => {
     current_update_frame = requestAnimationFrame(particles_render_loop);
 }
 
-const init = () => {
+const init = async () => {
     register_header_events();
     window.dispatchEvent(new CustomEvent("resize"));
-    particle_backend = get_particle_backend_factory(DOM_elements.canvas);
+    particle_backend = await get_particle_backend_factory(DOM_elements.canvas);
     create_particles(PARTICLE_WORLD_INFO.get_redraw_multiplier());
     particles_render_loop();
 }

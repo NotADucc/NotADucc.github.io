@@ -21,34 +21,58 @@ jobs:
             node-version: 20
 
       - name: Build page index file
-        run: node ./site_builder/updateProjects.js
+        run: node ./site_builder/updateProjects.js --mode prod
 
-      - run: npm install -g sass terser html-minifier-terser clean-css-cli
+      - name: Install build dependencies
+        run: npm install -g sass esbuild html-minifier-terser clean-css-cli
+
+      - name: Prepare dist directory
+        run: |
+          rm -rf ./dist
+          mkdir -p ./dist
+          cp -a ./src/. ./dist/
 
       - name: Rename .css to .scss, compile, and restore
         run: |
-          find ./src -type f -name "*.css" | while read file; do
+          find ./dist -type f -name "*.css" | while read file; do
             tmp="${file%.css}.scss"
             cp "$file" "$tmp"
             npx sass --no-source-map "$tmp" "$file"
             rm "$tmp"
           done
 
-      - name: Minify JS
+      - name: Prepare JS output directory
         run: |
-          find ./src -type f -name "*.js" -exec terser {} \
-            --compress passes=3 \
-            --mangle \
-            --module \
-            --format comments=false \
-            -o {} \;
+          JS=./dist/public/assets/static/js
+          mkdir -p "$JS"
+
+      - name: Bundle and minify JS
+        run: |
+          esbuild \
+            ./site_builder/entries/*.js
+            --bundle \
+            --minify \
+            --format=esm \
+            --splitting \
+            --outdir=./dist/public/assets/static/js/ \
+            --entry-names=[name].min \
+            --chunk-names=chunks/[name]-[hash]
+
+      - name: Remove unbundled source JS
+        run: |
+          JS=./dist/public/assets/static/js
+
+          find "$JS" -type f -name "*.js" \
+            ! -name "*.min.js" \
+            ! -path "$JS/chunks/*" \
+            -delete
 
       - name: Minify CSS files
-        run: find ./src -type f -name "*.css" -exec cleancss -o {} {} \;
+        run: find ./dist -type f -name "*.css" -exec cleancss -o {} {} \;
 
       - name: Minify HTML files
         run: |
-          find ./src -type f -name "*.html" -exec html-minifier-terser {} \
+          find ./dist -type f -name "*.html" -exec html-minifier-terser {} \
             --collapse-whitespace \
             --remove-comments \
             --remove-optional-tags \
@@ -100,7 +124,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: './src'
+          path: './dist'
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4

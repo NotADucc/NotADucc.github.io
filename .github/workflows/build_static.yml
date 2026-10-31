@@ -2,7 +2,7 @@ name: build
 
 on:
   push:
-    branches: [ "minified" ]
+    branches: [ "test" ]
 
 concurrency:
   group: "pages"
@@ -101,30 +101,3 @@ jobs:
         with:
           name: static-site
           path: '.'
-
-  deploy:
-    needs: build-static-site
-    permissions:
-      contents: read
-      pages: write
-      id-token: write
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Download site artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: static-site
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: './dist'
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4

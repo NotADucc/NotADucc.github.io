@@ -17,7 +17,7 @@ const PARTICLE_WORLD_INFO = {
 const ATTRACTION_MATRIX = 
 [
     {
-        color: [0.22, 0.45, 0.91, 1, "#3875ea"],
+        color: "#3875ea",
         count: 75,
         attraction: [
             0.32,
@@ -26,7 +26,7 @@ const ATTRACTION_MATRIX =
         ]
     },
     {
-        color: [1, 0, 1, 1, "#ff00ff"],
+        color: "#ff00ff",
         count: 25,
         attraction: [
             0.4,
@@ -35,7 +35,7 @@ const ATTRACTION_MATRIX =
         ]
     },
     {
-        color: [0.65, 0.13, 0.38, 1, "#a62161"],
+        color: "#a62161",
         count: 150,
         attraction: [
             0.4,
@@ -51,7 +51,7 @@ let current_update_frame = null;
 
 const create_particles = (multiplier) => {
     const particles = [];
-
+    
     for (const [key, value] of ATTRACTION_MATRIX.entries()) {
         const add_amount = value.count * multiplier;
         for (let i = 0; i < add_amount; i++) {
@@ -70,30 +70,21 @@ const create_particles = (multiplier) => {
 };
 
 const draw_particles = () => {
-    particle_backend?.render(
-        ATTRACTION_MATRIX.particles,
-        DOM_elements.canvas.width,
-        DOM_elements.canvas.height,
-        PARTICLE_WORLD_INFO
-    );
+    particle_backend?.render();
 };
 
 
 const particles_render_loop = () => {
-    particle_backend?.step(
-        ATTRACTION_MATRIX.particles,
-        ATTRACTION_MATRIX.info,
-        PARTICLE_WORLD_INFO
-    );
+    particle_backend?.step();
 
     draw_particles();
     current_update_frame = requestAnimationFrame(particles_render_loop);
 }
 
-const init = () => {
+const init = async () => {
     register_header_events();
     window.dispatchEvent(new CustomEvent("resize"));
-    particle_backend = get_particle_backend_factory(DOM_elements.canvas);
+    particle_backend = await get_particle_backend_factory(DOM_elements.canvas);
     create_particles(PARTICLE_WORLD_INFO.get_redraw_multiplier());
     particles_render_loop();
 }

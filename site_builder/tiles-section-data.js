@@ -1,0 +1,221 @@
+const icons = {
+    'github': `<i class="fa fa-github github-in-line icon"></i>`,
+    'link': `<i class="fa fa-link icon"></i>`
+}
+const TILE_DATA = 
+{
+    "Projects" :
+    [
+        {
+            "title": "OSRS Hiscore scraper",
+            "under_title": "CLI scripts for scraping and querying OSRS hiscores. ",
+            "image": "osrs-hiscore.png",
+            "tools": [
+				"Python", 
+				"PyTest"
+			],
+            "description": "This project is a data tool built around Old School RuneScape player Hiscores. It helps organize and filter player information, such as skills and boss achievements, and can save these results for later use. The tool can also analyze groups of players to highlight patterns, like averages or highest scores. In addition, it provides quick access to individual player profiles.",
+            "links": 
+            [
+                {
+                    "url": "https://github.com/NotADucc/osrs-hiscores-scrape",
+                    "icon": icons.github
+                }
+            ]
+        },
+		{
+            "title": "Nodo",
+            "under_title": "Accessible Social Messaging for Safe and Inclusive Connections",
+            "image": "nodo.jpg",
+            "tools": [
+				".NET",
+				"C#", 
+				"Blazor WebAssembly", 
+				"FastEndPoints", 
+				"Entity Framework Core", 
+				"SignalR", 
+				"Serilog",
+				"Tailwind"
+			],
+            "description": "Nodo is an accessible chat messaging platform designed for people with disabilities, focusing on safety, inclusion, and meaningful social interaction. The app enables users to connect and build friendships by matching based on shared interests. Beyond messaging, Nodo includes an educational section that addresses sensitive and often taboo topics in a clear and supportive way. To enhance user safety, the platform also features a monitoring system that can alert a supervisor if a conversation becomes concerning or potentially unsafe.",
+            "links": 
+            [
+                {
+                    "url": "https://github.com/NotADucc/Nodo",
+                    "icon": icons.github
+                }
+            ]
+        },
+        {
+            "title": ".Inside",
+            "under_title": "A visitor registration tool",
+            "image": "inside.png",
+            "tools": [
+				".NET", 
+				"C#", 
+				"ASP.NET Core", 
+				"WPF", 
+				"XUnit", 
+				"Moq"
+			],
+            "description": "A business park with a central reception wanted an application to register visitors to the park. This is necessary for fire safety, so that it is always known who is present on the site. Everyone visiting one of the companies must first register at the reception. To make this process as fast as possible, visitors are given the opportunity to register themselves via a touchscreen provided at the entrance. Through the touchscreen, they can enter their own information and the person they have an appointment with. Upon departure, visitors can check out again using the same touchscreen. We ensure that the privacy of visitors is respected in accordance with GDPR regulations. Visitors that came with a car can park at the car park.",
+        },
+        {
+            "title": "Mogcord - WOP",
+            "under_title": "A simple messaging platform",
+            "image": "mogcord.png",
+            "tools": [
+				"Rust", 
+				"MongoDB", 
+				"JWT", 
+				"AlpineJs", 
+				"HTMX", 
+				"Tailwind"
+			],
+            "description": "A messaging platform which allows the user to chat with individuals or with a group of people.",
+            "links": 
+            [
+                {
+                    "url": "https://github.com/MogInc/Mogcord",
+                    "icon": icons.github
+                }
+            ]
+        },
+        {
+            "title": "Follow-up system",
+            "under_title": "An interactive platform for tests",
+            "image": "web3.png",
+            "tools": [
+				"React", 
+				"Node.Js", 
+				"JWT", 
+				"Express", 
+				"WebSockets", 
+				"MySQL", 
+				"Tailwind"
+			],
+            "description": "A follow-up system where teachers can monitor or modify the timer for a test, see asked questions, and extra requested time by students in real time. Also allows the teacher to import bulk csv data.",
+        },
+        {
+            "title": "Electronic Receipts",
+            "under_title": "Bookkeeping Management Tool (Internship)",
+            "image": "electronic-receipts.png",
+            "tools": [
+				".NET Framework", 
+				"C#", 
+				"Winforms", 
+				"Entity Framework Core", 
+				"SQL Server", 
+				"SAP Crystal Reports", 
+				"OpenXML"
+			],
+            "description": `
+                As part of my internship at DVC Heilig Hart, I was responsible for migrating a legacy Visual Basic (VB) application to .NET C#. The application is an internal bookkeeping and order management system used by employees to manage customer-related expenses and orders.
+                The tool allows staff to create, edit, and delete customer orders through a centralized interface, streamlining administrative workflows and reducing manual paperwork. In addition, I implemented functionality to generate Excel reports, providing bookkeepers with clear overviews of orders and financial data, as well as PDF invoice generation for customer billing.
+                <br><br>
+                This project gave me hands-on experience with modernizing legacy software, working with business requirements, and developing features that directly supported the daily operations of administrative and bookkeeping staff.
+            `
+        },
+        {
+            "title": "Monkeys",
+            "under_title": "Optimal escape simulation",
+            "image": "monkeys.png",
+            "tools": [
+				".NET", 
+				"C#", 
+				"MongoDB",
+			],
+            "description": "Developed a simulation project focused on performance optimization. The challenge involved running large-scale simulations with complex interactions, which initially took minutes to hours to complete. By applying efficient algorithms and restructuring the system into manageable chunks, execution time was reduced to just a few seconds."
+        },
+        {
+            "title": "Mog Site",
+            "under_title": "Personal tool hub",
+            "image": "mogsite.png",
+            "tools": [
+				".NET", 
+				"C#", 
+				"ASP .NET CORE", 
+				"Angular.Js", 
+				"JWT", 
+				"Tailwind", 
+			],
+            "description": "Developed a centralized platform to consolidate all frequently used tools in one place, improving accessibility and workflow efficiency.",
+        },
+        {
+            "title": "Mogsweeper",
+            "under_title": "Minesweeper clone",
+            "image": "mogsweeper.png",
+            "tools": [
+				".NET", 
+				"C#", 
+				"WPF"
+			],
+            "description": "Built a functional clone of Minesweeper game using .NET WPF. Event-driven programming, and clean implementation of game logic while recreating a familiar and interactive user experience.",
+        },
+        {
+            "title": "Restaurant manager",
+            "under_title": "REST API to book and manage reservations",
+            "image": "web4.png",
+            "tools": [
+				"ASP .NET CORE", 
+				"C#", 
+				"SQL Server",
+			],
+            "description": "Created a REST API for managing restaurant reservations, enabling viewing, booking, and updating of reservations.",
+        },
+    ],
+    "Hobbies":
+    [
+        {
+            "title": "Advent of Code",
+            "under_title": "Holiday-themed event",
+            "image": "aoc.png",
+            "description": "An annual holiday-themed event featuring a series of 50 daily programming puzzles, released one per day (two parts per day) from December 1st to December 25th.",
+            "links": 
+            [
+                {
+                    "url": "https://github.com/NotADucc/AoC",
+                    "icon": icons.github
+                },
+                {
+                    "url": "https://adventofcode.com/",
+                    "icon": icons.link
+                }
+            ]
+        },
+        {
+            "title": "LeetCode",
+            "under_title": "Algorithm library",
+            "image": "leetcode.png",
+            "description": "A popular online platform providing a vast library of coding and algorithmic problems used by software developers to improve their skills, practice for technical interviews, and participate in coding competitions.",
+            "links": 
+            [
+                {
+                    "url": "https://github.com/NotADucc/LeetCode",
+                    "icon": icons.github
+                },
+                {
+                    "url": "https://leetcode.com/u/Gwilom/",
+                    "icon": icons.link
+                }
+            ]
+        },
+    ],
+    "Contributions":
+    [
+        {
+            "title": "NeetCode",
+            "under_title": "Community-Driven Coding Resource",
+            "description": "I contributed solutions to NeetCode, a platform for coding interview preparation, by implementing efficient answers to algorithm and data structure challenges that support learners in mastering problem-solving techniques.",
+            "links": 
+            [
+                {
+                    "url": "https://github.com/neetcode-gh/leetcode",
+                    "icon": icons.github
+                },
+            ]
+        },
+    ]
+}
+
+module.exports = { TILE_DATA };

@@ -38,20 +38,20 @@ export default class Canvas2DBackend {
 
             const rect = new Rectangle(seeker_x, seeker_y, rect_radius, rect_radius)
 
-            const targets = this._query_particles(rect)
+            const targets = this.container.query(rect)
 
             // horizontal borders.
             if (seeker_x < rect_radius) {
                 rect.update(
                     canvas_width - (rect_radius - seeker_x), seeker_y, rect_radius - seeker_x, rect_radius
                 )
-                for (const p of this._query_particles(rect)) 
+                for (const p of this.container.query(rect)) 
                     targets.push(p);
             } else if (canvas_width - seeker_x < rect_radius) {
                 rect.update(
                     0, seeker_y, rect_radius - (canvas_width - seeker_x), rect_radius
                 )
-                for (const p of this._query_particles(rect)) 
+                for (const p of this.container.query(rect)) 
                     targets.push(p);
             }
 
@@ -60,13 +60,13 @@ export default class Canvas2DBackend {
                 rect.update(
                     seeker_x, canvas_height - (rect_radius - seeker_y), rect_radius, rect_radius - seeker_y
                 )
-                for (const p of this._query_particles(rect)) 
+                for (const p of this.container.query(rect)) 
                     targets.push(p);
             } else if (canvas_height - seeker_y < rect_radius) {
                 rect.update(
                     seeker_x, 0, rect_radius, rect_radius - (canvas_height - seeker_y)
                 )
-                for (const p of this._query_particles(rect)) 
+                for (const p of this.container.query(rect)) 
                     targets.push(p);
             }
 
@@ -113,7 +113,7 @@ export default class Canvas2DBackend {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
         for (const p of this.particles) {
-            ctx.fillStyle = p.color?.[4] ?? "#ffffff";
+            ctx.fillStyle = p.color ?? "#ffffff";
             ctx.fillRect(
                 p.position[0],
                 p.position[1],
@@ -124,8 +124,4 @@ export default class Canvas2DBackend {
     }
 
     destroy() {}
-
-    _query_particles(rect) {
-        return this.container.query(rect);
-    }
 }

@@ -83,19 +83,6 @@ jobs:
             --minify-js true \
             -o {} \;
 
-      - name: Check for modified files
-        id: git-check
-        run: echo modified=$(if git diff-index --quiet HEAD --; then echo "false"; else echo "true"; fi) >> $GITHUB_OUTPUT
-
-      - name: Push to branch
-        if: steps.git-check.outputs.modified == 'true'
-        run: |
-            git config --global user.email "robertohelper@outlook.com"
-            git config --global user.name "Gwilom-Bot"
-            git add .
-            git commit -am "refactor: Updated static project files (generated index and minified files)" || true
-            git push || git pull --rebase && git push
-
       - name: Upload site artifact
         uses: actions/upload-artifact@v4
         with:
@@ -120,6 +107,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: static-site
+          path: ./dist
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact

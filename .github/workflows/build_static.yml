@@ -49,7 +49,7 @@ jobs:
       - name: Bundle and minify JS
         run: |
           esbuild \
-            ./site_builder/entries/*.js
+            ./site_builder/entries/*.js \
             --bundle \
             --minify \
             --format=esm \

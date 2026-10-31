@@ -39,9 +39,11 @@ if (!mode && (mode != "debug" || mode != "prod")) {
 
 const index_template = readFileSync(path.join(__dirname, 'index_template.html'), { encoding: 'utf8' });
 
+const base_path = path.join("public", "assets", "static", "js", "particle_life.js");
+
 const script = mode === "debug"
-    ? [path.join("public", "assets", "static", "js", "particle_life.js")]
-    : [path.join("dist", "assets", "static", "js", "main.min.js")];
+    ? [path.join(base_path, "particle_life.js")]
+    : [path.join(base_path, "main.min.js")];
 
 
 let output = insert_tiles(index_template, TILE_DATA);

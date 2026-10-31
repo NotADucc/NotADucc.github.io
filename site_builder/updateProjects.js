@@ -39,7 +39,7 @@ if (!mode && (mode != "debug" || mode != "prod")) {
 
 const index_template = readFileSync(path.join(__dirname, 'index_template.html'), { encoding: 'utf8' });
 
-const base_path = path.join("public", "assets", "static", "js", "particle_life.js");
+const base_path = path.join("public", "assets", "static", "js");
 
 const script = mode === "debug"
     ? [path.join(base_path, "particle_life.js")]

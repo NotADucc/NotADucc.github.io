@@ -1,5 +1,5 @@
 import { DOM_elements, is_mobile, random } from './shared.js';
-import { register_header_events, header_info, animate_header, counter_button_container_on_click } from './header.js';
+import { register_header_events, header_info, animate_header, counter_button_container_on_click, setup_dashboard, update_dashboard } from './header.js';
 import {get_particle_backend_factory} from './api/api-factory.js'
 
 const PARTICLE_WORLD_INFO = {
@@ -83,6 +83,7 @@ const particles_render_loop = () => {
 
 const init = async () => {
     register_header_events();
+    setup_dashboard(PARTICLE_WORLD_INFO, ATTRACTION_MATRIX);
     window.dispatchEvent(new CustomEvent("resize"));
     particle_backend = await get_particle_backend_factory(DOM_elements.canvas);
     create_particles(PARTICLE_WORLD_INFO.get_redraw_multiplier());
@@ -97,9 +98,11 @@ DOM_elements.minus_button.addEventListener("click", () => counter_button_contain
 addEventListener("counter-changed", (event) => {
     PARTICLE_WORLD_INFO.multiplier = event.detail.multiplier;
     create_particles(PARTICLE_WORLD_INFO.get_redraw_multiplier());
+    update_dashboard(PARTICLE_WORLD_INFO, ATTRACTION_MATRIX);
 });
 
 addEventListener("header-resized",  () => create_particles(PARTICLE_WORLD_INFO.get_redraw_multiplier()));
+addEventListener("update-dashboard",  () => create_particles(PARTICLE_WORLD_INFO.get_redraw_multiplier()));
 addEventListener("header-expanded", (event) => {
     cancelAnimationFrame(current_update_frame);
     animate_header(

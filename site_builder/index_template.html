@@ -23,22 +23,36 @@
                     Hehe.
                 </span>
             </a>
-            <div class="header_buttons">
-                <div id="counter_buttons_container" class="invisible">
-                    <button id="minus_button" class="button">
-                        <div id="minus"></div>
-                    </button>
-                    <button id="plus_button" class="button">
-                        <div id="plus"></div>
-                    </button>
+            <div id="particle_dashboard" class="particle-dashboard collapsed">
+                <div class="dashboard-header">
+                    <div class="dashboard-title">
+                        <span>Particle Dashboard</span>
+                    </div>
+                    <div class="header_buttons">
+                        <div id="counter_buttons_container" class="invisible">
+                            <button id="minus_button" class="button">
+                                <div id="minus"></div>
+                            </button>
+
+                            <button id="plus_button" class="button">
+                                <div id="plus"></div>
+                            </button>
+                        </div>
+
+                        <button id="expand_button" class="button">
+                            <div id="expand_button_triangle"></div>
+                        </button>
+                    </div>
                 </div>
-                <button id="expand_button" class="button">
-                    <div id="expand_button_triangle"></div>
-                </button>
+                <div id="dashboard_content" class="invisible"></div>
+                <div id="mobile_message" class="invisible">
+                    Particle dashboard is not available on mobile.
+                </div>
             </div>
         </div>
         <canvas id="noise" width="1000" height="73"></canvas>
     </header>
+
     <main>
         <div>
             <h1>Welcome to my portfolio.</h1>

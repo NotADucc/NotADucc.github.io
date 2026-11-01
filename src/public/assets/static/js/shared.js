@@ -9,6 +9,9 @@ export const DOM_elements = {
     plus_button: document.getElementById("plus_button"),
     minus_button: document.getElementById("minus_button"),
     counter_button_container: document.getElementById("counter_buttons_container"),
+    dashboard: document.getElementById("particle_dashboard"),
+    dashboard_content: document.getElementById("dashboard_content"),
+    dashboard_mobile_message: document.getElementById("mobile_message"),
 }
 
 export const is_mobile = () => /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent),

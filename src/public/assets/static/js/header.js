@@ -97,8 +97,8 @@ export const update_dashboard_stats = (world_info, particle_species_info) => {
 
     const content = DOM_elements.dashboard_content;
 
-    content.querySelector(".dashboard-particle-multiplier").textContent = `${multiplier}x`;
-    content.querySelector(".dashboard-particle-total").textContent = total.toLocaleString();
+    content.querySelector(".dashboard_particle_multiplier").textContent = `${multiplier}x`;
+    content.querySelector(".dashboard_particle_total").textContent = total.toLocaleString();
 };
 
 export const setup_dashboard = (world_info, particle_species_info) => {
@@ -107,36 +107,36 @@ export const setup_dashboard = (world_info, particle_species_info) => {
         const total = particle_species_info.reduce((total, species) => total + species.count, 0) * multiplier;
 
         DOM_elements.dashboard_content.innerHTML = `
-            <div class="dashboard-stats">
-                <div class="dashboard-stat">
+            <div class="dashboard_stats">
+                <div class="dashboard_stat">
                     <span>Multiplier</span>
-                    <strong class="dashboard-particle-multiplier">${multiplier}x</strong>
+                    <strong class="dashboard_particle_multiplier">${multiplier}x</strong>
                 </div>
-                <div class="dashboard-stat">
+                <div class="dashboard_stat">
                     <span>Total Particles</span>
-                    <strong class="dashboard-particle-total">${total.toLocaleString()}</strong>
+                    <strong class="dashboard_particle_total">${total.toLocaleString()}</strong>
                 </div>
             </div>
-            <div class="matrix-container">
-                <div class="matrix-inputs matrix-labels">
+            <div class="matrix_container">
+                <div class="matrix_inputs matrix_labels">
                     <span>Attraction Matrix</span>
                     ${particle_species_info.map(species => `
-                        <div class="matrix-color" style="background-color: ${species.color}"></div>
+                        <div class="matrix_color" style="background-color: ${species.color}"></div>
                     `).join("")}
                 </div>
 
                 ${particle_species_info.map((species, index) => `
-                    <div class="matrix-group" data-index="${index}">
-                        <div class="matrix-inputs">
-                            <div class="matrix-group-header">
+                    <div class="matrix_group" data-index="${index}">
+                        <div class="matrix_inputs">
+                            <div class="matrix_group_header">
                                 <input
                                     type="color"
-                                    class="matrix-color"
+                                    class="matrix_color"
                                     value="${species.color}"
                                     title="Change particle color"
                                 >
                             </div>
-                            <div class="number-control">
+                            <div class="number_control">
                                 <input
                                     type="number"
                                     data-field="count"
@@ -145,13 +145,13 @@ export const setup_dashboard = (world_info, particle_species_info) => {
                                     value="${species.count}"
                                     title="Particle count"
                                 >
-                                <div class="quantity-nav">
-                                    <button type="button" class="quantity-button quantity-up" aria-label="Increase count">+</button>
-                                    <button type="button" class="quantity-button quantity-down" aria-label="Decrease count">-</button>
+                                <div class="quantity_nav">
+                                    <button type="button" class="quantity_button quantity_up" aria-label="Increase count">+</button>
+                                    <button type="button" class="quantity_button quantity_down" aria-label="Decrease count">-</button>
                                 </div>
                             </div>
                             ${species.attraction.map((value, axis) => `
-                                <div class="number-control">
+                                <div class="number_control">
                                     <input
                                         type="number"
                                         data-field="attraction"
@@ -159,9 +159,9 @@ export const setup_dashboard = (world_info, particle_species_info) => {
                                         step="0.01"
                                         value="${value}"
                                     >
-                                    <div class="quantity-nav">
-                                        <button type="button" class="quantity-button quantity-up" aria-label="Increase attraction">+</button>
-                                        <button type="button" class="quantity-button quantity-down" aria-label="Decrease attraction">-</button>
+                                    <div class="quantity_nav">
+                                        <button type="button" class="quantity_button quantity_up" aria-label="Increase attraction">+</button>
+                                        <button type="button" class="quantity_button quantity_down" aria-label="Decrease attraction">-</button>
                                     </div>
                                 </div>
                             `).join("")}
@@ -215,8 +215,8 @@ export const setup_dashboard = (world_info, particle_species_info) => {
 
         input.addEventListener("change", () => update(input, species));
         
-        const increase_button = container.querySelector(".quantity-up");
-        const decrease_button = container.querySelector(".quantity-down");
+        const increase_button = container.querySelector(".quantity_up");
+        const decrease_button = container.querySelector(".quantity_down");
 
         increase_button.addEventListener("click", () => update_input_step(input, species, update, 1));
         decrease_button.addEventListener("click", () => update_input_step(input, species, update, -1));
@@ -226,7 +226,7 @@ export const setup_dashboard = (world_info, particle_species_info) => {
         create_dashboard(world_info, particle_species_info);
         const content = DOM_elements.dashboard_content;
 
-        const matrix_groups = content.querySelectorAll('.matrix-group');
+        const matrix_groups = content.querySelectorAll('.matrix_group');
         matrix_groups.forEach((matrix_group, index) => {
             const species = particle_species_info[index];
 

@@ -49,10 +49,22 @@ export const counter_button_container_on_click = (delta, multiplier, lower_bound
 }
 
 export const register_header_events = () => {
-    DOM_elements.expand_button.addEventListener("click", (_) => {
+    DOM_elements.expand_button.addEventListener("click", () => {
         header_info.is_expanded = !header_info.is_expanded;
-        DOM_elements.expand_button_triangle.classList.toggle("triangle_rotate");
-        if (!is_mobile()) DOM_elements.counter_button_container.classList.toggle("invisible");
+        const expanded = header_info.is_expanded;
+        DOM_elements.expand_button_triangle.classList.toggle("triangle_rotate", expanded);
+
+        if (!is_mobile()) {
+            DOM_elements.counter_button_container.classList.toggle("invisible", !expanded);
+            DOM_elements.dashboard.classList.toggle("collapsed", !expanded);
+            DOM_elements.dashboard_content.classList.toggle("invisible", !expanded);
+        } else {
+            // DOM_elements.counter_button_container.classList.add("invisible");
+            // DOM_elements.dashboard.classList.add("collapsed");
+            // DOM_elements.dashboard_content.classList.add("invisible");
+
+            DOM_elements.dashboard_mobile_message.classList.toggle("invisible", !expanded);
+        }
 
         window.dispatchEvent(new CustomEvent("header-expanded", {
             detail: {
@@ -62,13 +74,161 @@ export const register_header_events = () => {
         }));
     });
 
-    addEventListener("resize", (_) => {
+    addEventListener("resize", () => {
         const height = header_info.get_header_height();
-        if (DOM_elements.canvas.width === window.innerWidth && (is_mobile() || DOM_elements.canvas.innerHeight === height)) 
-            return;
+
+        if (
+            DOM_elements.canvas.width === window.innerWidth &&
+            DOM_elements.canvas.height === height
+        ) return;
+
         update_header_width(window.innerWidth);
         update_header_height(height);
 
         window.dispatchEvent(new CustomEvent("header-resized"));
+    });
+};
+
+export const update_dashboard = (world_info, attraction_matrix) => {
+    const multiplier = world_info.multiplier;
+    const total = attraction_matrix.reduce(
+        (total, group) => total + group.count,
+        0
+    ) * multiplier;
+
+DOM_elements.dashboard_content.innerHTML = `
+    <div class="dashboard-stats">
+        <div class="dashboard-stat">
+            <span>Multiplier</span>
+            <strong>${multiplier}x</strong>
+        </div>
+        <div class="dashboard-stat">
+            <span>Total Particles</span>
+            <strong>${total.toLocaleString()}</strong>
+        </div>
+    </div>
+
+    <div class="matrix-container">
+        <div class="matrix-inputs matrix-labels">
+            <span>Attraction Matrix</span>
+            ${attraction_matrix.map(group => `
+                <div class="matrix-color" style="background-color: ${group.color}"></div>
+            `).join("")}
+        </div>
+
+        ${attraction_matrix.map((group, index) => `
+            <div class="matrix-group" data-index="${index}">
+                <div class="matrix-inputs">
+
+                    <div class="matrix-group-header">
+                        <input
+                            type="color"
+                            class="matrix-color"
+                            value="${group.color}"
+                            title="Change particle color"
+                        >
+                    </div>
+
+                    <div class="number-control">
+                        <input
+                            type="number"
+                            data-field="count"
+                            step="1"
+                            min="0"
+                            value="${group.count}"
+                            title="Particle count"
+                        >
+                        <div class="quantity-nav">
+                            <button type="button" class="quantity-button quantity-up" aria-label="Increase count">+</button>
+                            <button type="button" class="quantity-button quantity-down" aria-label="Decrease count">−</button>
+                        </div>
+                    </div>
+
+                    ${group.attraction.map((value, axis) => `
+                        <div class="number-control">
+                            <input
+                                type="number"
+                                data-field="attraction"
+                                data-axis="${axis}"
+                                step="0.01"
+                                value="${value}"
+                            >
+                            <div class="quantity-nav">
+                                <button type="button" class="quantity-button quantity-up" aria-label="Increase attraction">+</button>
+                                <button type="button" class="quantity-button quantity-down" aria-label="Decrease attraction">−</button>
+                            </div>
+                        </div>
+                    `).join("")}
+
+                </div>
+            </div>
+        `).join("")}
+    </div>
+`;
+};
+
+export const setup_dashboard = (world_info, attraction_matrix) => {
+    update_dashboard(world_info, attraction_matrix);
+
+    DOM_elements.dashboard.addEventListener("change", (event) => {
+        const input = event.target;
+        const group_element = input.closest(".matrix-group");
+
+        if (!group_element) return;
+
+        const index = Number(group_element.dataset.index);
+        const group = attraction_matrix[index];
+
+        if (!group) return;
+
+        if (input.classList.contains("matrix-color")) {
+            group.color = input.value;
+        }
+        else {
+            const value = Number(input.value);
+
+            if (!Number.isFinite(value)) {
+                update_dashboard(world_info, attraction_matrix);
+                return;
+            }
+
+            if (input.dataset.field === "count") {
+                if (!Number.isInteger(value) || value < 0) {
+                    update_dashboard(world_info, attraction_matrix);
+                    return;
+                }
+
+                group.count = value;
+            }
+
+            if (input.dataset.field === "attraction") {
+                const axis = Number(input.dataset.axis);
+                group.attraction[axis] = value;
+            }
+        }
+
+        window.dispatchEvent(new CustomEvent("update-dashboard"));
+        update_dashboard(world_info, attraction_matrix);
+    });
+
+    DOM_elements.dashboard_content.addEventListener("click", (event) => {
+        const button = event.target.closest(".quantity-button");
+        if (!button) return;
+
+        const input = button.closest(".number-control").querySelector("input");
+
+        const direction = button.classList.contains("quantity-up") ? 1 : -1;
+        const step = Number(input.step) || 1;
+        const current = Number(input.value);
+
+        const min = input.min !== "" ? Number(input.min) : -Infinity;
+        const max = input.max !== "" ? Number(input.max) : Infinity;
+
+        const precision = (input.step.split(".")[1] || "").length;
+        const next = Math.min(max, Math.max(min, current + direction * step));
+
+        input.value = next.toFixed(precision);
+
+        input.dispatchEvent(new Event("change", { bubbles: true }));
     });
 };

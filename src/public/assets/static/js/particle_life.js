@@ -95,16 +95,24 @@ const init = async () => {
 DOM_elements.plus_button.addEventListener("click", () => counter_button_container_on_click(1, PARTICLE_WORLD_INFO.multiplier, 1, PARTICLE_WORLD_INFO.MAX_PARTICLE_MULTIPLIER));
 DOM_elements.minus_button.addEventListener("click", () => counter_button_container_on_click(-1, PARTICLE_WORLD_INFO.multiplier, 1, PARTICLE_WORLD_INFO.MAX_PARTICLE_MULTIPLIER));
 
-addEventListener("counter-changed", (event) => {
+addEventListener("counter:changed", (event) => {
     PARTICLE_WORLD_INFO.multiplier = event.detail.multiplier;
     create_particles(PARTICLE_WORLD_INFO.get_redraw_multiplier());
     update_dashboard(PARTICLE_WORLD_INFO, ATTRACTION_MATRIX);
 });
 
-addEventListener("update-dashboard",  () => create_particles(PARTICLE_WORLD_INFO.get_redraw_multiplier()));
+addEventListener("dashboard:rerender",  
+    () => create_particles(PARTICLE_WORLD_INFO.get_redraw_multiplier())
+);
+addEventListener("dashboard:update", 
+    () => {
+        particle_backend.set_species(ATTRACTION_MATRIX)
+        particle_backend.set_settings(PARTICLE_WORLD_INFO)
+    }
+);
 
-addEventListener("header-resized",  () => create_particles(PARTICLE_WORLD_INFO.get_redraw_multiplier()));
-addEventListener("header-expanded", (event) => {
+addEventListener("header:resized",  () => create_particles(PARTICLE_WORLD_INFO.get_redraw_multiplier()));
+addEventListener("header:expanded", (event) => {
     cancelAnimationFrame(current_update_frame);
     animate_header(
         0.0, 

@@ -22,6 +22,14 @@ export default class Canvas2DBackend {
         for(const particle of particles) this.container.insert(particle)
     }
 
+    set_species(species) {
+        if (species) this.species = species;
+    }
+
+    set_settings(settings) {
+        if (settings) this.settings = settings;
+    }
+
     step() {
         const canvas_width = this.canvas.width;
         const canvas_height = this.canvas.height;

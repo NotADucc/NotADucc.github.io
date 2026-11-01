@@ -62,6 +62,14 @@ export default class WebGLBackend {
         this.gpu.initialize(particles, species, settings);
     }
 
+    set_species(species) {
+        if (species) this.gpu.set_species(species);
+    }
+
+    set_settings(settings) {
+        if (settings) this.gpu.set_settings(settings);
+    }
+
     step() {
         this.gpu.simulate(this.canvas.width, this.canvas.height);
     }
@@ -213,8 +221,7 @@ class GpuSimulation {
         this._delete_state();
 
         this.count = particles.length;
-        this.settings = settings;
-        this.species_count = species.length;
+        this.set_settings(settings);
 
         this.width = Math.max(1, Math.ceil(Math.sqrt(this.count)));
         this.height = Math.max(1, Math.ceil(this.count / this.width));
@@ -241,28 +248,8 @@ class GpuSimulation {
         }
 
         this.species_texture = this._texture1(this.width, this.height, species_data);
-
-        const attraction_data = new Float32Array(this.species_count * this.species_count);
-        for (let own = 0; own < this.species_count; own++) {
-            for (let other = 0; other < this.species_count; other++) {
-                attraction_data[own * this.species_count + other] =
-                    species[own].attraction[other] ?? 0;
-            }
-        }
-        this.attraction_texture = this._texture1(
-            this.species_count, this.species_count, attraction_data
-        );
-
-        const color_data = new Float32Array(this.species_count * 4);
-        for (let i = 0; i < this.species_count; i++) {
-            const color = species[i].color;
-            const o = i * 4;
-            color_data[o] = parseInt(color.slice(1, 3), 16) / 255;
-            color_data[o + 1] = parseInt(color.slice(3, 5), 16) / 255;
-            color_data[o + 2] = parseInt(color.slice(5, 7), 16) / 255;
-            color_data[o + 3] = 1;
-        }
-        this.species_colors_texture = this._texture4(this.species_count, 1, color_data);
+        
+        this.set_species(species);
 
         for (let i = 0; i < 2; i++) {
             this.state_framebuffers.push(this._make_framebuffer(
@@ -289,6 +276,47 @@ class GpuSimulation {
         gl.bindFramebuffer(gl.FRAMEBUFFER, null);
         this.current = 0;
         this.sort_current = 0;
+    }
+
+    set_species(species) {
+        if (species) {
+            this._set_attraction(species);
+            this._set_color(species);
+        }
+    }
+
+    set_settings(settings) {
+        if (settings) this.settings = settings;
+    }
+
+    _set_attraction(species) {
+        const species_count = species.length;
+
+        const attraction_data = new Float32Array(species_count * species_count);
+        for (let own = 0; own < species_count; own++) {
+            for (let other = 0; other < species_count; other++) {
+                attraction_data[own * species_count + other] =
+                    species[own].attraction[other] ?? 0;
+            }
+        }
+        this.attraction_texture = this._texture1(
+            species_count, species_count, attraction_data
+        );
+    }
+
+    _set_color(species) {
+        const species_count = species.length;
+
+        const color_data = new Float32Array(species_count * 4);
+        for (let i = 0; i < species_count; i++) {
+            const color = species[i].color;
+            const o = i * 4;
+            color_data[o] = parseInt(color.slice(1, 3), 16) / 255;
+            color_data[o + 1] = parseInt(color.slice(3, 5), 16) / 255;
+            color_data[o + 2] = parseInt(color.slice(5, 7), 16) / 255;
+            color_data[o + 3] = 1;
+        }
+        this.species_colors_texture = this._texture4(species_count, 1, color_data);
     }
 
     _build_and_sort(width, height) {

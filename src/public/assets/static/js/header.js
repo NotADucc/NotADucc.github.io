@@ -41,7 +41,7 @@ export const counter_button_container_on_click = (delta, multiplier, lower_bound
     DOM_elements.plus_button.classList.toggle("disabled", DOM_elements.plus_button.disabled);
     DOM_elements.minus_button.classList.toggle("disabled", DOM_elements.minus_button.disabled);
     
-    window.dispatchEvent(new CustomEvent("counter-changed", {
+    window.dispatchEvent(new CustomEvent("counter:changed", {
         detail: {
             multiplier: new_multiplier
         }
@@ -66,7 +66,7 @@ export const register_header_events = () => {
             DOM_elements.dashboard_mobile_message.classList.toggle("invisible", !expanded);
         }
 
-        window.dispatchEvent(new CustomEvent("header-expanded", {
+        window.dispatchEvent(new CustomEvent("header:expanded", {
             detail: {
                 current_height: DOM_elements.canvas.height,
                 new_height: header_info.get_header_height()
@@ -85,7 +85,7 @@ export const register_header_events = () => {
         update_header_width(window.innerWidth);
         update_header_height(height);
 
-        window.dispatchEvent(new CustomEvent("header-resized"));
+        window.dispatchEvent(new CustomEvent("header:resized"));
     });
 };
 
@@ -196,11 +196,14 @@ export const setup_dashboard = (world_info, attraction_matrix) => {
             } else if (input.dataset.field === "attraction") {
                 const axis = Number(input.dataset.axis);
                 group.attraction[axis] = value;
+                update_dashboard(world_info, attraction_matrix);
+                window.dispatchEvent(new CustomEvent("dashboard:update"));
+                return;
             }
         }
 
         update_dashboard(world_info, attraction_matrix);
-        window.dispatchEvent(new CustomEvent("update-dashboard"));
+        window.dispatchEvent(new CustomEvent("dashboard:rerender"));
     });
 
     DOM_elements.dashboard_content.addEventListener("click", (event) => {

@@ -96,75 +96,74 @@ export const update_dashboard = (world_info, attraction_matrix) => {
         0
     ) * multiplier;
 
-DOM_elements.dashboard_content.innerHTML = `
-    <div class="dashboard-stats">
-        <div class="dashboard-stat">
-            <span>Multiplier</span>
-            <strong>${multiplier}x</strong>
-        </div>
-        <div class="dashboard-stat">
-            <span>Total Particles</span>
-            <strong>${total.toLocaleString()}</strong>
-        </div>
-    </div>
-
-    <div class="matrix-container">
-        <div class="matrix-inputs matrix-labels">
-            <span>Attraction Matrix</span>
-            ${attraction_matrix.map(group => `
-                <div class="matrix-color" style="background-color: ${group.color}"></div>
-            `).join("")}
+    DOM_elements.dashboard_content.innerHTML = `
+        <div class="dashboard-stats">
+            <div class="dashboard-stat">
+                <span>Multiplier</span>
+                <strong>${multiplier}x</strong>
+            </div>
+            <div class="dashboard-stat">
+                <span>Total Particles</span>
+                <strong>${total.toLocaleString()}</strong>
+            </div>
         </div>
 
-        ${attraction_matrix.map((group, index) => `
-            <div class="matrix-group" data-index="${index}">
-                <div class="matrix-inputs">
+        <div class="matrix-container">
+            <div class="matrix-inputs matrix-labels">
+                <span>Attraction Matrix</span>
+                ${attraction_matrix.map(group => `
+                    <div class="matrix-color" style="background-color: ${group.color}"></div>
+                `).join("")}
+            </div>
 
-                    <div class="matrix-group-header">
-                        <input
-                            type="color"
-                            class="matrix-color"
-                            value="${group.color}"
-                            title="Change particle color"
-                        >
-                    </div>
+            ${attraction_matrix.map((group, index) => `
+                <div class="matrix-group" data-index="${index}">
+                    <div class="matrix-inputs">
 
-                    <div class="number-control">
-                        <input
-                            type="number"
-                            data-field="count"
-                            step="1"
-                            min="0"
-                            value="${group.count}"
-                            title="Particle count"
-                        >
-                        <div class="quantity-nav">
-                            <button type="button" class="quantity-button quantity-up" aria-label="Increase count">+</button>
-                            <button type="button" class="quantity-button quantity-down" aria-label="Decrease count">−</button>
+                        <div class="matrix-group-header">
+                            <input
+                                type="color"
+                                class="matrix-color"
+                                value="${group.color}"
+                                title="Change particle color"
+                            >
                         </div>
-                    </div>
 
-                    ${group.attraction.map((value, axis) => `
                         <div class="number-control">
                             <input
                                 type="number"
-                                data-field="attraction"
-                                data-axis="${axis}"
-                                step="0.01"
-                                value="${value}"
+                                data-field="count"
+                                step="1"
+                                min="0"
+                                value="${group.count}"
+                                title="Particle count"
                             >
                             <div class="quantity-nav">
-                                <button type="button" class="quantity-button quantity-up" aria-label="Increase attraction">+</button>
-                                <button type="button" class="quantity-button quantity-down" aria-label="Decrease attraction">−</button>
+                                <button type="button" class="quantity-button quantity-up" aria-label="Increase count">+</button>
+                                <button type="button" class="quantity-button quantity-down" aria-label="Decrease count">−</button>
                             </div>
                         </div>
-                    `).join("")}
 
+                        ${group.attraction.map((value, axis) => `
+                            <div class="number-control">
+                                <input
+                                    type="number"
+                                    data-field="attraction"
+                                    data-axis="${axis}"
+                                    step="0.01"
+                                    value="${value}"
+                                >
+                                <div class="quantity-nav">
+                                    <button type="button" class="quantity-button quantity-up" aria-label="Increase attraction">+</button>
+                                    <button type="button" class="quantity-button quantity-down" aria-label="Decrease attraction">−</button>
+                                </div>
+                            </div>
+                        `).join("")}
+
+                    </div>
                 </div>
-            </div>
-        `).join("")}
-    </div>
-`;
+            `).join("")}
+        </div>`;
 };
 
 export const setup_dashboard = (world_info, attraction_matrix) => {
@@ -181,16 +180,11 @@ export const setup_dashboard = (world_info, attraction_matrix) => {
 
         if (!group) return;
 
-        if (input.classList.contains("matrix-color")) {
+        if (input.type === "color") {
             group.color = input.value;
         }
         else {
             const value = Number(input.value);
-
-            if (!Number.isFinite(value)) {
-                update_dashboard(world_info, attraction_matrix);
-                return;
-            }
 
             if (input.dataset.field === "count") {
                 if (!Number.isInteger(value) || value < 0) {
@@ -199,16 +193,14 @@ export const setup_dashboard = (world_info, attraction_matrix) => {
                 }
 
                 group.count = value;
-            }
-
-            if (input.dataset.field === "attraction") {
+            } else if (input.dataset.field === "attraction") {
                 const axis = Number(input.dataset.axis);
                 group.attraction[axis] = value;
             }
         }
 
-        window.dispatchEvent(new CustomEvent("update-dashboard"));
         update_dashboard(world_info, attraction_matrix);
+        window.dispatchEvent(new CustomEvent("update-dashboard"));
     });
 
     DOM_elements.dashboard_content.addEventListener("click", (event) => {

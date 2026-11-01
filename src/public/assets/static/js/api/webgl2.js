@@ -104,7 +104,7 @@ class GpuSimulation {
 
         this.species_texture = null;
         this.attraction_texture = null;
-        this.species_tolors_texture = null;
+        this.species_colors_texture = null;
 
         this.sim_vao = gl.createVertexArray();
         this.render_vao = gl.createVertexArray();
@@ -196,7 +196,7 @@ class GpuSimulation {
 
         if (this.species_texture) gl.deleteTexture(this.species_texture);
         if (this.attraction_texture) gl.deleteTexture(this.attraction_texture);
-        if (this.species_tolors_texture) gl.deleteTexture(this.species_tolors_texture);
+        if (this.species_colors_texture) gl.deleteTexture(this.species_colors_texture);
 
         this.position_textures = [];
         this.velocity_textures = [];
@@ -205,7 +205,7 @@ class GpuSimulation {
         this.sort_framebuffers = [];
         this.species_texture = null;
         this.attraction_texture = null;
-        this.species_tolors_texture = null;
+        this.species_colors_texture = null;
     }
 
     initialize(particles, species, settings) {
@@ -262,7 +262,7 @@ class GpuSimulation {
             color_data[o + 2] = parseInt(color.slice(5, 7), 16) / 255;
             color_data[o + 3] = 1;
         }
-        this.species_tolors_texture = this._texture4(this.species_count, 1, color_data);
+        this.species_colors_texture = this._texture4(this.species_count, 1, color_data);
 
         for (let i = 0; i < 2; i++) {
             this.state_framebuffers.push(this._make_framebuffer(
@@ -399,7 +399,7 @@ class GpuSimulation {
         gl.uniform1i(this.uRender.u_species, 1);
 
         gl.activeTexture(gl.TEXTURE2);
-        gl.bindTexture(gl.TEXTURE_2D, this.species_tolors_texture);
+        gl.bindTexture(gl.TEXTURE_2D, this.species_colors_texture);
         gl.uniform1i(this.uRender.u_speciesColors, 2);
 
         gl.uniform2i(this.uRender.u_stateSize, this.width, this.height);

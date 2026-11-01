@@ -101,8 +101,9 @@ addEventListener("counter-changed", (event) => {
     update_dashboard(PARTICLE_WORLD_INFO, ATTRACTION_MATRIX);
 });
 
-addEventListener("header-resized",  () => create_particles(PARTICLE_WORLD_INFO.get_redraw_multiplier()));
 addEventListener("update-dashboard",  () => create_particles(PARTICLE_WORLD_INFO.get_redraw_multiplier()));
+
+addEventListener("header-resized",  () => create_particles(PARTICLE_WORLD_INFO.get_redraw_multiplier()));
 addEventListener("header-expanded", (event) => {
     cancelAnimationFrame(current_update_frame);
     animate_header(

@@ -1,5 +1,5 @@
 import { DOM_elements, is_mobile, random } from './shared.js';
-import { register_header_events, header_info, animate_header, counter_button_container_on_click, setup_dashboard, update_dashboard } from './header.js';
+import { register_header_events, header_info, animate_header, counter_button_container_on_click, setup_dashboard, update_dashboard_stats } from './header.js';
 import {get_particle_backend_factory} from './api/api-factory.js'
 
 const PARTICLE_WORLD_INFO = {
@@ -14,7 +14,7 @@ const PARTICLE_WORLD_INFO = {
     get_redraw_multiplier: () => DOM_elements.canvas.height <= header_info.HEADER_MIN_HEIGHT ? 1 : PARTICLE_WORLD_INFO.multiplier,
 }
 
-const ATTRACTION_MATRIX = 
+const PARTICLE_SPECIES_INFO = 
 [
     {
         color: "#3875ea",
@@ -52,7 +52,7 @@ let current_update_frame = null;
 const create_particles = (multiplier) => {
     const particles = [];
     
-    for (const [key, value] of ATTRACTION_MATRIX.entries()) {
+    for (const [key, value] of PARTICLE_SPECIES_INFO.entries()) {
         const add_amount = value.count * multiplier;
         for (let i = 0; i < add_amount; i++) {
             const particle = {
@@ -66,7 +66,7 @@ const create_particles = (multiplier) => {
         }
     }
 
-    particle_backend?.initialize(particles, ATTRACTION_MATRIX, PARTICLE_WORLD_INFO);
+    particle_backend?.initialize(particles, PARTICLE_SPECIES_INFO, PARTICLE_WORLD_INFO);
 };
 
 const draw_particles = () => {
@@ -83,7 +83,7 @@ const particles_render_loop = () => {
 
 const init = async () => {
     register_header_events();
-    setup_dashboard(PARTICLE_WORLD_INFO, ATTRACTION_MATRIX);
+    setup_dashboard(PARTICLE_WORLD_INFO, PARTICLE_SPECIES_INFO);
     window.dispatchEvent(new CustomEvent("resize"));
     particle_backend = await get_particle_backend_factory(DOM_elements.canvas);
     create_particles(PARTICLE_WORLD_INFO.get_redraw_multiplier());
@@ -98,7 +98,7 @@ DOM_elements.minus_button.addEventListener("click", () => counter_button_contain
 addEventListener("counter:changed", (event) => {
     PARTICLE_WORLD_INFO.multiplier = event.detail.multiplier;
     create_particles(PARTICLE_WORLD_INFO.get_redraw_multiplier());
-    update_dashboard(PARTICLE_WORLD_INFO, ATTRACTION_MATRIX);
+    update_dashboard_stats(PARTICLE_WORLD_INFO, PARTICLE_SPECIES_INFO);
 });
 
 addEventListener("dashboard:rerender",  
@@ -106,7 +106,7 @@ addEventListener("dashboard:rerender",
 );
 addEventListener("dashboard:update", 
     () => {
-        particle_backend.set_species(ATTRACTION_MATRIX)
+        particle_backend.set_species(PARTICLE_SPECIES_INFO)
         particle_backend.set_settings(PARTICLE_WORLD_INFO)
     }
 );

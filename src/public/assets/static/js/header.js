@@ -120,13 +120,13 @@ export const setup_dashboard = (world_info, particle_species_info) => {
             <div class="matrix_container">
                 <div class="matrix_inputs matrix_labels">
                     <span>Attraction Matrix</span>
-                    ${particle_species_info.map(species => `
-                        <div class="matrix_color" style="background-color: ${species.color}"></div>
+                    ${particle_species_info.map((species, index) => `
+                        <div class="matrix_color" style="background-color: ${species.color}" data-y="${index}"></div>
                     `).join("")}
                 </div>
 
                 ${particle_species_info.map((species, index) => `
-                    <div class="matrix_group" data-index="${index}">
+                    <div class="matrix_group" data-x="${index}">
                         <div class="matrix_inputs">
                             <div class="matrix_group_header">
                                 <input
@@ -150,12 +150,12 @@ export const setup_dashboard = (world_info, particle_species_info) => {
                                     <button type="button" class="quantity_button quantity_down" aria-label="Decrease count">-</button>
                                 </div>
                             </div>
-                            ${species.attraction.map((value, axis) => `
+                            ${species.attraction.map((value, index) => `
                                 <div class="number_control">
                                     <input
                                         type="number"
                                         data-field="attraction"
-                                        data-axis="${axis}"
+                                        data-y="${index}"
                                         step="0.01"
                                         value="${value}"
                                     >
@@ -185,21 +185,30 @@ export const setup_dashboard = (world_info, particle_species_info) => {
         window.dispatchEvent(new CustomEvent("dashboard:rerender"));
     };
 
-    const update_particle_attraction = (input, species, axis) => {
+    const update_particle_attraction = (input, species, attraction_idx) => {
         const value = Number(input.value);
 
         if (!Number.isFinite(value)) {
-            input.value = species.attraction[axis];
+            input.value = species.attraction[attraction_idx];
             return;
         }
 
-        species.attraction[axis] = input.value = value;
+        species.attraction[attraction_idx] = input.value = value;
         input.blur();
         window.dispatchEvent(new CustomEvent("dashboard:update"));
     };
 
     const update_particle_color = (input, species) => {
         species.color = input.value;
+
+        const index = input.closest(".matrix_group").dataset.x;
+        const color_indicator = DOM_elements
+            .dashboard_content
+            .querySelector(`.matrix_labels .matrix_color[data-y="${index}"]`);
+
+        if (color_indicator) 
+            color_indicator.style.backgroundColor = input.value;
+
         input.blur();
         window.dispatchEvent(new CustomEvent("dashboard:update"));
     };
@@ -233,7 +242,7 @@ export const setup_dashboard = (world_info, particle_species_info) => {
             const species = particle_species_info[index];
 
             const color_input = matrix_group.querySelector('input[type="color"]');
-            color_input.addEventListener("change", () => update_particle_color(color_input, species));
+            color_input.addEventListener("change", () => update_particle_color(color_input, species)  );
 
             const count_input = matrix_group.querySelector('[data-field="count"]');
             setup_quantity_control(count_input, species, update_particle_count);
@@ -244,7 +253,7 @@ export const setup_dashboard = (world_info, particle_species_info) => {
                     attraction_input,
                     species,
                     (input, current_species) => 
-                        update_particle_attraction(input, current_species, Number(attraction_input.dataset.axis))
+                        update_particle_attraction(input, current_species, Number(attraction_input.dataset.y))
                 )
             );
         });

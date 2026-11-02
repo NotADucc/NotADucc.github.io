@@ -86,6 +86,29 @@ export const register_header_events = () => {
 
         window.dispatchEvent(new CustomEvent("header:resized"));
     });
+
+    let idle_timer_id;
+
+    const idle_elements = [
+        DOM_elements.dashboard,
+        DOM_elements.dashboard_content
+    ];
+
+    const reset_idle_timer = () => {
+        idle_elements.forEach(el => el.classList.remove('idle'));
+
+        clearTimeout(idle_timer_id);
+
+        idle_timer_id = setTimeout(
+            () => idle_elements.forEach(el => el.classList.add('idle')), 
+            7000
+        ); 
+    }
+
+    ['pointermove', 'pointerdown', 'keydown', 'input'].forEach(event => {
+        DOM_elements.dashboard.addEventListener(event, reset_idle_timer);
+    });
+    reset_idle_timer();
 };
 
 export const update_dashboard_stats = (world_info, particle_species_info) => {

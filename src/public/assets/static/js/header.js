@@ -179,8 +179,9 @@ export const setup_dashboard = (world_info, particle_species_info) => {
             return;
         }
 
-        species.count = value;
+        species.count = input.value = value;
         update_dashboard_stats(world_info, particle_species_info);
+        input.blur();
         window.dispatchEvent(new CustomEvent("dashboard:rerender"));
     };
 
@@ -192,13 +193,14 @@ export const setup_dashboard = (world_info, particle_species_info) => {
             return;
         }
 
-        species.attraction[axis] = value;
+        species.attraction[axis] = input.value = value;
+        input.blur();
         window.dispatchEvent(new CustomEvent("dashboard:update"));
     };
 
     const update_particle_color = (input, species) => {
         species.color = input.value;
-
+        input.blur();
         window.dispatchEvent(new CustomEvent("dashboard:update"));
     };
 

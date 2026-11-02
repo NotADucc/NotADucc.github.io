@@ -20,29 +20,42 @@ const PARTICLE_SPECIES_INFO =
         color: "#3875ea",
         count: 75,
         attraction: [
-            0.32,
-            -0.4,
-            -0.4
+            0.07,
+            0.20,
+            -0.20,
+            -0.05
         ]
     },
     {
         color: "#ff00ff",
-        count: 25,
+        count: 40,
         attraction: [
-            0.4,
-            0.1,
-            -0.2
+            -0.07,
+            -0.10,
+            0.20,
+            -0.30
         ]
     },
     {
         color: "#a62161",
         count: 150,
         attraction: [
-            0.4,
-            0,
-            -0.15
+            0.30,
+            -0.30,
+            0.10,
+            0.40
         ]
     },
+    {
+        color: "#80ffff",
+        count: 50,
+        attraction: [
+            0.15,
+            -0.10,
+            -0.20,
+            -0.25
+        ]
+    }
 ]
 
 

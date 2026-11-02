@@ -155,7 +155,6 @@ canvas {
 
 	margin-right: 1.75rem;
 
-	width: 350px;
 	max-width: calc(100vw - 80px);
 	max-height: 55vh;
 	overflow-y: auto;
@@ -344,16 +343,18 @@ input.matrix_color {
 }
 
 .matrix_inputs {
-	display: grid;
-	grid-template-columns: 0.7fr 2fr repeat(3, minmax(0, 1.5fr));
-	gap: 5px;
-	align-items: center;
-	justify-items: center;
+    --column-count: 4;
 
-	&.matrix_labels {
-		display: grid;
-		grid-template-columns: 3fr repeat(3, minmax(0, 1.5fr)) !important;
-	}
+    display: grid;
+    grid-template-columns: 0.7fr 2fr repeat(var(--column-count), minmax(0, 1.5fr));
+
+    gap: 5px;
+    align-items: center;
+    justify-items: center;
+
+    &.matrix_labels {
+        grid-template-columns: 3fr repeat(var(--column-count), minmax(0, 1.5fr));
+    }
 }
 
 .matrix_inputs input {

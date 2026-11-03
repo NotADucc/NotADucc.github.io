@@ -1,3 +1,15 @@
+/*
+ * AI generated this jawn after I mentioned wanting GPU rendering/calculations.
+ *
+ * It's based on my fallback/CPU-intensive system, so I have a general idea of how it works. 
+ * However, I'm not familiar with WebGL or GPU programming in general, 
+ * and tackling it properly is currently a bit too daunting with the limited resources I have. 
+ * On top of that, it currently works without any noticeable performance issues 
+ * (as far as I'm aware), so I don't have much incentive to dig deeper into it for now.
+ *
+ * If you have any suggestions or ideas for improvements, feel free to reach out!
+ */
+
 import {DRAW_FRAGMENT, GPU_VERTEX, SIM_FRAGMENT, BITONIC_SORT_FRAGMENT, BUILD_KEYS_FRAGMENT,FULLSCREEN_VERTEX } from "./internal/shaders.js"
 
 const compile_shader = (gl, type, source) => {

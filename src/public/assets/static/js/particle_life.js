@@ -99,17 +99,24 @@ const particles_render_loop = () => {
     current_update_frame = requestAnimationFrame(particles_render_loop);
 }
 
+const generate_species_info = (len) => {
+    return {
+        // Source - https://stackoverflow.com/a/5365036
+        color: "#" + ((1 << 24) * Math.random() | 0).toString(16).padStart(6, "0"),
+        count: Math.floor(Math.random() * 176) + 25,
+        attraction: Array.from(
+            { length: len },
+            () => Math.round((Math.random() * 1 - 0.5) * 100) / 100
+        )
+    };
+}
+
 const randomize_species = () => {
     for (const species of PARTICLE_SPECIES_INFO) {
-        // Source - https://stackoverflow.com/a/5365036
-        species.color = "#" + ((1 << 24) * Math.random() | 0).toString(16).padStart(6, "0")
-
-        species.count = Math.floor(Math.random() * 176) + 25;
-        
-        species.attraction = Array.from(
-            { length: 4 },
-            () => Math.round((Math.random() * 1 - 0.5) * 100) / 100
-        );
+        const new_info = generate_species_info(PARTICLE_SPECIES_INFO.length);
+        species.color = new_info.color;
+        species.count = new_info.count;
+        species.attraction = new_info.attraction;
     }
 
     create_particles(PARTICLE_WORLD_INFO.get_redraw_multiplier());
@@ -130,6 +137,41 @@ const reset_species = () => {
     setup_dashboard(PARTICLE_WORLD_INFO, PARTICLE_SPECIES_INFO);
 };
 
+// can replace 0 with a random value if u want it already generated
+// with values instead of 0
+const update_attraction_matrix = () => {
+    const species_count = PARTICLE_SPECIES_INFO.length;
+
+    PARTICLE_SPECIES_INFO.forEach(species => {
+        while (species.attraction.length < species_count) {
+            species.attraction.push(0);
+        }
+
+        while (species.attraction.length > species_count) {
+            species.attraction.pop();
+        }
+    });
+};
+
+const remove_species = () => {
+    if (PARTICLE_SPECIES_INFO.length <= 2) return;
+
+    PARTICLE_SPECIES_INFO.pop();
+    update_attraction_matrix();
+
+    create_particles(PARTICLE_WORLD_INFO.get_redraw_multiplier());
+    setup_dashboard(PARTICLE_WORLD_INFO, PARTICLE_SPECIES_INFO);
+};
+
+const add_species = () => {
+    const new_species = generate_species_info(PARTICLE_SPECIES_INFO.length);
+    PARTICLE_SPECIES_INFO.push(new_species);
+    update_attraction_matrix();
+
+    create_particles(PARTICLE_WORLD_INFO.get_redraw_multiplier());
+    setup_dashboard(PARTICLE_WORLD_INFO, PARTICLE_SPECIES_INFO);
+};
+
 const init = async () => {
     register_header_events();
     setup_dashboard(PARTICLE_WORLD_INFO, PARTICLE_SPECIES_INFO);
@@ -143,6 +185,8 @@ const init = async () => {
 
 addEventListener("particles:reset", reset_species);
 addEventListener("particles:randomize", randomize_species);
+addEventListener("particles:species:remove", remove_species);
+addEventListener("particles:species:add", add_species);
 
 addEventListener("dashboard:rerender",  
     () => create_particles(PARTICLE_WORLD_INFO.get_redraw_multiplier())

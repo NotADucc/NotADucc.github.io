@@ -1,3 +1,7 @@
+:root {
+  --column-count: 4;
+}
+
 body {
 	background-color: #171717;
 	display: flex; 
@@ -76,7 +80,7 @@ canvas {
 }
 
 #header_actions_container {
-    max-width: 100px;
+    max-width: 250px;
     overflow: hidden;
     opacity: 1;
     transform: translateX(0);
@@ -94,7 +98,7 @@ canvas {
     }
 }
 
-#header_actions_container svg {
+.header_buttons svg {
     width: 20px;
     height: 20px;
     fill: none;
@@ -103,6 +107,9 @@ canvas {
     stroke-linecap: round;
     stroke-linejoin: round;
 	color: white;
+	&.hidden {
+		display: none;
+	}
 }
 
 .button {
@@ -144,6 +151,34 @@ canvas {
     transform: rotate(180deg);
 }
 
+#plus,
+#minus {
+    position: relative;
+}
+
+#plus::before,
+#plus::after,
+#minus::after {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    display: block;
+    content: "";
+    background: #fff;
+    transform: translate(-50%, -50%);
+}
+
+#plus::before {
+    width: 3px;
+    height: 16px;
+}
+
+#plus::after,
+#minus::after {
+    width: 16px;
+    height: 3px;
+}
+
 /* ==============================
    PARTICLE DASHBOARD
    ============================== */
@@ -153,7 +188,7 @@ canvas {
 
     margin-right: 1.75rem;
 
-	width: 460px;
+	width: calc(150px + (70px * var(--column-count)));
     max-width: calc(100vw - 80px);
     max-height: 55vh;
     padding: 10px;
@@ -325,8 +360,6 @@ input.matrix_color {
 }
 
 .matrix_inputs {
-    --column-count: 4;
-
     display: grid;
     grid-template-columns: 0.7fr 2fr repeat(var(--column-count), minmax(0, 1.5fr));
 

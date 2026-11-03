@@ -3,6 +3,7 @@ import { is_mobile, DOM_elements, easingFunction } from './shared.js';
 export const header_info = {
     HEADER_MIN_HEIGHT: 73,
     is_expanded: false,
+    should_matrix_be_visible: true,
     get_header_height: () => header_info.is_expanded ? is_mobile() ? window.innerHeight >> 1 : window.innerHeight : header_info.HEADER_MIN_HEIGHT,
 }
 
@@ -31,22 +32,36 @@ export const animate_header = (index, start, stop, callback_grow, callback_finis
 }
 
 export const register_header_events = () => {
+    const update_dashboard_visibility = () => {
+        const expanded = header_info.is_expanded;
+        const visible = expanded && header_info.should_matrix_be_visible;
+
+        if (is_mobile()) {
+            DOM_elements.dashboard_mobile_message.classList.toggle("invisible", !expanded);
+            return;
+        }
+
+        DOM_elements.header_actions_container.classList.toggle("invisible", !visible);
+        DOM_elements.dashboard.classList.toggle("collapsed", !visible);
+        DOM_elements.dashboard_content.classList.toggle("invisible", !visible);
+    };
+
+    const update_visibility_icon = () => {
+        const visible = header_info.should_matrix_be_visible;
+
+        DOM_elements.visibility_on.classList.toggle("hidden", !visible);
+        DOM_elements.visibility_off.classList.toggle("hidden", visible);
+    };
+
     DOM_elements.expand_button.addEventListener("click", () => {
         header_info.is_expanded = !header_info.is_expanded;
-        const expanded = header_info.is_expanded;
-        DOM_elements.expand_button_triangle.classList.toggle("triangle_rotate", expanded);
 
-        if (!is_mobile()) {
-            DOM_elements.header_actions_container.classList.toggle("invisible", !expanded);
-            DOM_elements.dashboard.classList.toggle("collapsed", !expanded);
-            DOM_elements.dashboard_content.classList.toggle("invisible", !expanded);
-        } else {
-            // DOM_elements.header_actions_container.classList.add("invisible", expanded);
-            // DOM_elements.dashboard.classList.add("collapsed");
-            // DOM_elements.dashboard_content.classList.add("invisible");
+        DOM_elements.expand_button_triangle.classList.toggle(
+            "triangle_rotate",
+            header_info.is_expanded
+        );
 
-            DOM_elements.dashboard_mobile_message.classList.toggle("invisible", !expanded);
-        }
+        update_dashboard_visibility();
 
         window.dispatchEvent(new CustomEvent("header:expanded", {
             detail: {
@@ -56,12 +71,27 @@ export const register_header_events = () => {
         }));
     });
 
+    DOM_elements.hide_matrix.addEventListener("click", () => {
+        header_info.should_matrix_be_visible = !header_info.should_matrix_be_visible;
+
+        update_visibility_icon();
+        update_dashboard_visibility();
+    });
+
     DOM_elements.reset_button.addEventListener("click", () => {
         window.dispatchEvent(new CustomEvent("particles:reset"));
     });
 
     DOM_elements.randomize_button.addEventListener("click", () => {
         window.dispatchEvent(new CustomEvent("particles:randomize"));
+    });
+
+    DOM_elements.minus_button.addEventListener("click", () => {
+        window.dispatchEvent(new CustomEvent("particles:species:remove"));
+    });
+
+    DOM_elements.plus_button.addEventListener("click", () => {
+        window.dispatchEvent(new CustomEvent("particles:species:add"));
     });
 
     addEventListener("resize", () => {
@@ -257,6 +287,7 @@ export const setup_dashboard = (world_info, particle_species_info) => {
     };
 
     const render = () => {
+        document.documentElement.style.setProperty('--column-count', particle_species_info.length);
         create_dashboard(world_info, particle_species_info);
         const content = DOM_elements.dashboard_content;
 

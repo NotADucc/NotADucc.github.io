@@ -30,14 +30,14 @@
                     </div>
                     <div class="header_buttons">
                         <div id="header_actions_container" class="invisible">
-                            <button id="reset_button" class="button" aria-label="Reset" title="Reset">
+                            <button id="reset_button" class="button">
                                 <svg id="reset" viewBox="0 0 24 24">
                                     <path d="M3 12a9 9 0 1 0 3-6.7L3 8" />
                                     <path d="M3 3v5h5" />
                                 </svg>
                             </button>
 
-                            <button id="randomize_button" class="button" aria-label="Randomize" title="Randomize">
+                            <button id="randomize_button" class="button">
                                 <svg id="randomize" viewBox="0 0 24 24">
                                     <path d="M16 3h5v5" />
                                     <path d="M4 20 21 3" />
@@ -46,7 +46,28 @@
                                     <path d="m4 4 5 5" />
                                 </svg>
                             </button>
+
+                            <button id="minus_button" class="button">
+                                <div id="minus"></div>
+                            </button>
+                            <button id="plus_button" class="button">
+                                <div id="plus"></div>
+                            </button>
                         </div>
+                        
+                        <button id="hide_matrix" class="button">
+                            <svg id="visibility_on" viewBox="0 0 24 24">
+                                <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z" />
+                                <circle cx="12" cy="12" r="3" />
+                            </svg>
+
+                            <svg id="visibility_off" viewBox="0 0 24 24" class="hidden">
+                                <path d="m3 3 18 18" />
+                                <path d="M10.6 10.6a2 2 0 0 0 2.8 2.8" />
+                                <path d="M9.9 5.2A10.8 10.8 0 0 1 12 5c6.4 0 10 7 10 7a14.5 14.5 0 0 1-3 3.8" />
+                                <path d="M6.6 6.6C3.7 8.5 2 12 2 12s3.6 7 10 7a10.8 10.8 0 0 0 4-.8" />
+                            </svg>
+                        </button>
 
                         <button id="expand_button" class="button">
                             <div id="expand_button_triangle"></div>

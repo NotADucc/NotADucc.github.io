@@ -188,9 +188,9 @@ canvas {
 
     margin-right: 1.75rem;
 
-	width: calc(150px + (70px * var(--column-count)));
+	width: calc(160px + (70px * var(--column-count)));
     max-width: calc(100vw - 80px);
-    max-height: 55vh;
+    max-height: 85vh;
     padding: 10px;
 	overflow: auto;
 
@@ -287,7 +287,7 @@ canvas {
 
 .dashboard_stats {
 	display: grid;
-	grid-template-columns: repeat(2, 1fr);
+	grid-template-columns: 2fr repeat(2, 1fr);
 	gap: 6px;
 	margin-bottom: 10px;
 }
@@ -484,7 +484,6 @@ input.matrix_color {
 	justify-content: space-between;
     gap: 10px;
 
-    max-width: 180px;
     overflow: hidden;
 }
 

@@ -153,6 +153,10 @@ export const setup_dashboard = (world_info, particle_species_info) => {
                     </div>
                 </div>
                 <div class="dashboard_stat">
+                    <span>Total Species</span>
+                    <strong id="species_total_value">${particle_species_info.length.toLocaleString()}</strong>
+                </div>
+                <div class="dashboard_stat">
                     <span>Total Particles</span>
                     <strong id="particle_total_value">${total.toLocaleString()}</strong>
                 </div>
@@ -221,6 +225,7 @@ export const setup_dashboard = (world_info, particle_species_info) => {
         const content = DOM_elements.dashboard_content;
 
         content.querySelector("#particle_multiplier_value").textContent = `${multiplier}x`;
+        content.querySelector("#species_total_value").textContent = particle_species_info.length.toLocaleString();
         content.querySelector("#particle_total_value").textContent = total.toLocaleString();
     };
 

@@ -188,7 +188,7 @@ canvas {
 
     margin-right: 1.75rem;
 
-	width: calc(160px + (70px * var(--column-count)));
+	width: calc(180px + (70px * var(--column-count)));
     max-width: calc(100vw - 80px);
     max-height: 85vh;
     padding: 10px;
@@ -329,17 +329,6 @@ canvas {
 	border-radius: 4px;
 }
 
-.matrix_group_header {
-	display: flex;
-	align-items: center;
-	gap: 6px;
-}
-
-.matrix_group_header > span:nth-child(2) {
-	font-size: 10px;
-	font-weight: 600;
-}
-
 .matrix_color {
 	flex: 0 0 2em;
 	width: 2em;
@@ -376,38 +365,36 @@ input.matrix_color {
     }
 }
 
-.matrix_inputs input {
-	box-sizing: border-box;
-	width: 100%;
-	min-width: 0;
-	padding: 4px;
+.dashboard_input {
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+    padding: 4px;
 
-	background: rgba(255, 255, 255, 0.07);
-	border: 1px solid rgba(255, 255, 255, 0.12);
-	border-radius: 3px;
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 3px;
 
-	color: white;
-	font: inherit;
+    color: white;
+    font: inherit;
 
-	transition: border-color 0.2s ease, box-shadow 0.2s ease;
-	&:hover {
-		border-color: #888 !important;
-	}
-}
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
 
-.matrix_inputs input:focus {
-	outline: 1px solid #3875ea;
-	border-color: #3875ea;
-}
+    &:hover {
+        border-color: #888;
+    }
 
-.matrix_inputs input[type="number"]::-webkit-inner-spin-button,
-.matrix_inputs input[type="number"]::-webkit-outer-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-}
-.matrix_inputs input[type="number"] {
-    appearance: textfield;
+    &:focus {
+        outline: 1px solid #3875ea;
+        border-color: #3875ea;
+    }
+
+	appearance: textfield;
     -moz-appearance: textfield;
+	&::-webkit-inner-spin-button,::-webkit-outer-spin-button {
+		-webkit-appearance: none;
+		margin: 0;
+	}
 }
 
 .number_control {
@@ -417,16 +404,13 @@ input.matrix_color {
 }
 
 .number_control input[type="number"] {
-    width: 70px;
+    width: 100%;
     height: 30px;
     padding: 4px 23px 4px 6px;
     box-sizing: border-box;
+	border-radius: 5px;
 
-    border: 1px solid #444;
-    border-radius: 5px;
-    background: #252525;
     color: #eee;
-
     font: inherit;
     text-align: center;
 }

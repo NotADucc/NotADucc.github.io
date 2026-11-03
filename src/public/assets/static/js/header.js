@@ -131,6 +131,49 @@ export const register_header_events = () => {
 };
 
 export const setup_dashboard = (world_info, particle_species_info) => {
+    const world_info_builder = [
+        {
+            id: "dashboard_stat_particle_size",
+            field: "PARTICLE_SIZE",
+            title: "Particle Size",
+            step: 1,
+            min: 1,
+            value: world_info.PARTICLE_SIZE,
+        },
+        {
+            id: "dashboard_stat_particle_friction",
+            field: "FRICTION",
+            title: "Friction",
+            step: 0.01,
+            min: "",
+            value: world_info.FRICTION,
+        },
+        {
+            id: "dashboard_stat_particle_repulsion",
+            field: "REPULSION",
+            title: "Repulsion",
+            step: 0.01,
+            min: "",
+            value: world_info.REPULSION,
+        },
+        {
+            id: "dashboard_stat_particle_attraction_min_distance",
+            field: "MIN_DISTANCE",
+            title: "Min Distance",
+            step: 1,
+            min: 0,
+            value: world_info.MIN_DISTANCE,
+        },
+        {
+            id: "dashboard_stat_particle_attraction_max_distance",
+            field: "MAX_DISTANCE",
+            title: "Max Distance",
+            step: 1,
+            min: 0,
+            value: world_info.MAX_DISTANCE,
+        },
+    ];
+
     const create_dashboard = (world_info, particle_species_info) => {
         const multiplier = world_info.multiplier;
         const total = particle_species_info.reduce((total, species) => total + species.count, 0) * multiplier;
@@ -160,6 +203,26 @@ export const setup_dashboard = (world_info, particle_species_info) => {
                     <span>Total Particles</span>
                     <strong id="particle_total_value">${total.toLocaleString()}</strong>
                 </div>
+                ${world_info_builder.map(wi => `
+                <div class="dashboard_stat">
+                    <span>${wi.title}</span>
+                    <div class="number_control">
+                        <input
+                            id="${wi.id}"
+                            type="number"
+                            class="dashboard_input"
+                            data-field="count"
+                            step="${wi.step}"
+                            min="${wi.min}"
+                            value="${wi.value}"
+                        >
+                        <div class="quantity_nav">
+                            <button type="button" class="quantity_button quantity_up" aria-label="Increase count">+</button>
+                            <button type="button" class="quantity_button quantity_down" aria-label="Decrease count">-</button>
+                        </div>
+                    </div>
+                </div>
+                    `).join("")}
             </div>
             <div class="matrix_container">
                 <div class="matrix_inputs matrix_labels">
@@ -172,22 +235,21 @@ export const setup_dashboard = (world_info, particle_species_info) => {
                 ${particle_species_info.map((species, index) => `
                     <div class="matrix_group" data-x="${index}">
                         <div class="matrix_inputs">
-                            <div class="matrix_group_header">
+                            <div class="color_control">
                                 <input
                                     type="color"
-                                    class="matrix_color"
+                                    class="matrix_color dashboard_input"
                                     value="${species.color}"
-                                    title="Change particle color"
                                 >
                             </div>
                             <div class="number_control">
                                 <input
                                     type="number"
+                                    class="dashboard_input"
                                     data-field="count"
                                     step="1"
                                     min="0"
                                     value="${species.count}"
-                                    title="Particle count"
                                 >
                                 <div class="quantity_nav">
                                     <button type="button" class="quantity_button quantity_up" aria-label="Increase count">+</button>
@@ -198,6 +260,7 @@ export const setup_dashboard = (world_info, particle_species_info) => {
                                 <div class="number_control">
                                     <input
                                         type="number"
+                                        class="dashboard_input"
                                         data-field="attraction"
                                         data-y="${index}"
                                         step="0.01"
@@ -271,40 +334,66 @@ export const setup_dashboard = (world_info, particle_species_info) => {
         window.dispatchEvent(new CustomEvent("dashboard:update"));
     };
 
-    const update_input_step = (input, species, update, direction) => {
+    const update_world_setting = (input, world, field) => {
+        const value = Number(input.value);
+        const min = input.min === "" ? -Infinity : Number(input.min);
+
+        if (!Number.isFinite(value) || value < min) {
+            input.value = world[field];
+            return;
+        }
+
+        world[field] = input.value = value;
+
+        input.blur();
+
+        window.dispatchEvent(new CustomEvent("dashboard:update"));
+    };
+
+    // still have to check max/min in seperate methods since this just handles
+    // the clicking of (+/-) and not mantually entering a value
+    const update_input_step = (input, data, update, direction) => {
         const step = (Number(input.step) || 1) * direction;
         const precision = (input.step.split(".")[1] || "").length;
-        input.value = (Number(input.value) + step).toFixed(precision);
 
-        update(input, species);
-    }
+        const min = input.min === "" ? -Infinity : Number(input.min);
+        const max = input.max === "" ? Infinity : Number(input.max);
 
-    const setup_quantity_control = (input, species, update) => {
+        const value = Number(input.value) + step;
+
+        input.value = Math.min(max, Math.max(min, value)).toFixed(precision);
+
+        update(input, data);
+    };
+
+    const setup_quantity_control = (input, data_container, update) => {
         const container = input.parentElement;
 
-        input.addEventListener("change", () => update(input, species));
+        input.addEventListener("change", () => update(input, data_container));
         
         const increase_button = container.querySelector(".quantity_up");
         const decrease_button = container.querySelector(".quantity_down");
 
-        increase_button.addEventListener("click", () => update_input_step(input, species, update, 1));
-        decrease_button.addEventListener("click", () => update_input_step(input, species, update, -1));
+        increase_button.addEventListener("click", () => update_input_step(input, data_container, update, 1));
+        decrease_button.addEventListener("click", () => update_input_step(input, data_container, update, -1));
     };
 
     const render = () => {
         document.documentElement.style.setProperty('--column-count', particle_species_info.length);
-        create_dashboard(world_info, particle_species_info);
-        const content = DOM_elements.dashboard_content;
 
+        create_dashboard(world_info, particle_species_info);
+
+        const content = DOM_elements.dashboard_content;
+        const matrix_groups = content.querySelectorAll('.matrix_group');
         const multiplier_slider = content.querySelector("#particle_multiplier_slider");
+        
         multiplier_slider.addEventListener("input", () => {
             world_info.multiplier = Number(multiplier_slider.value);
 
             update_dashboard_stats(world_info, particle_species_info)
             window.dispatchEvent(new CustomEvent("dashboard:rerender"));
         });
-
-        const matrix_groups = content.querySelectorAll('.matrix_group');
+        
         matrix_groups.forEach((matrix_group, index) => {
             const species = particle_species_info[index];
 
@@ -323,6 +412,18 @@ export const setup_dashboard = (world_info, particle_species_info) => {
                         update_particle_attraction(input, current_species, Number(attraction_input.dataset.y))
                 )
             );
+        });
+
+        world_info_builder.forEach(wi => {
+            setup_quantity_control(
+                content.querySelector(`#${wi.id}`),
+                world_info,
+                (input, world) => update_world_setting(
+                    input,
+                    world,
+                    wi.field
+                )
+            )
         });
     };
 

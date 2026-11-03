@@ -116,7 +116,7 @@ const generate_species_info = (len) => {
 }
 
 const randomize_world = () => {
-    PARTICLE_WORLD_INFO.PARTICLE_SIZE = random(1, 6, 2);
+    PARTICLE_WORLD_INFO.PARTICLE_SIZE = random(1, 5, 1);
     PARTICLE_WORLD_INFO.FRICTION = random(0.1, 0.4, 2);
     PARTICLE_WORLD_INFO.REPULSION = random(0.2, 0.4, 2);
     PARTICLE_WORLD_INFO.MIN_DISTANCE = random(4, 10, 0);

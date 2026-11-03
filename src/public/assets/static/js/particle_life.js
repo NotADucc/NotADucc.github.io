@@ -164,6 +164,8 @@ const remove_species = () => {
 };
 
 const add_species = () => {
+    if (PARTICLE_SPECIES_INFO.length >= 15) return;
+
     const new_species = generate_species_info(PARTICLE_SPECIES_INFO.length);
     PARTICLE_SPECIES_INFO.push(new_species);
     update_attraction_matrix();

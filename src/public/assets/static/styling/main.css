@@ -68,10 +68,41 @@ canvas {
    HEADER CONTROLS
    ============================== */
 
-.header_buttons {
+.header_buttons,
+#header_actions_container {
     display: flex;
     align-items: center;
     gap: 5px;
+}
+
+#header_actions_container {
+    max-width: 100px;
+    overflow: hidden;
+    opacity: 1;
+    transform: translateX(0);
+    transition: max-width 0.25s ease, opacity 0.2s ease, transform 0.25s ease;
+
+	&.invisible {
+		max-width: 0;
+		opacity: 0;
+		transform: translateX(8px);
+		pointer-events: none;
+	}
+
+	@media (max-width: 600px) {
+        display: none;
+    }
+}
+
+#header_actions_container svg {
+    width: 20px;
+    height: 20px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+	color: white;
 }
 
 .button {

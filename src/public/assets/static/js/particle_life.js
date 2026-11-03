@@ -56,7 +56,12 @@ const PARTICLE_SPECIES_INFO =
             -0.25
         ]
     }
-]
+];
+
+const PARTICLE_SPECIES_INFO_ORIGINAL_DEEP_COPY = PARTICLE_SPECIES_INFO.map(species => ({
+    ...species,
+    attraction: [...species.attraction]
+}));
 
 
 let particle_backend = null;
@@ -94,6 +99,37 @@ const particles_render_loop = () => {
     current_update_frame = requestAnimationFrame(particles_render_loop);
 }
 
+const randomize_species = () => {
+    for (const species of PARTICLE_SPECIES_INFO) {
+        // Source - https://stackoverflow.com/a/5365036
+        species.color = "#" + ((1 << 24) * Math.random() | 0).toString(16).padStart(6, "0")
+
+        species.count = Math.floor(Math.random() * 176) + 25;
+        
+        species.attraction = Array.from(
+            { length: 4 },
+            () => Math.round((Math.random() * 1 - 0.5) * 100) / 100
+        );
+    }
+
+    create_particles(PARTICLE_WORLD_INFO.get_redraw_multiplier());
+    setup_dashboard(PARTICLE_WORLD_INFO, PARTICLE_SPECIES_INFO);
+};
+
+const reset_species = () => {
+    PARTICLE_SPECIES_INFO.splice(
+        0,
+        PARTICLE_SPECIES_INFO.length,
+        ...PARTICLE_SPECIES_INFO_ORIGINAL_DEEP_COPY.map(species => ({
+            ...species,
+            attraction: [...species.attraction]
+        }))
+    );
+
+    create_particles(PARTICLE_WORLD_INFO.get_redraw_multiplier());
+    setup_dashboard(PARTICLE_WORLD_INFO, PARTICLE_SPECIES_INFO);
+};
+
 const init = async () => {
     register_header_events();
     setup_dashboard(PARTICLE_WORLD_INFO, PARTICLE_SPECIES_INFO);
@@ -104,6 +140,9 @@ const init = async () => {
 }
 
 // EVENT LISTENERS
+
+addEventListener("particles:reset", reset_species);
+addEventListener("particles:randomize", randomize_species);
 
 addEventListener("dashboard:rerender",  
     () => create_particles(PARTICLE_WORLD_INFO.get_redraw_multiplier())

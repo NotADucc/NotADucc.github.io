@@ -37,9 +37,11 @@ export const register_header_events = () => {
         DOM_elements.expand_button_triangle.classList.toggle("triangle_rotate", expanded);
 
         if (!is_mobile()) {
+            DOM_elements.header_actions_container.classList.toggle("invisible", !expanded);
             DOM_elements.dashboard.classList.toggle("collapsed", !expanded);
             DOM_elements.dashboard_content.classList.toggle("invisible", !expanded);
         } else {
+            // DOM_elements.header_actions_container.classList.add("invisible", expanded);
             // DOM_elements.dashboard.classList.add("collapsed");
             // DOM_elements.dashboard_content.classList.add("invisible");
 
@@ -52,6 +54,14 @@ export const register_header_events = () => {
                 new_height: header_info.get_header_height()
             }
         }));
+    });
+
+    DOM_elements.reset_button.addEventListener("click", () => {
+        window.dispatchEvent(new CustomEvent("particles:reset"));
+    });
+
+    DOM_elements.randomize_button.addEventListener("click", () => {
+        window.dispatchEvent(new CustomEvent("particles:randomize"));
     });
 
     addEventListener("resize", () => {

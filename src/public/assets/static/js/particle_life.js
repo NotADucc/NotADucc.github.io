@@ -110,7 +110,7 @@ const generate_species_info = (len) => {
         count: random(25, 200, 0),
         attraction: Array.from(
             { length: len },
-            () => random(-1, 1, 2)
+            () => random(-0.5, 0.5, 2)
         )
     };
 }

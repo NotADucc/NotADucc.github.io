@@ -13,6 +13,10 @@ export const PARTICLE_WORLD_INFO = {
     get_redraw_multiplier: () => DOM_elements.canvas.height <= header_info.HEADER_MIN_HEIGHT ? 1 : PARTICLE_WORLD_INFO.multiplier,
 }
 
+const PARTICLE_WORLD_INFO_ORIGINAL_DEEP_COPY = {
+    ...PARTICLE_WORLD_INFO,
+};
+
 const PARTICLE_SPECIES_INFO = 
 [
     {
@@ -63,6 +67,7 @@ const PARTICLE_SPECIES_INFO_ORIGINAL_DEEP_COPY = PARTICLE_SPECIES_INFO.map(speci
 }));
 
 
+
 let particle_backend = null;
 let current_update_frame = null;
 
@@ -74,7 +79,7 @@ const create_particles = (multiplier) => {
         for (let i = 0; i < add_amount; i++) {
             const particle = {
                 key: key, 
-                position: [random(DOM_elements.canvas.width), random(DOM_elements.canvas.height)], 
+                position: [random(0, DOM_elements.canvas.width, 0), random(0, DOM_elements.canvas.height, 0)], 
                 velocity: [0, 0],
                 color: value.color, 
                 bounds: value.bounds
@@ -102,15 +107,21 @@ const generate_species_info = (len) => {
     return {
         // Source - https://stackoverflow.com/a/5365036
         color: "#" + ((1 << 24) * Math.random() | 0).toString(16).padStart(6, "0"),
-        count: Math.floor(Math.random() * 176) + 25,
+        count: random(25, 200, 0),
         attraction: Array.from(
             { length: len },
-            () => Math.round((Math.random() * 1 - 0.5) * 100) / 100
+            () => random(-1, 1, 2)
         )
     };
 }
 
-const randomize_species = () => {
+const randomize_world = () => {
+    PARTICLE_WORLD_INFO.PARTICLE_SIZE = random(1, 6, 2);
+    PARTICLE_WORLD_INFO.FRICTION = random(0.1, 0.4, 2);
+    PARTICLE_WORLD_INFO.REPULSION = random(0.2, 0.4, 2);
+    PARTICLE_WORLD_INFO.MIN_DISTANCE = random(4, 10, 0);
+    PARTICLE_WORLD_INFO.MAX_DISTANCE = random(20, 50, 0);
+
     for (const species of PARTICLE_SPECIES_INFO) {
         const new_info = generate_species_info(PARTICLE_SPECIES_INFO.length);
         species.color = new_info.color;
@@ -122,7 +133,12 @@ const randomize_species = () => {
     setup_dashboard(PARTICLE_WORLD_INFO, PARTICLE_SPECIES_INFO);
 };
 
-const reset_species = () => {
+const reset_world = () => {
+    Object.assign(
+        PARTICLE_WORLD_INFO,
+        PARTICLE_WORLD_INFO_ORIGINAL_DEEP_COPY
+    );
+
     PARTICLE_SPECIES_INFO.splice(
         0,
         PARTICLE_SPECIES_INFO.length,
@@ -184,8 +200,8 @@ const init = async () => {
 
 // EVENT LISTENERS
 
-addEventListener("particles:reset", reset_species);
-addEventListener("particles:randomize", randomize_species);
+addEventListener("particles:reset", reset_world);
+addEventListener("particles:randomize", randomize_world);
 addEventListener("particles:species:remove", remove_species);
 addEventListener("particles:species:add", add_species);
 

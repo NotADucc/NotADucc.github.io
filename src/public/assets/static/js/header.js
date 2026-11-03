@@ -169,7 +169,7 @@ const WORLD_SETTINGS = [
         id: 'dashboard_stat_particle_size',
         field: 'PARTICLE_SIZE',
         title: 'Particle Size',
-        step: 1,
+        step: 0.1,
         min: 1,
     },
     {

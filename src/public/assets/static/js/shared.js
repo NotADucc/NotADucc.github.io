@@ -20,5 +20,5 @@ export const DOM_elements = {
 }
 
 export const is_mobile = () => /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent),
-    random = (size) => Math.random() * size,
+    random = (min, max, precision) => +(Math.random() * (max - min) + min).toFixed(precision),
     easingFunction = bezier(0.45, 0.1, 0.25, 1);

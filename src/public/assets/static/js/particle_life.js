@@ -2,13 +2,12 @@ import { DOM_elements, is_mobile, random } from './shared.js';
 import { register_header_events, header_info, animate_header, setup_dashboard } from './header.js';
 import {get_particle_backend_factory} from './api/api-factory.js'
 
-const PARTICLE_WORLD_INFO = {
+export const PARTICLE_WORLD_INFO = {
     FRICTION: 0.4,
     PARTICLE_SIZE: 5.0,
+    REPULSION: 0.3,
     MIN_DISTANCE: 6,
-    MIN_DISTANCE_SQ: 36,
     MAX_DISTANCE: 30,
-    MAX_DISTANCE_SQ: 900,
     MAX_PARTICLE_MULTIPLIER: 100,
     multiplier: is_mobile() ? 3 : 10,
     get_redraw_multiplier: () => DOM_elements.canvas.height <= header_info.HEADER_MIN_HEIGHT ? 1 : PARTICLE_WORLD_INFO.multiplier,

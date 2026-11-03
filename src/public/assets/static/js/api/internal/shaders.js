@@ -83,6 +83,7 @@ uniform vec2 u_resolution;
 uniform float u_minDistance;
 uniform float u_maxDistance;
 uniform float u_friction;
+uniform float u_repulsion;
 layout(location=0) out vec4 outPosition;
 layout(location=1) out vec4 outVelocity;
 
@@ -159,7 +160,7 @@ void main() {
 
                 float attraction = texelFetch(u_attraction, ivec2(otherSpecies, ownSpecies), 0).r;
                 float d = sqrt(d2);
-                float f = (d <= u_minDistance ? 0.3 : -attraction) / d;
+                float f = (d <= u_minDistance ? u_repulsion : -attraction) / d;
                 force += f * delta;
             }
         }

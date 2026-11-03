@@ -33,6 +33,7 @@ export default class Canvas2DBackend {
     step() {
         const canvas_width = this.canvas.width;
         const canvas_height = this.canvas.height;
+        const MAX_DISTANCE_SQ = this.settings.MAX_DISTANCE ** 2;
         for (let i = 0; i < this.particles.length; i++) {
             let fx = 0.0;
             let fy = 0.0;
@@ -95,11 +96,11 @@ export default class Canvas2DBackend {
                 else if (dy < -half_height) dy += canvas_height;
 
                 const d = dx * dx + dy * dy;
-                if (d <= 0 || d > this.settings.MAX_DISTANCE_SQ) continue;
+                if (d <= 0 || d > MAX_DISTANCE_SQ) continue;
                 
                 const d_sqrt = Math.sqrt(d);
                 // true path fixed repulsion
-                const F = (d_sqrt <= this.settings.MIN_DISTANCE ? 0.3 : -attraction) / d_sqrt;
+                const F = (d_sqrt <= this.settings.MIN_DISTANCE ? this.settings.REPULSION : -attraction) / d_sqrt;
 
                 fx += F * dx;
                 fy += F * dy;

@@ -144,7 +144,7 @@ class GpuSimulation {
             "u_positions", "u_velocities", "u_species", "u_attraction",
             "u_sortedItems", "u_stateSize", "u_gridSize", "u_particleCount",
             "u_sortWidth", "u_sortCount", "u_resolution", "u_minDistance",
-            "u_maxDistance", "u_friction"
+            "u_maxDistance", "u_friction", "u_repulsion"
         ]);
         this.uRender = cache(this.render_program, [
             "u_positions", "u_species", "u_speciesColors", "u_stateSize",
@@ -403,6 +403,7 @@ class GpuSimulation {
         gl.uniform1f(this.uSim.u_minDistance, this.settings.MIN_DISTANCE);
         gl.uniform1f(this.uSim.u_maxDistance, this.settings.MAX_DISTANCE);
         gl.uniform1f(this.uSim.u_friction, this.settings.FRICTION);
+        gl.uniform1f(this.uSim.u_repulsion, this.settings.REPULSION);
 
         gl.drawArrays(gl.TRIANGLES, 0, 3);
         gl.bindFramebuffer(gl.FRAMEBUFFER, null);

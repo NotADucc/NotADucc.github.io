@@ -30,25 +30,6 @@ export const animate_header = (index, start, stop, callback_grow, callback_finis
     }
 }
 
-export const counter_button_container_on_click = (delta, multiplier, lower_bound, upper_bound) => {
-    const new_multiplier = multiplier + delta;
-
-    if (new_multiplier < lower_bound || new_multiplier > upper_bound) 
-        return;
-    
-    DOM_elements.minus_button.disabled = new_multiplier <= lower_bound;
-    DOM_elements.plus_button.disabled = new_multiplier >= upper_bound;
-    
-    DOM_elements.plus_button.classList.toggle("disabled", DOM_elements.plus_button.disabled);
-    DOM_elements.minus_button.classList.toggle("disabled", DOM_elements.minus_button.disabled);
-    
-    window.dispatchEvent(new CustomEvent("counter:changed", {
-        detail: {
-            multiplier: new_multiplier
-        }
-    }));
-}
-
 export const register_header_events = () => {
     DOM_elements.expand_button.addEventListener("click", () => {
         header_info.is_expanded = !header_info.is_expanded;
@@ -56,11 +37,9 @@ export const register_header_events = () => {
         DOM_elements.expand_button_triangle.classList.toggle("triangle_rotate", expanded);
 
         if (!is_mobile()) {
-            DOM_elements.counter_button_container.classList.toggle("invisible", !expanded);
             DOM_elements.dashboard.classList.toggle("collapsed", !expanded);
             DOM_elements.dashboard_content.classList.toggle("invisible", !expanded);
         } else {
-            // DOM_elements.counter_button_container.classList.add("invisible");
             // DOM_elements.dashboard.classList.add("collapsed");
             // DOM_elements.dashboard_content.classList.add("invisible");
 
@@ -111,19 +90,6 @@ export const register_header_events = () => {
     reset_idle_timer();
 };
 
-export const update_dashboard_stats = (world_info, particle_species_info) => {
-    const multiplier = world_info.multiplier;
-    const total = particle_species_info.reduce(
-        (total, species) => total + species.count,
-        0
-    ) * multiplier;
-
-    const content = DOM_elements.dashboard_content;
-
-    content.querySelector(".dashboard_particle_multiplier").textContent = `${multiplier}x`;
-    content.querySelector(".dashboard_particle_total").textContent = total.toLocaleString();
-};
-
 export const setup_dashboard = (world_info, particle_species_info) => {
     const create_dashboard = (world_info, particle_species_info) => {
         const multiplier = world_info.multiplier;
@@ -133,11 +99,22 @@ export const setup_dashboard = (world_info, particle_species_info) => {
             <div class="dashboard_stats">
                 <div class="dashboard_stat">
                     <span>Multiplier</span>
-                    <strong class="dashboard_particle_multiplier">${multiplier}x</strong>
+                    <div class="slider_container">
+                        <input
+                            type="range"
+                            id="particle_multiplier_slider"
+                            class="slider"
+                            min="1"
+                            max="100"
+                            value="${world_info.multiplier}"
+                            step="1"
+                        />
+                        <strong id="particle_multiplier_value">${multiplier}x</strong>
+                    </div>
                 </div>
                 <div class="dashboard_stat">
                     <span>Total Particles</span>
-                    <strong class="dashboard_particle_total">${total.toLocaleString()}</strong>
+                    <strong id="particle_total_value">${total.toLocaleString()}</strong>
                 </div>
             </div>
             <div class="matrix_container">
@@ -193,6 +170,19 @@ export const setup_dashboard = (world_info, particle_species_info) => {
                 `).join("")}
             </div>`;
     }
+
+    const update_dashboard_stats = (world_info, particle_species_info) => {
+        const multiplier = world_info.multiplier;
+        const total = particle_species_info.reduce(
+            (total, species) => total + species.count,
+            0
+        ) * multiplier;
+
+        const content = DOM_elements.dashboard_content;
+
+        content.querySelector("#particle_multiplier_value").textContent = `${multiplier}x`;
+        content.querySelector("#particle_total_value").textContent = total.toLocaleString();
+    };
 
     const update_particle_count = (input, species) => {
         const value = Number(input.value);
@@ -259,6 +249,14 @@ export const setup_dashboard = (world_info, particle_species_info) => {
     const render = () => {
         create_dashboard(world_info, particle_species_info);
         const content = DOM_elements.dashboard_content;
+
+        const multiplier_slider = content.querySelector("#particle_multiplier_slider");
+        multiplier_slider.addEventListener("input", () => {
+            world_info.multiplier = Number(multiplier_slider.value);
+
+            update_dashboard_stats(world_info, particle_species_info)
+            window.dispatchEvent(new CustomEvent("dashboard:rerender"));
+        });
 
         const matrix_groups = content.querySelectorAll('.matrix_group');
         matrix_groups.forEach((matrix_group, index) => {

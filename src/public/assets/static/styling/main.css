@@ -68,8 +68,7 @@ canvas {
    HEADER CONTROLS
    ============================== */
 
-.header_buttons,
-#counter_buttons_container {
+.header_buttons {
     display: flex;
     align-items: center;
     gap: 5px;
@@ -101,36 +100,6 @@ canvas {
     pointer-events: none;
 }
 
-#plus,
-#minus {
-    position: relative;
-    width: 16px;
-    height: 16px;
-}
-
-#plus::before,
-#plus::after,
-#minus::after {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    display: block;
-    content: "";
-    background: #fff;
-    transform: translate(-50%, -50%);
-}
-
-#plus::before {
-    width: 3px;
-    height: 16px;
-}
-
-#plus::after,
-#minus::after {
-    width: 16px;
-    height: 3px;
-}
-
 #expand_button_triangle {
     width: 0;
     height: 0;
@@ -148,7 +117,7 @@ canvas {
    PARTICLE DASHBOARD
    ============================== */
 
-#particle_dashboard {
+#dashboard {
     grid-column: 2;
     grid-row: 1;
     z-index: 10;
@@ -250,26 +219,6 @@ canvas {
         opacity: 0.3;
     }
 }
-
-#counter_buttons_container {
-    max-width: 100px;
-    overflow: hidden;
-    opacity: 1;
-    transform: translateX(0);
-    transition: max-width 0.25s ease, opacity 0.2s ease, transform 0.25s ease;
-
-	&.invisible {
-		max-width: 0;
-		opacity: 0;
-		transform: translateX(8px);
-		pointer-events: none;
-	}
-
-	@media (max-width: 600px) {
-        display: none;
-    }
-}
-
 
 .dashboard_stats {
 	display: grid;
@@ -459,6 +408,64 @@ input.matrix_color {
     border-top: 1px solid #252525;
 }
 
+#particle_multiplier_value {
+    flex-shrink: 0;
+    width: 4ch;
+    text-align: right;
+    white-space: nowrap;
+}
+
+.slider_container {
+    display: flex;
+    align-items: center;
+	justify-content: space-between;
+    gap: 10px;
+
+    max-width: 180px;
+    overflow: hidden;
+}
+
+.slider {
+    width: 95%;
+    height: 3px;
+    margin: 0;
+
+    appearance: none;
+    -webkit-appearance: none;
+
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 5px;
+    outline: none;
+    cursor: pointer;
+
+	&::-webkit-slider-thumb {
+		appearance: none;
+		-webkit-appearance: none;
+
+		width: 12px;
+		height: 12px;
+
+		border-radius: 50%;
+		background: #fff;
+		border: none;
+
+		transition: transform 0.2s ease;
+	}
+
+	&::-webkit-slider-thumb:hover {
+		transform: scale(1.3);
+	}
+
+	&::-moz-range-thumb {
+		width: 12px;
+		height: 12px;
+
+		border-radius: 50%;
+		background: #fff;
+		border: none;
+		cursor: pointer;
+	}
+}
 
 /* ==============================
    MAIN CONTENT

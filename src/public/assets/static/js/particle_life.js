@@ -1,5 +1,5 @@
 import { DOM_elements, is_mobile, random } from './shared.js';
-import { register_header_events, header_info, animate_header, counter_button_container_on_click, setup_dashboard, update_dashboard_stats } from './header.js';
+import { register_header_events, header_info, animate_header, setup_dashboard } from './header.js';
 import {get_particle_backend_factory} from './api/api-factory.js'
 
 const PARTICLE_WORLD_INFO = {
@@ -104,15 +104,6 @@ const init = async () => {
 }
 
 // EVENT LISTENERS
-
-DOM_elements.plus_button.addEventListener("click", () => counter_button_container_on_click(1, PARTICLE_WORLD_INFO.multiplier, 1, PARTICLE_WORLD_INFO.MAX_PARTICLE_MULTIPLIER));
-DOM_elements.minus_button.addEventListener("click", () => counter_button_container_on_click(-1, PARTICLE_WORLD_INFO.multiplier, 1, PARTICLE_WORLD_INFO.MAX_PARTICLE_MULTIPLIER));
-
-addEventListener("counter:changed", (event) => {
-    PARTICLE_WORLD_INFO.multiplier = event.detail.multiplier;
-    create_particles(PARTICLE_WORLD_INFO.get_redraw_multiplier());
-    update_dashboard_stats(PARTICLE_WORLD_INFO, PARTICLE_SPECIES_INFO);
-});
 
 addEventListener("dashboard:rerender",  
     () => create_particles(PARTICLE_WORLD_INFO.get_redraw_multiplier())

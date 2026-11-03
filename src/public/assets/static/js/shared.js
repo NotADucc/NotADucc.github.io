@@ -6,10 +6,7 @@ export const DOM_elements = {
     main: document.getElementsByTagName("main")[0],
     expand_button: document.getElementById("expand_button"),
     expand_button_triangle: document.getElementById("expand_button_triangle"),
-    plus_button: document.getElementById("plus_button"),
-    minus_button: document.getElementById("minus_button"),
-    counter_button_container: document.getElementById("counter_buttons_container"),
-    dashboard: document.getElementById("particle_dashboard"),
+    dashboard: document.getElementById("dashboard"),
     dashboard_content: document.getElementById("dashboard_content"),
     dashboard_mobile_message: document.getElementById("mobile_message"),
 }

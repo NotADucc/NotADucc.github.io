@@ -40,13 +40,7 @@ const update_header_height = (height) => {
     DOM_elements.main.style.marginTop = `${height}px`;
 };
 
-export const animate_header = (
-    index,
-    start,
-    stop,
-    callback_grow,
-    callback_finished
-) => {
+export const animate_header = (index, start, stop, callback_grow, callback_finished) => {
     if (index > 1) {
         update_header_height(stop);
         callback_finished();
@@ -61,6 +55,11 @@ export const animate_header = (
     requestAnimationFrame(() =>
         animate_header(index + 0.01, start, stop, callback_grow, callback_finished)
     );
+};
+
+export const update_species_buttons = ({ can_add, can_remove }) => {
+    DOM_elements.plus_button.disabled = !can_add;
+    DOM_elements.minus_button.disabled = !can_remove;
 };
 
 const update_dashboard_visibility = () => {

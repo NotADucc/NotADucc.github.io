@@ -1,5 +1,5 @@
 import { DOM_elements, is_mobile, random } from './shared.js';
-import { register_header_events, header_info, animate_header, setup_dashboard } from './header.js';
+import { register_header_events, header_info, animate_header, setup_dashboard, update_species_buttons } from './header.js';
 import {get_particle_backend_factory} from './api/api-factory.js'
 
 export const PARTICLE_WORLD_INFO = {
@@ -9,6 +9,8 @@ export const PARTICLE_WORLD_INFO = {
     MIN_DISTANCE: 6,
     MAX_DISTANCE: 30,
     MAX_PARTICLE_MULTIPLIER: 100,
+    SPECIES_COUNT_MIN: 2,
+    SPECIES_COUNT_MAX: 15,
     multiplier: is_mobile() ? 3 : 10,
     get_redraw_multiplier: () => DOM_elements.canvas.height <= header_info.HEADER_MIN_HEIGHT ? 1 : PARTICLE_WORLD_INFO.multiplier,
 }
@@ -148,6 +150,8 @@ const reset_world = () => {
         }))
     );
 
+    update_species_buttons_state();
+
     create_particles(PARTICLE_WORLD_INFO.get_redraw_multiplier());
     setup_dashboard(PARTICLE_WORLD_INFO, PARTICLE_SPECIES_INFO);
 };
@@ -168,22 +172,33 @@ const update_attraction_matrix = () => {
     });
 };
 
+const update_species_buttons_state = () => {
+    update_species_buttons({
+        can_add: PARTICLE_SPECIES_INFO.length < PARTICLE_WORLD_INFO.SPECIES_COUNT_MAX,
+        can_remove: PARTICLE_SPECIES_INFO.length > PARTICLE_WORLD_INFO.SPECIES_COUNT_MIN
+    });
+};
+
 const remove_species = () => {
-    if (PARTICLE_SPECIES_INFO.length <= 2) return;
+    if (PARTICLE_SPECIES_INFO.length <= PARTICLE_WORLD_INFO.SPECIES_COUNT_MIN) return;
 
     PARTICLE_SPECIES_INFO.pop();
+
     update_attraction_matrix();
+    update_species_buttons_state();
 
     create_particles(PARTICLE_WORLD_INFO.get_redraw_multiplier());
     setup_dashboard(PARTICLE_WORLD_INFO, PARTICLE_SPECIES_INFO);
 };
 
 const add_species = () => {
-    if (PARTICLE_SPECIES_INFO.length >= 15) return;
+    if (PARTICLE_SPECIES_INFO.length >= PARTICLE_WORLD_INFO.SPECIES_COUNT_MAX) return;
 
     const new_species = generate_species_info(PARTICLE_SPECIES_INFO.length);
     PARTICLE_SPECIES_INFO.push(new_species);
+
     update_attraction_matrix();
+    update_species_buttons_state();
 
     create_particles(PARTICLE_WORLD_INFO.get_redraw_multiplier());
     setup_dashboard(PARTICLE_WORLD_INFO, PARTICLE_SPECIES_INFO);

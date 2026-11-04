@@ -36,8 +36,7 @@ const update_header_width = (width) => {
 
 const update_header_height = (height) => {
     DOM_elements.canvas.height = height;
-    DOM_elements.header.style.height = `${height}px`;
-    DOM_elements.main.style.marginTop = `${height}px`;
+    DOM_elements.header.style.height = DOM_elements.main.style.marginTop  = `${height}px`;
 };
 
 export const animate_header = (index, start, stop, callback_grow, callback_finished) => {
@@ -127,10 +126,7 @@ export const register_header_events = () => {
         const height = header_info.get_header_height();
         const width = window.innerWidth;
 
-        if (
-            DOM_elements.canvas.width === width &&
-            DOM_elements.canvas.height === height
-        ) {
+        if (DOM_elements.canvas.width === width && DOM_elements.canvas.height === height) {
             return;
         }
 

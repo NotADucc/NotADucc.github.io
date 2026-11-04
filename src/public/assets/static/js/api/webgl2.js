@@ -10,7 +10,7 @@
  * If you have any suggestions or ideas for improvements, feel free to reach out!
  */
 
-import {DRAW_FRAGMENT, GPU_VERTEX, SIM_FRAGMENT, BITONIC_SORT_FRAGMENT, BUILD_KEYS_FRAGMENT,FULLSCREEN_VERTEX } from "./internal/shaders.js"
+import { DRAW_FRAGMENT, GPU_VERTEX, SIM_FRAGMENT, BITONIC_SORT_FRAGMENT, BUILD_KEYS_FRAGMENT,FULLSCREEN_VERTEX } from "./shaders.js"
 
 const compile_shader = (gl, type, source) => {
     const shader = gl.createShader(type);

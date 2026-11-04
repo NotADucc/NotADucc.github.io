@@ -1,4 +1,4 @@
-import bezier from './bezier.js';
+import bezier from './helper/bezier.js';
 
 export const DOM_elements = {
     canvas: document.getElementById("noise"),
@@ -21,4 +21,4 @@ export const DOM_elements = {
 
 export const is_mobile = () => /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent),
     random = (min, max, precision) => +(Math.random() * (max - min) + min).toFixed(precision),
-    easingFunction = bezier(0.45, 0.1, 0.25, 1);
+    easing_function = bezier(0.45, 0.1, 0.25, 1);

@@ -1,4 +1,4 @@
-import { is_mobile, DOM_elements, easingFunction } from './shared.js';
+import { is_mobile, DOM_elements, easing_function } from './shared.js';
 
 const EVENTS = {
     HEADER_EXPANDED: 'header:expanded',
@@ -36,7 +36,7 @@ const update_header_width = (width) => {
 
 const update_header_height = (height) => {
     DOM_elements.canvas.height = height;
-    DOM_elements.header.style.height = DOM_elements.main.style.marginTop  = `${height}px`;
+    DOM_elements.header.style.height = DOM_elements.main.style.marginTop = `${height}px`;
 };
 
 export const animate_header = (index, start, stop, callback_grow, callback_finished) => {
@@ -46,7 +46,7 @@ export const animate_header = (index, start, stop, callback_grow, callback_finis
         return;
     }
 
-    const height = start + (stop - start) * easingFunction(index);
+    const height = start + (stop - start) * easing_function(index);
 
     update_header_height(height);
     callback_grow();
@@ -172,24 +172,26 @@ const WORLD_SETTINGS = [
         field: 'FRICTION',
         title: 'Friction',
         step: 0.01,
+        min: 0.01,
     },
     {
         id: 'dashboard_stat_particle_repulsion',
         field: 'REPULSION',
         title: 'Repulsion',
         step: 0.01,
+        min: 0,
     },
     {
         id: 'dashboard_stat_particle_attraction_min_distance',
         field: 'MIN_DISTANCE',
-        title: 'Min Distance',
+        title: 'Min Radius',
         step: 1,
         min: 0,
     },
     {
         id: 'dashboard_stat_particle_attraction_max_distance',
         field: 'MAX_DISTANCE',
-        title: 'Max Distance',
+        title: 'Max Radius',
         step: 1,
         min: 0,
     },
@@ -292,7 +294,6 @@ const create_dashboard = (world_info, particle_species_info) => {
                 <span>Total Species</span>
                 <strong id="species_total_value">${particle_species_info.length.toLocaleString()}</strong>
             </div>
-
             <div class="dashboard_stat">
                 <span>Total Particles</span>
                 <strong id="particle_total_value">${total_particles.toLocaleString()}</strong>

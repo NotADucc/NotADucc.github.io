@@ -1,6 +1,6 @@
 import { DOM_elements, is_mobile, random } from './shared.js';
 import { register_header_events, header_info, animate_header, setup_dashboard, update_species_buttons } from './header.js';
-import {get_particle_backend_factory} from './api/api-factory.js'
+import { get_particle_backend_factory } from './api/api-factory.js'
 
 export const PARTICLE_WORLD_INFO = {
     FRICTION: 0.4,
@@ -156,14 +156,12 @@ const reset_world = () => {
     setup_dashboard(PARTICLE_WORLD_INFO, PARTICLE_SPECIES_INFO);
 };
 
-// can replace 0 with a random value if u want it already generated
-// with values instead of 0
 const update_attraction_matrix = () => {
     const species_count = PARTICLE_SPECIES_INFO.length;
 
     PARTICLE_SPECIES_INFO.forEach(species => {
         while (species.attraction.length < species_count) {
-            species.attraction.push(0);
+            species.attraction.push(random(-0.5, 0.5, 2));
         }
 
         while (species.attraction.length > species_count) {
@@ -194,8 +192,9 @@ const remove_species = () => {
 const add_species = () => {
     if (PARTICLE_SPECIES_INFO.length >= PARTICLE_WORLD_INFO.SPECIES_COUNT_MAX) return;
 
-    const new_species = generate_species_info(PARTICLE_SPECIES_INFO.length);
-    PARTICLE_SPECIES_INFO.push(new_species);
+    PARTICLE_SPECIES_INFO.push(
+        generate_species_info(PARTICLE_SPECIES_INFO.length)
+    );
 
     update_attraction_matrix();
     update_species_buttons_state();

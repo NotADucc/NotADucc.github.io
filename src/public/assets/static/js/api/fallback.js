@@ -1,5 +1,5 @@
-import QuadTree from "./internal/quadtree.js";
-import Rectangle from "./internal/rectangle.js";
+import QuadTree from "../helper/quadtree.js";
+import Rectangle from "../helper/rectangle.js";
 
 export default class Canvas2DBackend {
     constructor(canvas) {

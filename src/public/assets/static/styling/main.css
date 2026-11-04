@@ -188,7 +188,7 @@ canvas {
 
     margin-right: 1.75rem;
 
-	width: calc(180px + (70px * var(--column-count)));
+	width: max(370px, calc(180px + (70px * var(--column-count))));
     max-width: calc(100vw - 80px);
     max-height: 85vh;
     padding: 10px;

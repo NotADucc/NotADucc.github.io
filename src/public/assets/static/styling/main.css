@@ -2,6 +2,18 @@
   --column-count: 4;
 }
 
+@property --x-glow-color {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: transparent;
+}
+
+@property --y-glow-color {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: transparent;
+}
+
 body {
 	background-color: #171717;
 	display: flex; 
@@ -336,11 +348,58 @@ canvas {
 	border-radius: 0.25em;
 }
 
-input.matrix_color {
+input[type="color"].matrix_color {
 	width: 2em !important;
 	padding: 0 !important;
 	background: transparent;
 	cursor: pointer;
+	border: 0px !important;
+	border-radius: 0px !important;
+
+	&::-webkit-color-swatch-wrapper {
+		padding: 0;
+	}
+
+	&::-webkit-color-swatch {
+		border: none;
+	}
+
+	&::-moz-color-swatch {
+		border: none;
+	}
+}
+
+.matrix_group.axis_glow_x .matrix_color  {
+    box-shadow:
+        0 0 6px var(--x-glow-color),
+        0 0 10px var(--x-glow-color);
+	transition: box-shadow 0.3s ease;
+}
+
+.matrix_color.axis_glow_y  {
+    box-shadow:
+        0 0 6px var(--y-glow-color),
+        0 0 10px var(--y-glow-color);
+	transition: box-shadow 0.3s ease;
+}
+
+.matrix_group input.coordinate_glow {
+    border: 2px solid transparent;
+	/* have to transition like this er else the brighter colors 
+	in polar opposite colors overpower the darker one */
+    background:
+	linear-gradient(#222, #222) padding-box,
+	linear-gradient(
+		to top right,
+			var(--x-glow-color) 0%,
+			var(--x-glow-color) 38%,
+			var(--y-glow-color) 62%,
+			var(--y-glow-color) 100%
+        ) border-box;
+
+	transition:
+        --x-glow-color 0.3s ease,
+        --y-glow-color 0.3s ease;
 }
 
 .matrix_labels .matrix_color {
@@ -378,7 +437,9 @@ input.matrix_color {
     color: white;
     font: inherit;
 
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    transition: 
+		border-color 0.2s ease, 
+		box-shadow 0.2s ease;
 
     &:hover {
         border-color: #888;
@@ -442,7 +503,7 @@ input.matrix_color {
     cursor: pointer;
     user-select: none;
 
-    transition: background 0.2s, color 0.2s;
+    transition: color 0.2s;
 
 	&:hover {
 		background: #505050;

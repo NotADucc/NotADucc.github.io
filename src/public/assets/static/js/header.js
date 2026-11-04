@@ -321,6 +321,53 @@ const create_dashboard = (world_info, particle_species_info) => {
     `;
 };
 
+const setup_matrix_hover = () => {
+    const matrix = document.querySelector('.matrix_container');
+
+    if (!matrix) return;
+
+    const root = document.documentElement;
+
+    const clear_highlights = () => {
+        matrix.querySelectorAll('.axis_glow_x, .axis_glow_y, .coordinate_glow')
+            .forEach(element => {
+                element.classList.remove(
+                    'axis_glow_x',
+                    'axis_glow_y',
+                    'coordinate_glow'
+                );
+            });
+
+        root.style.setProperty('--x-glow-color', 'transparent');
+        root.style.setProperty('--y-glow-color', 'transparent');
+    };
+
+    matrix.addEventListener('pointerover', event => {
+        const control = event.target.closest('.number_control');
+        const input = control?.querySelector('input[data-field="attraction"]');
+
+        clear_highlights();
+
+        if (!input) return;
+
+        const row = input.closest('.matrix_group');
+        const column = matrix.querySelector(`.matrix_color[data-y="${input.dataset.y}"]`);
+
+        const row_color = row.querySelector('.matrix_color').value;
+        const column_color = column.style.backgroundColor;
+
+        root.style.setProperty('--x-glow-color', row_color);
+        root.style.setProperty('--y-glow-color', column_color);
+        
+        input.classList.add('coordinate_glow');
+        row.classList.add('axis_glow_x');
+        column.classList.add('axis_glow_y');
+    });
+
+
+    matrix.addEventListener('pointerleave', clear_highlights);
+};
+
 const give_number_within_range = (input) => {
     const min = input.min === '' ? -Infinity : Number(input.min);
     const max = input.max === '' ? Infinity : Number(input.max);
@@ -490,6 +537,8 @@ export const setup_dashboard = (world_info, particle_species_info) => {
                 particle_species_info
             );
         });
+
+        setup_matrix_hover();
     };
 
     render();

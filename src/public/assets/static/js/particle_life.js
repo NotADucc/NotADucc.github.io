@@ -247,4 +247,8 @@ addEventListener("header:expanded", (event) => {
     );
 });
 
-addEventListener("load", init);
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+} else {
+    init();
+}

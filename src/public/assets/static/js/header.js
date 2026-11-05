@@ -344,24 +344,28 @@ const setup_matrix_hover = () => {
 
     matrix.addEventListener('pointerover', event => {
         const control = event.target.closest('.number_control');
-        const input = control?.querySelector('input[data-field="attraction"]');
+        const input = control?.querySelector('input');
 
         clear_highlights();
 
         if (!input) return;
 
         const row = input.closest('.matrix_group');
-        const column = matrix.querySelector(`.matrix_color[data-y="${input.dataset.y}"]`);
+        const column = matrix.querySelector(`.matrix_color[data-y="${input.dataset.y}"]`) 
+            ?? row; // if it cant find data-y then we know it's a count input
 
         const row_color = row.querySelector('.matrix_color').value;
-        const column_color = column.style.backgroundColor;
+        const column_color = column.style.backgroundColor || row_color;
 
         root.style.setProperty('--x-glow-color', row_color);
         root.style.setProperty('--y-glow-color', column_color);
         
         input.classList.add('coordinate_glow');
-        row.classList.add('axis_glow_x');
-        column.classList.add('axis_glow_y');
+
+        if (input.matches('input[data-field="attraction"]')) {
+            row.classList.add('axis_glow_x');
+            column.classList.add('axis_glow_y');
+        }
     });
 
 

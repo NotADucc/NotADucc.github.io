@@ -282,7 +282,7 @@ const create_dashboard = (world_info, particle_species_info) => {
                         id="particle_multiplier_slider"
                         class="slider"
                         min="1"
-                        max="100"
+                        max="${world_info.MAX_PARTICLE_MULTIPLIER}"
                         value="${world_info.multiplier}"
                         step="1"
                     >

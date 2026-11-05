@@ -1,3 +1,5 @@
+import WebGLBackend from "./webgl2.js";
+
 export const get_particle_backend_factory = async (canvas) => {
     try {
         let supports_gpu = false;
@@ -25,7 +27,6 @@ export const get_particle_backend_factory = async (canvas) => {
         console.info(supports_gpu ? "supports gpu" : "does not support gpu");
 
         if (supports_gpu) {
-            const { default: WebGLBackend } = await import("./webgl2.js");
             return new WebGLBackend(canvas);
         } else {
             const { default: Canvas2DBackend } = await import("./fallback.js");

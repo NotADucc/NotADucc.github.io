@@ -119,6 +119,7 @@ void main() {
     vec2 velocity = texelFetch(u_velocities, texel, 0).xy;
     int ownSpecies = int(texelFetch(u_species, texel, 0).r + 0.5);
 
+    float minDistanceSq = u_minDistance * u_minDistance;
     float maxDistanceSq = u_maxDistance * u_maxDistance;
     vec2 force = vec2(0.0);
 
@@ -159,8 +160,9 @@ void main() {
                 if (d2 <= 0.0 || d2 > maxDistanceSq) continue;
 
                 float attraction = texelFetch(u_attraction, ivec2(otherSpecies, ownSpecies), 0).r;
-                float d = sqrt(d2);
-                float f = (d <= u_minDistance ? u_repulsion : -attraction) / d;
+
+                float f = (d2 <= minDistanceSq ? u_repulsion : -attraction) * inversesqrt(d2);
+
                 force += f * delta;
             }
         }

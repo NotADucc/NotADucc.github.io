@@ -302,6 +302,11 @@ class GpuSimulation {
     }
 
     _set_attraction(species) {
+        const gl = this.gl;
+        if (this.attraction_texture) {
+            gl.deleteTexture(this.attraction_texture);
+        }
+
         const species_count = species.length;
 
         const attraction_data = new Float32Array(species_count * species_count);
@@ -317,6 +322,11 @@ class GpuSimulation {
     }
 
     _set_color(species) {
+        const gl = this.gl;
+        if (this.species_colors_texture) {
+            gl.deleteTexture(this.species_colors_texture);
+        }
+
         const species_count = species.length;
 
         const color_data = new Float32Array(species_count * 4);

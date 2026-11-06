@@ -77,6 +77,7 @@ const PARTICLE_SPECIES_INFO_ORIGINAL_DEEP_COPY = deep_copy(PARTICLE_SPECIES_INFO
 
 let particle_backend = null;
 let current_update_frame = null;
+let monitor_refresh_rate = 60;
 
 const create_particles = (multiplier) => {
     const particles = [];
@@ -128,8 +129,10 @@ const rebuild_world = () => {
 };
 
 const randomize_world = () => {
+    const scale = 60 / monitor_refresh_rate;
+
     PARTICLE_WORLD_INFO.PARTICLE_SIZE = random(1, 5, 1);
-    PARTICLE_WORLD_INFO.FRICTION = random(0.1, 0.4, 2);
+    PARTICLE_WORLD_INFO.FRICTION = random(0.1 * scale, 0.4 * scale, 2);
     PARTICLE_WORLD_INFO.REPULSION = random(0.2, 0.4, 2);
     PARTICLE_WORLD_INFO.MIN_DISTANCE = random(4, 10, 0);
     PARTICLE_WORLD_INFO.MAX_DISTANCE = random(20, 50, 0);
@@ -209,14 +212,34 @@ const add_species = () => {
     rebuild_world();
 };
 
+const estimate_refresh_rate = async (samples = 100) => {
+    let total = 0, previous;
+
+    for (let i = 0; i <= samples; i++) {
+        const time = await new Promise(requestAnimationFrame);
+
+        if (previous !== undefined) total += time - previous;
+        previous = time;
+    }
+
+    return Math.round(1000 * samples / total);
+};
+
 const init = async () => {
     register_header_events();
     setup_dashboard(PARTICLE_WORLD_INFO, PARTICLE_SPECIES_INFO);
     window.dispatchEvent(new CustomEvent("resize"));
+
+    estimate_refresh_rate().then(rate => {
+        monitor_refresh_rate = rate;
+        console.info(`estimated hz: ${monitor_refresh_rate}`);
+    });
+
     particle_backend = await get_particle_backend_factory(DOM_elements.canvas);
     create_particles(PARTICLE_WORLD_INFO.get_redraw_multiplier());
     particles_render_loop();
-}
+};
+
 
 // EVENT LISTENERS
 

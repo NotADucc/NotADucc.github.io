@@ -15,10 +15,6 @@ export const PARTICLE_WORLD_INFO = {
     get_redraw_multiplier: () => DOM_elements.canvas.height <= header_info.HEADER_MIN_HEIGHT ? 1 : PARTICLE_WORLD_INFO.multiplier,
 }
 
-const PARTICLE_WORLD_INFO_ORIGINAL_DEEP_COPY = {
-    ...PARTICLE_WORLD_INFO,
-};
-
 const PARTICLE_SPECIES_INFO = 
 [
     {
@@ -63,11 +59,20 @@ const PARTICLE_SPECIES_INFO =
     }
 ];
 
-const PARTICLE_SPECIES_INFO_ORIGINAL_DEEP_COPY = PARTICLE_SPECIES_INFO.map(species => ({
-    ...species,
-    attraction: [...species.attraction]
-}));
+const deep_copy = (value) => {
+    if (value === null || typeof value !== "object") 
+        return value;
 
+    if (Array.isArray(value)) 
+        return value.map(deep_copy);
+
+    return Object.fromEntries(
+        Object.entries(value).map(([key, val]) => [key, deep_copy(val)])
+    );
+}
+
+const PARTICLE_WORLD_INFO_ORIGINAL_DEEP_COPY = deep_copy(PARTICLE_WORLD_INFO);
+const PARTICLE_SPECIES_INFO_ORIGINAL_DEEP_COPY = deep_copy(PARTICLE_SPECIES_INFO);
 
 
 let particle_backend = null;
@@ -117,6 +122,11 @@ const generate_species_info = (len) => {
     };
 }
 
+const rebuild_world = () => {
+    create_particles(PARTICLE_WORLD_INFO.get_redraw_multiplier());
+    setup_dashboard(PARTICLE_WORLD_INFO, PARTICLE_SPECIES_INFO);
+};
+
 const randomize_world = () => {
     PARTICLE_WORLD_INFO.PARTICLE_SIZE = random(1, 5, 1);
     PARTICLE_WORLD_INFO.FRICTION = random(0.1, 0.4, 2);
@@ -131,8 +141,7 @@ const randomize_world = () => {
         species.attraction = new_info.attraction;
     }
 
-    create_particles(PARTICLE_WORLD_INFO.get_redraw_multiplier());
-    setup_dashboard(PARTICLE_WORLD_INFO, PARTICLE_SPECIES_INFO);
+    rebuild_world();
 };
 
 const reset_world = () => {
@@ -152,8 +161,7 @@ const reset_world = () => {
 
     update_species_buttons_state();
 
-    create_particles(PARTICLE_WORLD_INFO.get_redraw_multiplier());
-    setup_dashboard(PARTICLE_WORLD_INFO, PARTICLE_SPECIES_INFO);
+    rebuild_world();
 };
 
 const update_attraction_matrix = () => {
@@ -185,8 +193,7 @@ const remove_species = () => {
     update_attraction_matrix();
     update_species_buttons_state();
 
-    create_particles(PARTICLE_WORLD_INFO.get_redraw_multiplier());
-    setup_dashboard(PARTICLE_WORLD_INFO, PARTICLE_SPECIES_INFO);
+    rebuild_world();
 };
 
 const add_species = () => {
@@ -199,8 +206,7 @@ const add_species = () => {
     update_attraction_matrix();
     update_species_buttons_state();
 
-    create_particles(PARTICLE_WORLD_INFO.get_redraw_multiplier());
-    setup_dashboard(PARTICLE_WORLD_INFO, PARTICLE_SPECIES_INFO);
+    rebuild_world();
 };
 
 const init = async () => {

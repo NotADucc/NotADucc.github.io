@@ -532,7 +532,7 @@ const setup_multiplier_control = (content, world_info, particle_species_info) =>
 export const setup_dashboard = (world_info, particle_species_info) => {
     const render = () => {
         document.documentElement.style.setProperty(
-            '--column-count',
+            '--matrix-column-count',
             particle_species_info.length
         );
 

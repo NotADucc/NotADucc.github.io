@@ -1,5 +1,5 @@
 :root {
-  --column-count: 4;
+  --matrix-column-count: 4;
 }
 
 @property --x-glow-color {
@@ -200,7 +200,7 @@ canvas {
 
     margin-right: 1.75rem;
 
-	width: max(370px, calc(180px + (70px * var(--column-count))));
+	width: max(370px, calc(180px + (70px * var(--matrix-column-count))));
     max-width: calc(100vw - 80px);
     max-height: 85vh;
     padding: 10px;
@@ -413,14 +413,14 @@ input[type="color"].matrix_color {
 
 .matrix_inputs {
     display: grid;
-    grid-template-columns: 0.7fr 2fr repeat(var(--column-count), minmax(0, 1.5fr));
+    grid-template-columns: 0.7fr 2fr repeat(var(--matrix-column-count), minmax(0, 1.5fr));
 
     gap: 5px;
     align-items: center;
     justify-items: center;
 
     &.matrix_labels {
-        grid-template-columns: 3fr repeat(var(--column-count), minmax(0, 1.5fr));
+        grid-template-columns: 3fr repeat(var(--matrix-column-count), minmax(0, 1.5fr));
     }
 }
 

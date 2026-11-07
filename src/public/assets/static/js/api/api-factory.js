@@ -2,6 +2,15 @@ import WebGLBackend from "./webgl2.js";
 
 export const get_particle_backend_factory = async (canvas) => {
     try {
+        if (false) {
+            const fallback_requested = new URLSearchParams(window.location.search).has("fallback");
+            if (fallback_requested) {
+                console.info("fallback requested");
+                const { default: Canvas2DBackend } = await import("./fallback.js");
+                return new Canvas2DBackend(canvas);
+            }
+        }
+
         let supports_gpu = false;
 
         try {
@@ -23,9 +32,8 @@ export const get_particle_backend_factory = async (canvas) => {
         } catch (_error) {
             supports_gpu = false;
         }
-
+        
         console.info(supports_gpu ? "supports gpu" : "does not support gpu");
-
         if (supports_gpu) {
             return new WebGLBackend(canvas);
         } else {

@@ -158,12 +158,12 @@ void scan(int row, int firstCell, int lastCell) {
         delta -= u_resolution * floor(delta / u_resolution + 0.5);
 
         float d2 = dot(delta, delta);
-        if (d2 <= 0.0 || d2 > u_maxDistSq) continue;   // also rejects self
+        if (d2 <= 0.0 || d2 > u_maxDistSq) continue;
 
         float f = d2 <= u_minDistSq
             ? u_repulsion
             : -texelFetch(u_attraction, ivec2(int(other.z + 0.5), g_species), 0).r;
-        g_force += (f * inversesqrt(d2)) * delta;
+        g_force += f * delta * inversesqrt(d2);
     }
 }
 

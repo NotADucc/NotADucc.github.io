@@ -55,7 +55,7 @@ header .container {
     padding-block: 0.625rem;
 }
 
-.container > a {
+header .container a {
     display: flex;
     align-items: center;
 	align-self: flex-start;

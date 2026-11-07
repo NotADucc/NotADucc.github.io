@@ -74,6 +74,8 @@ const deep_copy = (value) => {
 const PARTICLE_WORLD_INFO_ORIGINAL_DEEP_COPY = deep_copy(PARTICLE_WORLD_INFO);
 const PARTICLE_SPECIES_INFO_ORIGINAL_DEEP_COPY = deep_copy(PARTICLE_SPECIES_INFO);
 
+globalThis.PARTICLE_WORLD_INFO = PARTICLE_WORLD_INFO
+globalThis.PARTICLE_SPECIES_INFO = PARTICLE_SPECIES_INFO
 
 let particle_backend = null;
 let current_update_frame = null;

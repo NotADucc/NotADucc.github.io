@@ -13,7 +13,7 @@ const insert_tiles = (file, tile_data) => {
             output.push(`
                 <div>
                     <div class="tile_item">
-                        <a class="tile_link" href="#popup-${title}${idx}">
+                        <a class="tile_link" href="#popup-${title}${idx}" aria-label="View details for ${tile.title}">
                             ${image_minified}
                         </a>
                         <div class="tile_content">
@@ -33,7 +33,7 @@ const insert_tiles = (file, tile_data) => {
                             <h3 class="tile_title">${tile.title}</h3>
                             <h4><i>${tile.under_title}</i></h4>
                             <p class="tools">${joined_tools}</p>
-                            <a class="close" onclick="location.href='#ignore'; history.pushState('', document.title, window.location.pathname);">&times;</a>
+                            <a class="close" aria-label="Close ${tile.title} details" onclick="location.href='#ignore'; history.pushState('', document.title, window.location.pathname);">&times;</a>
                             <p class="tile_description">
                                 ${tile.description}
                             </p>
@@ -55,8 +55,8 @@ const _get_images = (tile) =>
     {
         const img = tile.image?.split('.');
         return {
-            image: `<img src="public/assets/img/${tile.image}" class="img img_pop" loading="lazy" alt="${tile.image}-screenshot">`,
-            image_minified: `<img src="public/assets/img/${img[0]}.mini.${img[1]}" class="img fluid" loading="lazy" alt="${tile.image}-screenshot">`,
+            image: `<img src="public/assets/img/${tile.image}" class="img img_pop" loading="lazy" alt="${tile.title} project screenshot">`,
+            image_minified: `<img src="public/assets/img/${img[0]}.mini.${img[1]}" class="img fluid" loading="lazy" alt="${tile.title} project screenshot">`,
         }
     }
 
@@ -71,13 +71,30 @@ const _get_links = (tile) =>
     if (tile.links)
     {
         return {
-            links: tile.links.map((link) => 
-                `
-                <a href="${link.url}" class="tile_link tile_title_link" target="_blank" rel="noopener noreferrer">
-                    ${link.icon}
-                </a>
-                `
-            ).join('')
+           links: tile.links.map((link) => {
+                if (link.action) {
+                    return `
+                        <button 
+                            type="button" 
+                            id="${link.action}" 
+                            class="tile_link tile_title_link tile_action"
+                            aria-label="Visit ${tile.title} on ${link.icon.label}"
+                        >
+                            ${link.icon.html}
+                        </button>
+                    `;
+                }
+
+                return `
+                    <a href="${link.url}" 
+                        class="tile_link tile_title_link" 
+                        target="_blank" rel="noopener noreferrer" 
+                        aria-label="Visit ${tile.title} on ${link.icon.label}"
+                    >
+                        ${link.icon.html}
+                    </a>
+                `;
+            }).join('')
         }
     }
 

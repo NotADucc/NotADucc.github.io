@@ -1,15 +1,44 @@
 const icons = {
-    'github': `<i class="fa fa-github github-in-line icon"></i>`,
-    'link': `<i class="fa fa-link icon"></i>`
-}
+    github: {
+        html: `<i aria-hidden="true" class="fa fa-github github-in-line icon"></i>`,
+        label: "GitHub"
+    },
+    link: {
+        html: `<i aria-hidden="true" class="fa fa-link icon"></i>`,
+        label: "website"
+    }
+};
+
 const TILE_DATA = 
 {
     "Projects" :
     [
         {
+            "title": "Particle Life",
+            "under_title": "Interactive GPU-accelerated particle simulation",
+            "image": "particle-life.webp",
+            "tools": [
+				"JavaScript",
+				"WebGL2",
+				"GLSL",
+			],
+            "description": "An interactive particle-life simulation where each species has configurable attraction and repulsion rules. Users can adjust particle counts, species, colors, interaction strengths, and simulation settings in real time. The simulation runs on the GPU with WebGL2 or the CPU fallback.",
+            "links":
+            [
+                {
+                    "url": "https://github.com/NotADucc/NotADucc.github.io",
+                    "icon": icons.github
+                },
+                {
+                    "action": "particle-life-expand",
+                    "icon": icons.link
+                }
+            ]
+        },
+        {
             "title": "OSRS Hiscore scraper",
             "under_title": "CLI scripts for scraping and querying OSRS hiscores. ",
-            "image": "osrs-hiscore.png",
+            "image": "osrs-hiscore.webp",
             "tools": [
 				"Python", 
 				"PyTest"
@@ -26,7 +55,7 @@ const TILE_DATA =
 		{
             "title": "Nodo",
             "under_title": "Accessible Social Messaging for Safe and Inclusive Connections",
-            "image": "nodo.jpg",
+            "image": "nodo.webp",
             "tools": [
 				".NET",
 				"C#", 
@@ -49,7 +78,7 @@ const TILE_DATA =
         {
             "title": ".Inside",
             "under_title": "A visitor registration tool",
-            "image": "inside.png",
+            "image": "inside.webp",
             "tools": [
 				".NET", 
 				"C#", 
@@ -63,7 +92,7 @@ const TILE_DATA =
         {
             "title": "Mogcord - WOP",
             "under_title": "A simple messaging platform",
-            "image": "mogcord.png",
+            "image": "mogcord.webp",
             "tools": [
 				"Rust", 
 				"MongoDB", 
@@ -84,7 +113,7 @@ const TILE_DATA =
         {
             "title": "Follow-up system",
             "under_title": "An interactive platform for tests",
-            "image": "web3.png",
+            "image": "web3.webp",
             "tools": [
 				"React", 
 				"Node.Js", 
@@ -99,7 +128,7 @@ const TILE_DATA =
         {
             "title": "Electronic Receipts",
             "under_title": "Bookkeeping Management Tool (Internship)",
-            "image": "electronic-receipts.png",
+            "image": "electronic-receipts.webp",
             "tools": [
 				".NET Framework", 
 				"C#", 
@@ -119,7 +148,7 @@ const TILE_DATA =
         {
             "title": "Monkeys",
             "under_title": "Optimal escape simulation",
-            "image": "monkeys.png",
+            "image": "monkeys.webp",
             "tools": [
 				".NET", 
 				"C#", 
@@ -130,7 +159,7 @@ const TILE_DATA =
         {
             "title": "Mog Site",
             "under_title": "Personal tool hub",
-            "image": "mogsite.png",
+            "image": "mogsite.webp",
             "tools": [
 				".NET", 
 				"C#", 
@@ -144,7 +173,7 @@ const TILE_DATA =
         {
             "title": "Mogsweeper",
             "under_title": "Minesweeper clone",
-            "image": "mogsweeper.png",
+            "image": "mogsweeper.webp",
             "tools": [
 				".NET", 
 				"C#", 
@@ -155,7 +184,7 @@ const TILE_DATA =
         {
             "title": "Restaurant manager",
             "under_title": "REST API to book and manage reservations",
-            "image": "web4.png",
+            "image": "web4.webp",
             "tools": [
 				"ASP .NET CORE", 
 				"C#", 
@@ -169,7 +198,7 @@ const TILE_DATA =
         {
             "title": "Advent of Code",
             "under_title": "Holiday-themed event",
-            "image": "aoc.png",
+            "image": "aoc.webp",
             "description": "An annual holiday-themed event featuring a series of 50 daily programming puzzles, released one per day (two parts per day) from December 1st to December 25th.",
             "links": 
             [
@@ -186,7 +215,7 @@ const TILE_DATA =
         {
             "title": "LeetCode",
             "under_title": "Algorithm library",
-            "image": "leetcode.png",
+            "image": "leetcode.webp",
             "description": "A popular online platform providing a vast library of coding and algorithmic problems used by software developers to improve their skills, practice for technical interviews, and participate in coding competitions.",
             "links": 
             [

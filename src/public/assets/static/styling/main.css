@@ -664,6 +664,15 @@ main h1 {
 	color: #ffffff; 
 }
 
+.tile_action {
+	appearance: none;
+	border: 0;
+	padding: 0 0 0 0.5em;
+	background: transparent;
+	font: inherit;
+	cursor: pointer;
+}
+
 .tile_content {
 	margin-left: 1rem;
 	margin-right: 1rem;

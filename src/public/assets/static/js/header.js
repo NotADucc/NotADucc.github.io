@@ -80,11 +80,13 @@ const update_visibility_icon = () => {
 
     DOM_elements.visibility_on.classList.toggle('hidden', !visible);
     DOM_elements.visibility_off.classList.toggle('hidden', visible);
+    DOM_elements.hide_matrix.setAttribute('aria-pressed', String(!visible));
 };
 
 export const register_header_events = () => {
     DOM_elements.expand_button.addEventListener('click', () => {
         header_info.is_expanded = !header_info.is_expanded;
+        DOM_elements.expand_button.setAttribute('aria-expanded', String(header_info.is_expanded));
 
         DOM_elements.expand_button_triangle.classList.toggle(
             'triangle_rotate',
@@ -98,6 +100,7 @@ export const register_header_events = () => {
             new_height: header_info.get_header_height(),
         });
     });
+    document.getElementById('particle-life-expand')?.addEventListener('click', () => DOM_elements.expand_button.click());
 
     DOM_elements.hide_matrix.addEventListener('click', () => {
         header_info.should_matrix_be_visible = !header_info.should_matrix_be_visible;
@@ -201,6 +204,7 @@ const create_number_control = ({
     value,
     step,
     field,
+    label,
     extra_attributes = '',
 }) => `
     <div class="number_control">
@@ -208,13 +212,14 @@ const create_number_control = ({
             type="number"
             class="dashboard_input"
             data-field="${field}"
+            aria-label="${label}"
             value="${value}"
             step="${step}"
             ${extra_attributes}
         >
         <div class="quantity_nav">
-            <button type="button" class="quantity_button quantity_up" aria-label="Increase value">+</button>
-            <button type="button" class="quantity_button quantity_down" aria-label="Decrease value">-</button>
+            <button type="button" class="quantity_button quantity_up" aria-label="Increase ${label}">+</button>
+            <button type="button" class="quantity_button quantity_down" aria-label="Decrease ${label}">-</button>
         </div>
     </div>
 `;
@@ -224,6 +229,7 @@ const create_world_setting = (setting, world_info) => `
         <span>${setting.title}</span>
         ${create_number_control({
             field: 'count',
+            label: setting.title,
             step: setting.step,
             min: setting.min,
             value: world_info[setting.field],
@@ -243,6 +249,7 @@ const create_species_row = (species, species_index) => `
                 <input
                     type="color"
                     class="matrix_color dashboard_input"
+                    aria-label="Species ${species_index + 1} color"
                     value="${species.color}"
                 >
             </div>
@@ -251,6 +258,7 @@ const create_species_row = (species, species_index) => `
                 value: species.count,
                 step: 1,
                 field: 'count',
+                label: `Species ${species_index + 1} particle count`,
                 extra_attributes: `min="0"`,
             })}
 
@@ -259,6 +267,7 @@ const create_species_row = (species, species_index) => `
                     value,
                     step: 0.01,
                     field: 'attraction',
+                    label: `Species ${species_index + 1} attraction toward species ${attraction_index + 1}`,
                     extra_attributes: `data-y="${attraction_index}"`,
                 })
             ).join('')}
@@ -285,6 +294,7 @@ const create_dashboard = (world_info, particle_species_info) => {
                         max="${world_info.MAX_PARTICLE_MULTIPLIER}"
                         value="${world_info.multiplier}"
                         step="1"
+                        aria-label="Particle count multiplier"
                     >
                     <strong id="particle_multiplier_value">${world_info.multiplier}x</strong>
                 </div>

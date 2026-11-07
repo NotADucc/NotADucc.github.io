@@ -807,32 +807,28 @@ footer a {
 }
 
 .popup {
-	padding: 20px;
-	background: #171717;
-	border-radius: 6px;
-	position: fixed;
-	top: var(--popup-pos);
-	left: var(--popup-pos);
-	transform: translate(calc(-1 * var(--popup-pos)), calc(-1 * var(--popup-pos)));
-	transition: all 0.6s ease-in-out;
+    --popup-x: 50%;
+    --popup-y: 50%;
 
-	@media (max-width: 600px) {
-		top: 10%;
-		left: 0%;
-		transform: translate(0, 0);
-	}
+    padding: 20px;
+    background: #171717;
+    border-radius: 6px;
+    position: fixed;
+    top: var(--popup-y);
+    left: var(--popup-x);
+    transform: translate(-50%, -50%);
+    transition: all 0.6s ease-in-out;
 
-	@media (min-width: 600px) {
-		--popup-pos: 30%;
-	}
+    @media (max-width: 900px) {
+        --popup-x: 10%;
+        --popup-y: 10%;
+        transform: translate(-5%, 0);
+    }
 
-	@media (min-width: 900px) {
-		--popup-pos: 40%;
-	}
-
-	@media (min-width: 1400px) {
-		--popup-pos: 50%;
-	}
+    @media (min-width: 1400px) {
+        --popup-x: 50%;
+        --popup-y: 50%;
+    }
 }
 
 .popup .close {

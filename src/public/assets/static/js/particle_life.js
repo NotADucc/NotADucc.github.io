@@ -79,6 +79,8 @@ globalThis.PARTICLE_SPECIES_INFO = PARTICLE_SPECIES_INFO
 
 let particle_backend = null;
 let current_update_frame = null;
+const frame_rate = 60;
+const frame_rate_timing = 1000 / frame_rate;
 
 const create_particles = (multiplier) => {
     const particles = [];
@@ -104,12 +106,16 @@ const draw_particles = () => {
     particle_backend?.render();
 };
 
+const particles_render_loop = (timestamp, last_update_timestamp) => {
+    const t_delta = timestamp - last_update_timestamp;
 
-const particles_render_loop = () => {
-    particle_backend?.step();
+    if (t_delta >= frame_rate_timing) {
+        last_update_timestamp = timestamp - (t_delta % frame_rate_timing);
+        particle_backend?.step();
+        draw_particles();
+    }
 
-    draw_particles();
-    current_update_frame = requestAnimationFrame(particles_render_loop);
+    current_update_frame = requestAnimationFrame((t) => particles_render_loop(t, last_update_timestamp));
 }
 
 const generate_species_info = (len) => {
@@ -119,7 +125,7 @@ const generate_species_info = (len) => {
         count: random(25, 200, 0),
         attraction: Array.from(
             { length: len },
-            () => random(-0.5, 0.5, 2)
+            () => random(-1, 1, 2)
         )
     };
 }
@@ -217,7 +223,7 @@ const init = async () => {
     window.dispatchEvent(new CustomEvent("resize"));
     particle_backend = await get_particle_backend_factory(DOM_elements.canvas);
     create_particles(PARTICLE_WORLD_INFO.get_redraw_multiplier());
-    particles_render_loop();
+    requestAnimationFrame((t) => particles_render_loop(t, t));
 }
 
 // EVENT LISTENERS
@@ -250,7 +256,7 @@ addEventListener("header:expanded", (event) => {
         },
         () => {
             create_particles(PARTICLE_WORLD_INFO.get_redraw_multiplier());
-            particles_render_loop();
+            requestAnimationFrame((t) => particles_render_loop(t, t));
         }
     );
 });

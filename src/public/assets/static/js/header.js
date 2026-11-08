@@ -1,4 +1,5 @@
-import { is_mobile, DOM_elements, easing_function } from './shared.js';
+import { DOM_elements } from './dom_elements.js';
+import { is_mobile, easing_function } from './shared.js';
 
 const EVENTS = {
     HEADER_EXPANDED: 'header:expanded',

@@ -1,0 +1,1 @@
+import '../../src/public/assets/static/js/secrets.js';

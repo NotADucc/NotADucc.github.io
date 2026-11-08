@@ -42,9 +42,8 @@ const index_template = readFileSync(path.join(__dirname, 'index_template.html'),
 const base_path = path.join("public", "assets", "static", "js");
 
 const script = mode === "debug"
-    ? [path.join(base_path, "particle_life.js")]
-    : [path.join(base_path, "main.min.js")];
-
+    ? [path.join(base_path, "particle_life.js"), path.join(base_path, "secrets.js")]
+    : [path.join(base_path, "main.min.js"), path.join(base_path, "secrets.min.js")];
 
 let output = insert_tiles(index_template, TILE_DATA);
 output = insert_scripts(output, script);

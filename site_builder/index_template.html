@@ -2,12 +2,18 @@
 <html lang="en">
 
 <head>
-    <title>Portfolio</title>
+    <title>Gwilom | Software Developer Portfolio</title>
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="My personal portfolio showcasing my projects, skills and experience.">
-    
+
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Gwilom | Software Developer Portfolio">
+    <meta property="og:description" content="Portfolio of Gwilom featuring web apps, .NET software, and interactive simulations built with C#, JavaScript, WebGL2, Python, and Rust.">
+    <meta property="og:url" content="https://mog-inc.be/">
+    <meta property="og:site_name" content="Gwilom">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
@@ -51,14 +57,14 @@
                     </div>
                     <div class="header_buttons">
                         <div id="header_actions_container" class="invisible">
-                            <button id="reset_button" class="button" type="button" aria-label="Reset particles">
+                            <button id="reset_button" class="header_button" type="button" aria-label="Reset particles">
                                 <svg id="reset" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
                                     <path d="M3 12a9 9 0 1 0 3-6.7L3 8" />
                                     <path d="M3 3v5h5" />
                                 </svg>
                             </button>
 
-                            <button id="randomize_button" class="button" type="button" aria-label="Randomize particles">
+                            <button id="randomize_button" class="header_button" type="button" aria-label="Randomize particles">
                                 <svg id="randomize" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
                                     <path d="M16 3h5v5" />
                                     <path d="M4 20 21 3" />
@@ -68,15 +74,15 @@
                                 </svg>
                             </button>
 
-                            <button id="minus_button" class="button" type="button" aria-label="Remove a particle species">
+                            <button id="minus_button" class="header_button" type="button" aria-label="Remove a particle species">
                                 <div id="minus"></div>
                             </button>
-                            <button id="plus_button" class="button" type="button" aria-label="Add a particle species">
+                            <button id="plus_button" class="header_button" type="button" aria-label="Add a particle species">
                                 <div id="plus"></div>
                             </button>
                         </div>
                         
-                        <button id="hide_matrix" class="button" type="button" aria-label="Particle interaction matrix visibility" aria-pressed="false">
+                        <button id="hide_matrix" class="header_button" type="button" aria-label="Particle interaction matrix visibility" aria-pressed="false">
                             <svg id="visibility_on" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
                                 <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z" />
                                 <circle cx="12" cy="12" r="3" />
@@ -90,7 +96,7 @@
                             </svg>
                         </button>
 
-                        <button id="expand_button" class="button" type="button" aria-label="Expand particle world" aria-expanded="false">
+                        <button id="expand_button" class="header_button" type="button" aria-label="Expand particle world" aria-expanded="false">
                             <div id="expand_button_triangle"></div>
                         </button>
                     </div>
@@ -104,13 +110,31 @@
         <canvas id="noise" width="1000" height="73" aria-hidden="true"></canvas>
     </header>
 
-    <main>
-        <div>
-            <h1>Welcome to my portfolio.</h1>
-            <section>
-                <div class="tile_container"></div>
-            </section>
-        </div>
+        <main>
+        <aside id="profile" aria-labelledby="profile-name">
+            <h1 id="profile-name">Gwilom</h1>
+            <h2>Software developer</h2>
+            <p class="intro">
+                I'm an Applied Informatics graduate with a passion for software development and a curious, 
+                collaborative mindset. I specialize in building full-stack applications and user-focused solutions 
+                using technologies such as C#, JavaScript, Java, VB.NET, and SQL, with experience 
+                in both relational and NoSQL databases.
+                </br></br>
+                Beyond development, I enjoy exploring emerging technologies, tackling algorithmic challenges, 
+                and continuously refining my skills to build efficient, scalable, and maintainable software.
+            </p>
+            <div class="private-contact">
+                <form id="private-links-form">
+                    <input id="private-links-key" name="key" type="password" autocomplete="off" required>
+                    <button class="private-link-button" type="submit">Unlock</button>
+                </form>
+                <p id="private-links-status" role="status" aria-live="polite">Enter key to reveal personal information.</p>
+                <nav id="private-links-list" class="private-links-list" aria-label="Unlocked personal information"></nav>
+            </div>
+        </aside>
+        <section class="portfolio-projects" aria-label="Portfolio projects">
+            <div class="tile_container"></div>
+        </section>
     </main>
     <footer>
         <div class="container">

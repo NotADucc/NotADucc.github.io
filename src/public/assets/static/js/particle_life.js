@@ -1,4 +1,5 @@
-import { DOM_elements, is_mobile, random } from './shared.js';
+import { DOM_elements } from './dom_elements.js';
+import { is_mobile, random } from './shared.js';
 import { register_header_events, header_info, animate_header, setup_dashboard, update_species_buttons } from './header.js';
 import { get_particle_backend_factory } from './api/api-factory.js'
 

@@ -156,42 +156,42 @@ const TILE_DATA =
 			],
             "description": "Developed a simulation project focused on performance optimization. The challenge involved running large-scale simulations with complex interactions, which initially took minutes to hours to complete. By applying efficient algorithms and restructuring the system into manageable chunks, execution time was reduced to just a few seconds."
         },
-        {
-            "title": "Mog Site",
-            "under_title": "Personal tool hub",
-            "image": "mogsite.webp",
-            "tools": [
-				".NET", 
-				"C#", 
-				"ASP .NET CORE", 
-				"Angular.Js", 
-				"JWT", 
-				"Tailwind", 
-			],
-            "description": "Developed a centralized platform to consolidate all frequently used tools in one place, improving accessibility and workflow efficiency.",
-        },
-        {
-            "title": "Mogsweeper",
-            "under_title": "Minesweeper clone",
-            "image": "mogsweeper.webp",
-            "tools": [
-				".NET", 
-				"C#", 
-				"WPF"
-			],
-            "description": "Built a functional clone of Minesweeper game using .NET WPF. Event-driven programming, and clean implementation of game logic while recreating a familiar and interactive user experience.",
-        },
-        {
-            "title": "Restaurant manager",
-            "under_title": "REST API to book and manage reservations",
-            "image": "web4.webp",
-            "tools": [
-				"ASP .NET CORE", 
-				"C#", 
-				"SQL Server",
-			],
-            "description": "Created a REST API for managing restaurant reservations, enabling viewing, booking, and updating of reservations.",
-        },
+        // {
+        //     "title": "Mog Site",
+        //     "under_title": "Personal tool hub",
+        //     "image": "mogsite.webp",
+        //     "tools": [
+		// 		".NET", 
+		// 		"C#", 
+		// 		"ASP .NET CORE", 
+		// 		"Angular.Js", 
+		// 		"JWT", 
+		// 		"Tailwind", 
+		// 	],
+        //     "description": "Developed a centralized platform to consolidate all frequently used tools in one place, improving accessibility and workflow efficiency.",
+        // },
+        // {
+        //     "title": "Mogsweeper",
+        //     "under_title": "Minesweeper clone",
+        //     "image": "mogsweeper.webp",
+        //     "tools": [
+		// 		".NET", 
+		// 		"C#", 
+		// 		"WPF"
+		// 	],
+        //     "description": "Built a functional clone of Minesweeper game using .NET WPF. Event-driven programming, and clean implementation of game logic while recreating a familiar and interactive user experience.",
+        // },
+        // {
+        //     "title": "Restaurant manager",
+        //     "under_title": "REST API to book and manage reservations",
+        //     "image": "web4.webp",
+        //     "tools": [
+		// 		"ASP .NET CORE", 
+		// 		"C#", 
+		// 		"SQL Server",
+		// 	],
+        //     "description": "Created a REST API for managing restaurant reservations, enabling viewing, booking, and updating of reservations.",
+        // },
     ],
     "Hobbies":
     [

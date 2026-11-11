@@ -124,6 +124,7 @@ jobs:
         with:
           name: static-site
           path: "./dist/"
+          retention-days: 1
           if-no-files-found: error
 
   deploy:

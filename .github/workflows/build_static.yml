@@ -2,23 +2,61 @@ name: build
 
 on:
   push:
-    branches: [ "minified" ]
+    branches: ["minified"]
+  workflow_dispatch:
+    inputs:
+      artifact_run_id:
+        description: "Private encryption workflow run containing the portfolio artifact"
+        required: false
+        type: string
 
 concurrency:
   group: "pages"
   cancel-in-progress: true
 
 jobs:
-  build-static-site:
+  request-encryption:
+    if: ${{ github.event_name == 'push' || !inputs.artifact_run_id }}
     runs-on: ubuntu-latest
     steps:
-      - name: check out the repository
+      - name: Dispatch private encryption workflow
+        env:
+          GH_TOKEN: ${{ secrets.ENCRYPTION_REPO_TOKEN }}
+        run: |
+          curl --fail-with-body --silent --show-error \
+            --request POST \
+            --header "Accept: application/vnd.github+json" \
+            --header "Authorization: Bearer ${GH_TOKEN}" \
+            --header "X-GitHub-Api-Version: 2022-11-28" \
+            "https://api.github.com/repos/NotADucc/NotADucc.github.io-encryption/actions/workflows/encrypt-portfolio.yml/dispatches" \
+            --data '{"ref":"main"}'
+
+  build-static-site:
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.artifact_run_id }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repository
         uses: actions/checkout@v4
+
+      - name: Download encrypted portfolio artifact
+        uses: actions/download-artifact@v5
+        with:
+          name: portfolio-encrypted
+          repository: NotADucc/NotADucc.github.io-encryption
+          run-id: ${{ inputs.artifact_run_id }}
+          github-token: ${{ secrets.ENCRYPTION_REPO_TOKEN }}
+          path: ${{ runner.temp }}/portfolio-artifact
+
+      - name: Add encrypted portfolio data to source
+        run: |
+          mkdir -p ./src/public/assets/static/data
+          cp "$RUNNER_TEMP/portfolio-artifact/portfolio.enc.json" \
+            ./src/public/assets/static/data/portfolio.enc.json
 
       - name: Use Node.js (dependency)
         uses: actions/setup-node@v4
         with:
-            node-version: 20
+          node-version: 20
 
       - name: Build page index file
         run: node ./site_builder/updateProjects.js --mode prod
@@ -42,9 +80,7 @@ jobs:
           done
 
       - name: Prepare JS output directory
-        run: |
-          JS=./dist/public/assets/static/js
-          mkdir -p "$JS"
+        run: mkdir -p ./dist/public/assets/static/js
 
       - name: Bundle and minify JS
         run: |
@@ -87,7 +123,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: static-site
-          path: './dist/'
+          path: "./dist/"
           if-no-files-found: error
 
   deploy:
@@ -103,17 +139,21 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
       - name: Download site artifact
         uses: actions/download-artifact@v4
         with:
           name: static-site
           path: ./dist
+
       - name: Setup Pages
         uses: actions/configure-pages@v5
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: './dist'
+          path: "./dist"
+
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4

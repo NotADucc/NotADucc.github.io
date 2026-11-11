@@ -38,9 +38,7 @@ const decrypt_profile = async (password, { salt, iv, ciphertext }) => {
     const plaintext = await crypto.subtle.decrypt(
         { name: 'AES-GCM', iv: from_base64(iv) }, key, from_base64(ciphertext)
     );
-    const decoded = new TextDecoder().decode(plaintext);
-    const profile = JSON.parse(decoded);
-    return typeof profile === 'string' ? JSON.parse(profile) : profile;
+    return JSON.parse(new TextDecoder().decode(plaintext));
 };
 
 const render_links = links => {

@@ -3,7 +3,7 @@ const form = document.getElementById('private-links-form');
 const form_status = document.getElementById('private-links-status');
 const list = document.getElementById('private-links-list');
 const heading = document.querySelector('#profile h1');
-const cache_key = 'private-profile-unlocked-v1';
+const cache_prefix = 'private-profile:';
 
 const icons = {
     email: 'fa-envelope', github: 'fa-github', goodreads: 'fa-book',
@@ -20,7 +20,7 @@ const encrypted_profile_promise = fetch(profile_url)
     })
     .then(data => {
         form_status.textContent = 'Enter key to reveal personal information.';
-        return data;
+        return { data, cache_key: cache_prefix + data.iv };
     })
     .catch(() => {
         form_status.textContent = "Couldn't load private information. Try again later.";
@@ -76,27 +76,43 @@ const apply_profile = profile => {
 
 const hide_form = () => form.hidden = form_status.hidden = true;
 
-try {
-    const cached = sessionStorage.getItem(cache_key);
-    if (cached && apply_profile(JSON.parse(cached))) hide_form();
-} catch {
-    sessionStorage.removeItem(cache_key);
-    list.replaceChildren();
-}
+const purge_stale_cache = current_key => {
+    for (const key of Object.keys(sessionStorage)) {
+        if (key.startsWith(cache_prefix) && key !== current_key) {
+            sessionStorage.removeItem(key);
+        }
+    }
+};
+
+const restore_from_cache = async () => {
+    const encrypted = await encrypted_profile_promise;
+    if (!encrypted) return;
+
+    try {
+        purge_stale_cache(encrypted.cache_key);
+        const cached = sessionStorage.getItem(encrypted.cache_key);
+        if (cached && apply_profile(JSON.parse(cached))) hide_form();
+    } catch {
+        sessionStorage.removeItem(encrypted.cache_key);
+        list.replaceChildren();
+    }
+};
+
+restore_from_cache();
 
 form.addEventListener('submit', async event => {
     event.preventDefault();
     list.replaceChildren();
 
-    const encrypted_profile = await encrypted_profile_promise;
-    if (!encrypted_profile) return;
+    const encrypted = await encrypted_profile_promise;
+    if (!encrypted) return;
 
     form_status.textContent = 'Trying key…';
     try {
         const password = document.getElementById('private-links-key').value;
-        const profile = await decrypt_profile(password, encrypted_profile);
+        const profile = await decrypt_profile(password, encrypted.data);
         const link_count = apply_profile(profile);
-        sessionStorage.setItem(cache_key, JSON.stringify(profile));
+        sessionStorage.setItem(encrypted.cache_key, JSON.stringify(profile));
 
         if (link_count) {
             form.reset();
